@@ -1,0 +1,205 @@
+---
+/**
+ * MiniMap.astro
+ *
+ * Purpose: Display a small, non-interactive map showing a single venue location.
+ *
+ * Features:
+ * - Compact map display (150-200px height)
+ * - Single marker showing venue location
+ * - Zoom and pan controls disabled for simplicity
+ * - Lightweight - just shows location context
+ *
+ * Props:
+ * - latitude: number - Venue latitude
+ * - longitude: number - Venue longitude
+ * - venueName: string - Name of the venue for marker tooltip
+ * - height: string - Map height (default: "150px")
+ *
+ * Dependencies: Leaflet CSS/JS (loaded via CDN)
+ */
+
+interface Props {
+  latitude: number;
+  longitude: number;
+  venueName: string;
+  height?: string;
+}
+
+const {
+  latitude,
+  longitude,
+  venueName,
+  height = "150px",
+} = Astro.props;
+
+// Generate unique ID for this map instance
+const mapId = `mini-map-${Math.random().toString(36).substring(2, 9)}`;
+
+// Serialize data for client-side script
+const mapData = JSON.stringify({
+  lat: latitude,
+  lng: longitude,
+  name: venueName,
+});
+---
+
+<!-- Leaflet CSS (shared with InteractiveMap if already loaded) -->
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+  crossorigin=""
+/>
+
+<div class="mini-map-wrapper" style={`height: ${height};`}>
+  <div id={mapId} class="mini-map-container" data-map-config={mapData}></div>
+</div>
+
+<!-- Leaflet JS (shared with InteractiveMap if already loaded) -->
+<script
+  is:inline
+  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+  crossorigin=""
+></script>
+
+<script>
+  /**
+   * Initialize all mini-maps on the page
+   * Uses data attributes to get configuration
+   */
+  function initMiniMaps() {
+    const miniMaps = document.querySelectorAll(".mini-map-container");
+
+    miniMaps.forEach((container) => {
+      // Skip if already initialized
+      if (container.hasAttribute("data-initialized")) return;
+
+      const configStr = container.getAttribute("data-map-config");
+      if (!configStr || typeof L === "undefined") return;
+
+      try {
+        const config = JSON.parse(configStr);
+        const mapId = container.id;
+
+        // Initialize map with disabled interactions
+        const map = L.map(mapId, {
+          center: [config.lat, config.lng],
+          zoom: 15,
+          zoomControl: false,
+          scrollWheelZoom: false,
+          dragging: false,
+          touchZoom: false,
+          doubleClickZoom: false,
+          boxZoom: false,
+          keyboard: false,
+          attributionControl: false,
+        });
+
+        // Add OpenStreetMap tiles
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          maxZoom: 19,
+        }).addTo(map);
+
+        // Create custom marker icon (gold color for venues)
+        const markerIcon = L.divIcon({
+          className: "mini-map-marker",
+          html: `
+            <div class="mini-marker-pin" style="background-color: #D4A843;">
+              <div class="mini-marker-inner"></div>
+            </div>
+          `,
+          iconSize: [24, 32],
+          iconAnchor: [12, 32],
+          popupAnchor: [0, -32],
+        });
+
+        // Add marker
+        const marker = L.marker([config.lat, config.lng], { icon: markerIcon });
+        marker.bindTooltip(config.name, {
+          permanent: false,
+          direction: "top",
+          offset: [0, -28],
+        });
+        marker.addTo(map);
+
+        // Mark as initialized
+        container.setAttribute("data-initialized", "true");
+      } catch (e) {
+        console.error("Failed to initialize mini-map:", e);
+      }
+    });
+  }
+
+  // Initialize maps when DOM is ready
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
+      setTimeout(initMiniMaps, 100);
+    });
+  } else {
+    setTimeout(initMiniMaps, 100);
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener("astro:page-load", () => {
+    setTimeout(initMiniMaps, 100);
+  });
+</script>
+
+<style>
+  .mini-map-wrapper {
+    position: relative;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+  }
+
+  .mini-map-container {
+    width: 100%;
+    height: 100%;
+    min-height: 100px;
+  }
+
+  /* Custom Marker Styles for Mini-Map */
+  :global(.mini-map-marker) {
+    background: transparent !important;
+    border: none !important;
+  }
+
+  :global(.mini-marker-pin) {
+    width: 24px;
+    height: 24px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  :global(.mini-marker-inner) {
+    width: 10px;
+    height: 10px;
+    background-color: white;
+    border-radius: 50%;
+    transform: rotate(45deg);
+  }
+
+  /* Override Leaflet tooltip styles for mini-map */
+  :global(.mini-map-container .leaflet-tooltip) {
+    background-color: white;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 4px 8px;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-earth-800);
+    box-shadow: var(--shadow-sm);
+  }
+
+  :global(.mini-map-container .leaflet-tooltip-top::before) {
+    border-top-color: var(--color-border);
+  }
+</style>

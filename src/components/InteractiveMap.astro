@@ -1,0 +1,969 @@
+---
+/**
+ * InteractiveMap.astro
+ *
+ * Purpose: Display an interactive Leaflet map with venue markers, popups, and routes.
+ *
+ * Features:
+ * - OpenStreetMap tiles (free, no API key required)
+ * - Color-coded markers by location type (venue, hotel, airport, shopping)
+ * - Informative popups with venue details and directions links
+ * - Route polylines between locations with toggle controls
+ * - Full-screen toggle capability
+ * - Responsive design for mobile and desktop
+ *
+ * Props:
+ * - locations: MapLocation[] - Array of locations to display
+ * - routes: RouteSegment[] - Array of route segments to display (optional)
+ * - center: { lat: number, lng: number } - Map center coordinates
+ * - zoom: number - Initial zoom level (default: 12)
+ * - height: string - Map container height (default: "500px")
+ * - showRoutes: boolean - Whether to enable route display (default: false)
+ *
+ * Dependencies: Leaflet CSS/JS (loaded via CDN)
+ */
+
+import type { MapLocation, Coordinates, RouteSegment } from "../types/data";
+
+interface Props {
+  locations: MapLocation[];
+  routes?: RouteSegment[];
+  center?: Coordinates;
+  zoom?: number;
+  height?: string;
+  showRoutes?: boolean;
+}
+
+const {
+  locations,
+  routes = [],
+  center = { lat: 13.0108, lng: 80.2300 }, // Default: Chennai center (between venues)
+  zoom = 12,
+  height = "500px",
+  showRoutes = false,
+} = Astro.props;
+
+// Serialize data for client-side script
+const locationsJson = JSON.stringify(locations);
+const routesJson = JSON.stringify(routes);
+const centerJson = JSON.stringify(center);
+
+// Color mapping for marker types
+const markerColors = {
+  venue: "#D4A843",      // Gold
+  hotel: "#3B82F6",      // Blue
+  airport: "#F97316",    // Orange
+  shopping: "#22C55E",   // Green
+};
+
+// Route color for polylines
+const routeColor = "#D4A843"; // Gold to match theme
+---
+
+<!-- Leaflet CSS -->
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+  crossorigin=""
+/>
+
+<div class="map-wrapper" style={`height: ${height};`}>
+  <div id="interactive-map" class="map-container"></div>
+
+  <button
+    id="fullscreen-toggle"
+    class="fullscreen-button"
+    aria-label="Toggle fullscreen map"
+    title="Toggle fullscreen"
+  >
+    <svg
+      id="fullscreen-expand-icon"
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <polyline points="15 3 21 3 21 9"></polyline>
+      <polyline points="9 21 3 21 3 15"></polyline>
+      <line x1="21" y1="3" x2="14" y2="10"></line>
+      <line x1="3" y1="21" x2="10" y2="14"></line>
+    </svg>
+    <svg
+      id="fullscreen-collapse-icon"
+      class="hidden"
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <polyline points="4 14 10 14 10 20"></polyline>
+      <polyline points="20 10 14 10 14 4"></polyline>
+      <line x1="14" y1="10" x2="21" y2="3"></line>
+      <line x1="3" y1="21" x2="10" y2="14"></line>
+    </svg>
+  </button>
+</div>
+
+<!-- Map Legend -->
+<div class="map-legend">
+  <h3 class="legend-title">Map Legend</h3>
+  <div class="legend-items">
+    <div class="legend-item">
+      <span class="legend-marker" style="background-color: #D4A843;"></span>
+      <span class="legend-label">Wedding Venues</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-marker" style="background-color: #3B82F6;"></span>
+      <span class="legend-label">Hotel</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-marker" style="background-color: #F97316;"></span>
+      <span class="legend-label">Airport</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-marker" style="background-color: #22C55E;"></span>
+      <span class="legend-label">Shopping Areas</span>
+    </div>
+  </div>
+  <h3 class="legend-title" style="margin-top: var(--spacing-3);">Route Types</h3>
+  <div class="legend-items">
+    <div class="legend-item">
+      <span class="legend-route" style="background-color: #D4A843;"></span>
+      <span class="legend-label">Driving Route</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-route legend-route-dashed" style="background-color: #22C55E;"></span>
+      <span class="legend-label">Walking Route</span>
+    </div>
+  </div>
+</div>
+
+<!-- Leaflet JS -->
+<script
+  is:inline
+  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+  crossorigin=""
+></script>
+
+<script define:vars={{ locationsJson, routesJson, centerJson, zoom, showRoutes }}>
+  /**
+   * Initialize the Leaflet map with markers, popups, and routes
+   */
+  function initMap() {
+    const mapContainer = document.getElementById("interactive-map");
+    if (!mapContainer || typeof L === "undefined") {
+      console.error("Map container or Leaflet not found");
+      return;
+    }
+
+    // Parse data from server
+    const locations = JSON.parse(locationsJson);
+    const routes = JSON.parse(routesJson);
+    const center = JSON.parse(centerJson);
+
+    // Initialize map
+    const map = L.map("interactive-map", {
+      center: [center.lat, center.lng],
+      zoom: zoom,
+      scrollWheelZoom: true,
+      zoomControl: true,
+    });
+
+    // Add OpenStreetMap tiles
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      maxZoom: 19,
+    }).addTo(map);
+
+    // Color mapping for marker types
+    const markerColors = {
+      venue: "#D4A843",
+      hotel: "#3B82F6",
+      airport: "#F97316",
+      shopping: "#22C55E",
+    };
+
+    // Create custom marker icons
+    function createMarkerIcon(type) {
+      const color = markerColors[type] || "#6B7280";
+
+      return L.divIcon({
+        className: "custom-marker",
+        html: `
+          <div class="marker-pin" style="background-color: ${color};">
+            <div class="marker-inner"></div>
+          </div>
+        `,
+        iconSize: [30, 40],
+        iconAnchor: [15, 40],
+        popupAnchor: [0, -40],
+      });
+    }
+
+    // Format date for display
+    function formatDate(dateStr) {
+      if (!dateStr) return null;
+      const date = new Date(dateStr + "T00:00:00");
+      return date.toLocaleDateString("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+    }
+
+    // Format time for display
+    function formatTime(timeStr) {
+      if (!timeStr) return null;
+      const [hours, minutes] = timeStr.split(":");
+      const hour = parseInt(hours, 10);
+      const ampm = hour >= 12 ? "PM" : "AM";
+      const hour12 = hour % 12 || 12;
+      return `${hour12}:${minutes} ${ampm}`;
+    }
+
+    // Generate popup content
+    function createPopupContent(location) {
+      const { lat, lng } = location.coordinates;
+      const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+      const appleMapsUrl = `maps://maps.apple.com/?daddr=${lat},${lng}`;
+
+      let dateTimeHtml = "";
+      if (location.eventDate) {
+        const formattedDate = formatDate(location.eventDate);
+        const formattedTime = location.eventTime ? formatTime(location.eventTime) : null;
+        dateTimeHtml = `
+          <div class="popup-datetime">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            <span>${formattedDate}${formattedTime ? ` at ${formattedTime}` : ""}</span>
+          </div>
+        `;
+      }
+
+      let eventNameHtml = "";
+      if (location.eventName) {
+        eventNameHtml = `<div class="popup-event-name">${location.eventName}</div>`;
+      }
+
+      return `
+        <div class="popup-content">
+          <h3 class="popup-title">${location.name}</h3>
+          ${eventNameHtml}
+          ${dateTimeHtml}
+          ${location.address ? `
+            <div class="popup-address">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <span>${location.address}</span>
+            </div>
+          ` : ""}
+          ${location.area ? `<div class="popup-area">${location.area}</div>` : ""}
+          ${location.description && !location.eventName ? `<div class="popup-description">${location.description}</div>` : ""}
+          <div class="popup-directions">
+            <a href="${googleMapsUrl}" target="_blank" rel="noopener noreferrer" class="directions-link">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+              </svg>
+              Get Directions
+            </a>
+          </div>
+        </div>
+      `;
+    }
+
+    // Add markers to map
+    const markers = [];
+    locations.forEach((location) => {
+      const marker = L.marker(
+        [location.coordinates.lat, location.coordinates.lng],
+        { icon: createMarkerIcon(location.type) }
+      );
+
+      marker.bindPopup(createPopupContent(location), {
+        maxWidth: 300,
+        className: "custom-popup",
+      });
+
+      marker.addTo(map);
+      markers.push(marker);
+    });
+
+    // Fit map to show all markers
+    if (markers.length > 0) {
+      const group = L.featureGroup(markers);
+      map.fitBounds(group.getBounds().pad(0.1));
+    }
+
+    // Route polyline management
+    const routePolylines = {};
+    let currentRouteMode = "driving"; // Track current mode
+    const routeStyles = {
+      driving: {
+        color: "#D4A843",     // Gold
+        hoverColor: "#B8860B", // Darker gold
+        weight: 5,
+        dashArray: null,
+        opacity: 0.85
+      },
+      walking: {
+        color: "#22C55E",     // Green
+        hoverColor: "#16A34A", // Darker green
+        weight: 4,
+        dashArray: "8, 12",   // Dashed line for walking
+        opacity: 0.8
+      }
+    };
+
+    /**
+     * Create a polyline for a route segment
+     */
+    function createRoutePolyline(route, mode = "driving") {
+      // Use walking polyline if available and mode is walking, otherwise use driving polyline
+      const polylineData = mode === "walking" && route.walkingPolyline
+        ? route.walkingPolyline
+        : route.polyline;
+
+      if (!polylineData || polylineData.length === 0) {
+        console.warn(`No ${mode} polyline for route ${route.id}`);
+        return null;
+      }
+
+      const coordinates = polylineData.map(coord => [coord.lat, coord.lng]);
+      const style = routeStyles[mode] || routeStyles.driving;
+
+      const polyline = L.polyline(coordinates, {
+        color: style.color,
+        weight: style.weight,
+        opacity: style.opacity,
+        dashArray: style.dashArray,
+        lineCap: "round",
+        lineJoin: "round"
+      });
+
+      // Add hover effects
+      polyline.on("mouseover", function() {
+        this.setStyle({
+          color: style.hoverColor,
+          weight: style.weight + 2,
+          opacity: 1
+        });
+        this.bringToFront();
+      });
+
+      polyline.on("mouseout", function() {
+        this.setStyle({
+          color: style.color,
+          weight: style.weight,
+          opacity: style.opacity
+        });
+      });
+
+      // Create popup content for route
+      const popupContent = createRoutePopup(route, mode);
+      polyline.bindPopup(popupContent, {
+        maxWidth: 280,
+        className: "route-popup"
+      });
+
+      return polyline;
+    }
+
+    /**
+     * Generate popup content for a route
+     */
+    function createRoutePopup(route, mode = "driving") {
+      // For walking mode, show the walking option first
+      let displayOptions = route.transportOptions;
+      if (mode === "walking") {
+        const walkOption = route.transportOptions.find(opt => opt.mode === "walking");
+        if (walkOption) {
+          displayOptions = [walkOption, ...route.transportOptions.filter(opt => opt.mode !== "walking")];
+        }
+      }
+
+      const recommendedOption = mode === "walking"
+        ? displayOptions.find(opt => opt.mode === "walking")
+        : route.transportOptions.find(opt => opt.isRecommended);
+      const otherOptions = displayOptions.filter(opt => opt !== recommendedOption);
+
+      let optionsHtml = "";
+
+      if (recommendedOption) {
+        optionsHtml += `
+          <div class="route-popup-option recommended">
+            <div class="option-badge">Recommended</div>
+            <div class="option-mode">${formatTransportMode(recommendedOption.mode)}</div>
+            <div class="option-stats">
+              <span class="stat-time">${recommendedOption.durationDisplay}</span>
+              <span class="stat-cost">${recommendedOption.costDisplay}</span>
+            </div>
+            ${recommendedOption.notes ? `<div class="option-note">${recommendedOption.notes}</div>` : ""}
+          </div>
+        `;
+      }
+
+      otherOptions.forEach(opt => {
+        optionsHtml += `
+          <div class="route-popup-option">
+            <div class="option-mode">${formatTransportMode(opt.mode)}</div>
+            <div class="option-stats">
+              <span class="stat-time">${opt.durationDisplay}</span>
+              <span class="stat-cost">${opt.costDisplay}</span>
+            </div>
+          </div>
+        `;
+      });
+
+      return `
+        <div class="route-popup-content">
+          <div class="route-popup-header">
+            <span class="route-from">${route.startName}</span>
+            <span class="route-arrow">→</span>
+            <span class="route-to">${route.endName}</span>
+          </div>
+          <div class="route-popup-distance">${route.distanceDisplay}</div>
+          <div class="route-popup-options">
+            ${optionsHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    /**
+     * Format transport mode for display
+     */
+    function formatTransportMode(mode) {
+      const modes = {
+        taxi: "Taxi / Uber / Ola",
+        "auto-rickshaw": "Auto-rickshaw",
+        walking: "Walking"
+      };
+      return modes[mode] || mode;
+    }
+
+    /**
+     * Show a route on the map
+     */
+    function showRoute(routeId, mode = "driving") {
+      const route = routes.find(r => r.id === routeId);
+      if (!route) return;
+
+      const polylineKey = `${routeId}-${mode}`;
+
+      // Remove any existing polyline for this route (different mode)
+      Object.keys(routePolylines).forEach(key => {
+        if (key.startsWith(routeId + "-") && key !== polylineKey) {
+          if (map.hasLayer(routePolylines[key])) {
+            map.removeLayer(routePolylines[key]);
+          }
+        }
+      });
+
+      if (routePolylines[polylineKey]) {
+        // Already exists for this mode, just add to map
+        if (!map.hasLayer(routePolylines[polylineKey])) {
+          routePolylines[polylineKey].addTo(map);
+        }
+      } else {
+        // Create new polyline for this mode
+        const polyline = createRoutePolyline(route, mode);
+        if (polyline) {
+          polyline.addTo(map);
+          routePolylines[polylineKey] = polyline;
+        }
+      }
+    }
+
+    /**
+     * Hide a route from the map
+     */
+    function hideRoute(routeId) {
+      // Remove all mode variants of this route
+      Object.keys(routePolylines).forEach(key => {
+        if (key.startsWith(routeId + "-")) {
+          if (map.hasLayer(routePolylines[key])) {
+            map.removeLayer(routePolylines[key]);
+          }
+        }
+      });
+    }
+
+    /**
+     * Toggle route visibility
+     */
+    function toggleRoute(routeId, visible, mode = "driving") {
+      if (visible) {
+        showRoute(routeId, mode);
+      } else {
+        hideRoute(routeId);
+      }
+    }
+
+    // Listen for route toggle events from RoutePanel
+    window.addEventListener("routeToggle", (e) => {
+      const { routeId, visible, mode = "driving" } = e.detail;
+      currentRouteMode = mode;
+      toggleRoute(routeId, visible, mode);
+    });
+
+    // Listen for mode change events
+    window.addEventListener("routeModeChange", (e) => {
+      currentRouteMode = e.detail.mode;
+    });
+
+    // Initialize routes if showRoutes is enabled
+    if (showRoutes && routes.length > 0) {
+      // Show first 3 routes by default
+      routes.slice(0, 3).forEach(route => {
+        showRoute(route.id);
+      });
+    }
+
+    // Fullscreen toggle functionality
+    const fullscreenToggle = document.getElementById("fullscreen-toggle");
+    const mapWrapper = document.querySelector(".map-wrapper");
+    const expandIcon = document.getElementById("fullscreen-expand-icon");
+    const collapseIcon = document.getElementById("fullscreen-collapse-icon");
+
+    if (fullscreenToggle && mapWrapper) {
+      let isFullscreen = false;
+
+      fullscreenToggle.addEventListener("click", () => {
+        isFullscreen = !isFullscreen;
+
+        if (isFullscreen) {
+          mapWrapper.classList.add("fullscreen");
+          expandIcon.classList.add("hidden");
+          collapseIcon.classList.remove("hidden");
+          document.body.style.overflow = "hidden";
+        } else {
+          mapWrapper.classList.remove("fullscreen");
+          expandIcon.classList.remove("hidden");
+          collapseIcon.classList.add("hidden");
+          document.body.style.overflow = "";
+        }
+
+        // Invalidate map size after fullscreen toggle
+        setTimeout(() => {
+          map.invalidateSize();
+          if (markers.length > 0) {
+            const group = L.featureGroup(markers);
+            map.fitBounds(group.getBounds().pad(0.1));
+          }
+        }, 100);
+      });
+
+      // Close fullscreen on Escape key
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && isFullscreen) {
+          isFullscreen = false;
+          mapWrapper.classList.remove("fullscreen");
+          expandIcon.classList.remove("hidden");
+          collapseIcon.classList.add("hidden");
+          document.body.style.overflow = "";
+          setTimeout(() => {
+            map.invalidateSize();
+          }, 100);
+        }
+      });
+    }
+  }
+
+  // Initialize map when DOM is ready
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initMap);
+  } else {
+    // Small delay to ensure Leaflet is fully loaded
+    setTimeout(initMap, 100);
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener("astro:page-load", () => {
+    setTimeout(initMap, 100);
+  });
+</script>
+
+<style>
+  .map-wrapper {
+    position: relative;
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    background-color: var(--color-bg-secondary);
+    transition: all 0.3s ease;
+  }
+
+  .map-wrapper.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh !important;
+    z-index: 9999;
+    border-radius: 0;
+  }
+
+  .map-container {
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+  }
+
+  .fullscreen-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    background-color: white;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    padding: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+  }
+
+  .fullscreen-button:hover {
+    background-color: var(--color-gold-100);
+  }
+
+  .fullscreen-button:focus {
+    outline: 2px solid var(--color-gold-500);
+    outline-offset: 2px;
+  }
+
+  .fullscreen-button svg {
+    color: var(--color-earth-700);
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  /* Map Legend */
+  .map-legend {
+    margin-top: var(--spacing-4);
+    padding: var(--spacing-4);
+    background-color: var(--color-bg-card);
+    border-radius: var(--radius-card);
+    border: 1px solid var(--color-border);
+  }
+
+  .legend-title {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--spacing-3);
+  }
+
+  .legend-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-4);
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+  }
+
+  .legend-marker {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .legend-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+  }
+
+  .legend-route {
+    width: 24px;
+    height: 4px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .legend-route-dashed {
+    background: repeating-linear-gradient(
+      90deg,
+      currentColor 0px,
+      currentColor 6px,
+      transparent 6px,
+      transparent 10px
+    );
+  }
+
+  /* Custom Marker Styles */
+  :global(.custom-marker) {
+    background: transparent !important;
+    border: none !important;
+  }
+
+  :global(.marker-pin) {
+    width: 30px;
+    height: 30px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  :global(.marker-inner) {
+    width: 12px;
+    height: 12px;
+    background-color: white;
+    border-radius: 50%;
+    transform: rotate(45deg);
+  }
+
+  /* Custom Popup Styles */
+  :global(.custom-popup .leaflet-popup-content-wrapper) {
+    border-radius: var(--radius-card);
+    padding: 0;
+    box-shadow: var(--shadow-card);
+  }
+
+  :global(.custom-popup .leaflet-popup-content) {
+    margin: 0;
+    min-width: 200px;
+  }
+
+  :global(.popup-content) {
+    padding: var(--spacing-4);
+  }
+
+  :global(.popup-title) {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-earth-900);
+    margin: 0 0 var(--spacing-2) 0;
+    line-height: 1.3;
+  }
+
+  :global(.popup-event-name) {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gold-700);
+    margin-bottom: var(--spacing-2);
+  }
+
+  :global(.popup-datetime) {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-2);
+  }
+
+  :global(.popup-datetime svg) {
+    flex-shrink: 0;
+    color: var(--color-gold-600);
+  }
+
+  :global(.popup-address) {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-2);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-1);
+  }
+
+  :global(.popup-address svg) {
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: var(--color-gold-600);
+  }
+
+  :global(.popup-area) {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    margin-left: 22px;
+    margin-bottom: var(--spacing-2);
+  }
+
+  :global(.popup-description) {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-3);
+    font-style: italic;
+  }
+
+  :global(.popup-directions) {
+    padding-top: var(--spacing-3);
+    border-top: 1px solid var(--color-border);
+  }
+
+  :global(.directions-link) {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gold-700);
+    text-decoration: none;
+    padding: var(--spacing-2) var(--spacing-3);
+    background-color: var(--color-gold-100);
+    border-radius: var(--radius-button);
+    transition: all 0.2s ease;
+  }
+
+  :global(.directions-link:hover) {
+    background-color: var(--color-gold-200);
+    color: var(--color-gold-800);
+    text-decoration: none;
+  }
+
+  :global(.directions-link svg) {
+    flex-shrink: 0;
+  }
+
+  /* Route Popup Styles */
+  :global(.route-popup .leaflet-popup-content-wrapper) {
+    border-radius: var(--radius-card);
+    padding: 0;
+    box-shadow: var(--shadow-card);
+  }
+
+  :global(.route-popup .leaflet-popup-content) {
+    margin: 0;
+    min-width: 220px;
+  }
+
+  :global(.route-popup-content) {
+    padding: var(--spacing-3);
+  }
+
+  :global(.route-popup-header) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-1);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-earth-900);
+    margin-bottom: var(--spacing-2);
+  }
+
+  :global(.route-from),
+  :global(.route-to) {
+    color: var(--color-earth-800);
+  }
+
+  :global(.route-arrow) {
+    color: var(--color-gold-600);
+    font-weight: var(--font-weight-bold);
+  }
+
+  :global(.route-popup-distance) {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    margin-bottom: var(--spacing-3);
+    padding-bottom: var(--spacing-2);
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  :global(.route-popup-options) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+
+  :global(.route-popup-option) {
+    padding: var(--spacing-2);
+    background-color: var(--color-bg-secondary);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border-light);
+  }
+
+  :global(.route-popup-option.recommended) {
+    background-color: var(--color-gold-50);
+    border-color: var(--color-gold-300);
+  }
+
+  :global(.option-badge) {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-gold-700);
+    background-color: var(--color-gold-200);
+    padding: 2px var(--spacing-2);
+    border-radius: var(--radius-badge);
+    display: inline-block;
+    margin-bottom: var(--spacing-1);
+  }
+
+  :global(.option-mode) {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-earth-800);
+    margin-bottom: var(--spacing-1);
+  }
+
+  :global(.option-stats) {
+    display: flex;
+    gap: var(--spacing-3);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+  }
+
+  :global(.stat-time),
+  :global(.stat-cost) {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+  }
+
+  :global(.option-note) {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    font-style: italic;
+    margin-top: var(--spacing-1);
+    padding-top: var(--spacing-1);
+    border-top: 1px dashed var(--color-border-light);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 767px) {
+    .legend-items {
+      flex-direction: column;
+      gap: var(--spacing-2);
+    }
+
+    .map-wrapper.fullscreen {
+      border-radius: 0;
+    }
+  }
+</style>

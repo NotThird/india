@@ -1,0 +1,410 @@
+/**
+ * Global CSS Styles
+ *
+ * Purpose: Define global styles, CSS custom properties, and Tailwind theme configuration.
+ *
+ * Structure:
+ * 1. Tailwind import and @theme configuration
+ * 2. CSS custom properties (design tokens)
+ * 3. Base/reset styles
+ * 4. Typography defaults
+ * 5. Utility classes
+ *
+ * Design System: India-inspired warm palette (golds, oranges, earth tones)
+ */
+
+@import "tailwindcss";
+
+/* ==========================================================================
+   Tailwind v4 Theme Configuration
+   ========================================================================== */
+
+@theme {
+  /* Gold Palette - Ceremonial/Decorative Gold */
+  --color-gold-50: #FDF9F0;
+  --color-gold-100: #FBF2DC;
+  --color-gold-200: #F5E4B8;
+  --color-gold-300: #EDD28E;
+  --color-gold-400: #E3BE64;
+  --color-gold-500: #D4A843;
+  --color-gold-600: #B88E36;
+  --color-gold-700: #9A752C;
+  --color-gold-800: #7C5D23;
+  --color-gold-900: #5E461A;
+  --color-gold-950: #3F2F11;
+
+  /* Orange Palette - Marigold/Saffron */
+  --color-orange-50: #FEF5F0;
+  --color-orange-100: #FDEAD9;
+  --color-orange-200: #FAD0B0;
+  --color-orange-300: #F5B07D;
+  --color-orange-400: #ED8E4F;
+  --color-orange-500: #E07C3E;
+  --color-orange-600: #C56630;
+  --color-orange-700: #A45126;
+  --color-orange-800: #833F1E;
+  --color-orange-900: #632F17;
+  --color-orange-950: #421F0F;
+
+  /* Earth Palette - Grounding Browns */
+  --color-earth-50: #F7F5F3;
+  --color-earth-100: #EDE9E5;
+  --color-earth-200: #DCD4CC;
+  --color-earth-300: #C5B9AB;
+  --color-earth-400: #AC9A87;
+  --color-earth-500: #8C7A66;
+  --color-earth-600: #746351;
+  --color-earth-700: #5C4033;
+  --color-earth-800: #4A3329;
+  --color-earth-900: #38271F;
+  --color-earth-950: #251A14;
+
+  /* Cream Palette - Warm neutrals for backgrounds */
+  --color-cream-50: #FFFDFB;
+  --color-cream-100: #FEF9F3;
+  --color-cream-200: #FCF3E8;
+  --color-cream-300: #F9EBDA;
+  --color-cream-400: #F5E0C7;
+  --color-cream-500: #EED4B3;
+
+  /* System Font Stack */
+  --font-family-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+
+  /* Border Radius Tokens */
+  --radius-card: 0.5rem;
+  --radius-button: 0.25rem;
+
+  /* Box Shadows */
+  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --shadow-card-hover: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+/* ==========================================================================
+   CSS Custom Properties (Semantic Design Tokens)
+   ========================================================================== */
+
+:root {
+  /* Primary Colors (semantic aliases) */
+  --color-primary: var(--color-gold-500);
+  --color-primary-light: var(--color-gold-300);
+  --color-primary-dark: var(--color-gold-700);
+
+  /* Accent Colors */
+  --color-accent: var(--color-orange-500);
+  --color-accent-light: var(--color-orange-300);
+  --color-accent-dark: var(--color-orange-700);
+
+  /* Text Colors */
+  --color-text-primary: var(--color-earth-800);
+  --color-text-secondary: var(--color-earth-600);
+  --color-text-muted: var(--color-earth-400);
+  --color-text-inverse: var(--color-cream-50);
+
+  /* Background Colors */
+  --color-bg-primary: var(--color-cream-50);
+  --color-bg-secondary: var(--color-cream-100);
+  --color-bg-tertiary: var(--color-cream-200);
+
+  /* Border Colors */
+  --color-border-light: var(--color-earth-200);
+  --color-border-default: var(--color-earth-300);
+  --color-border-dark: var(--color-earth-400);
+
+  /* Status Colors */
+  --color-success: #16A34A;
+  --color-success-light: #DCFCE7;
+  --color-warning: var(--color-orange-500);
+  --color-warning-light: var(--color-orange-100);
+  --color-info: #0EA5E9;
+  --color-info-light: #E0F2FE;
+
+  /* Typography Scale (based on 1rem = 16px) */
+  --font-size-xs: 0.75rem;      /* 12px */
+  --font-size-sm: 0.875rem;     /* 14px */
+  --font-size-base: 1rem;       /* 16px */
+  --font-size-lg: 1.125rem;     /* 18px */
+  --font-size-xl: 1.25rem;      /* 20px */
+  --font-size-2xl: 1.5rem;      /* 24px */
+  --font-size-3xl: 1.875rem;    /* 30px */
+  --font-size-4xl: 2.25rem;     /* 36px */
+  --font-size-5xl: 3rem;        /* 48px */
+
+  /* Line Heights */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  /* Font Weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Spacing Scale (based on 4px unit) */
+  --spacing-1: 0.25rem;   /* 4px */
+  --spacing-2: 0.5rem;    /* 8px */
+  --spacing-3: 0.75rem;   /* 12px */
+  --spacing-4: 1rem;      /* 16px */
+  --spacing-5: 1.25rem;   /* 20px */
+  --spacing-6: 1.5rem;    /* 24px */
+  --spacing-8: 2rem;      /* 32px */
+  --spacing-10: 2.5rem;   /* 40px */
+  --spacing-12: 3rem;     /* 48px */
+  --spacing-16: 4rem;     /* 64px */
+
+  /* Layout */
+  --sidebar-width: 15rem; /* 240px */
+  --content-max-width: 72rem; /* 1152px */
+}
+
+/* ==========================================================================
+   Base/Reset Styles
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 100%; /* 16px base */
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
+  min-height: 100vh;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+/* Remove default button styles */
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Remove list styles on ul, ol with role="list" */
+ul[role="list"],
+ol[role="list"] {
+  list-style: none;
+}
+
+/* Anchor styling */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================================================
+   Typography Defaults
+   ========================================================================== */
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  color: var(--color-earth-900);
+}
+
+h1 {
+  font-size: var(--font-size-4xl);
+}
+
+h2 {
+  font-size: var(--font-size-3xl);
+}
+
+h3 {
+  font-size: var(--font-size-2xl);
+}
+
+h4 {
+  font-size: var(--font-size-xl);
+}
+
+h5 {
+  font-size: var(--font-size-lg);
+}
+
+h6 {
+  font-size: var(--font-size-base);
+}
+
+p {
+  margin-bottom: var(--spacing-4);
+}
+
+p:last-child {
+  margin-bottom: 0;
+}
+
+strong, b {
+  font-weight: var(--font-weight-semibold);
+}
+
+small {
+  font-size: var(--font-size-sm);
+}
+
+/* ==========================================================================
+   Focus Styles (Accessibility)
+   ========================================================================== */
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Selection Styles
+   ========================================================================== */
+
+::selection {
+  background-color: var(--color-gold-200);
+  color: var(--color-earth-900);
+}
+
+/* ==========================================================================
+   Scrollbar Styling (Optional Enhancement)
+   ========================================================================== */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-cream-100);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-earth-300);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-earth-400);
+}
+
+/* ==========================================================================
+   Utility Classes (Supplement Tailwind)
+   ========================================================================== */
+
+/* Container with sidebar offset */
+.main-content {
+  margin-left: var(--sidebar-width);
+  padding: var(--spacing-6);
+  max-width: var(--content-max-width);
+}
+
+@media (max-width: 767px) {
+  .main-content {
+    margin-left: 0;
+    padding: var(--spacing-4);
+  }
+}
+
+/* Card component base */
+.card {
+  background-color: white;
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: var(--spacing-6);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* Badge base styles */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-1) var(--spacing-2);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-button);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+/* Status badge variants */
+.badge-success {
+  background-color: var(--color-success-light);
+  color: var(--color-success);
+}
+
+.badge-warning {
+  background-color: var(--color-warning-light);
+  color: var(--color-orange-800);
+}
+
+.badge-info {
+  background-color: var(--color-info-light);
+  color: #0369A1;
+}
+
+.badge-muted {
+  background-color: var(--color-earth-100);
+  color: var(--color-earth-600);
+}
+
+/* Event type badge variants */
+.badge-ceremony {
+  background-color: var(--color-gold-100);
+  color: var(--color-gold-800);
+}
+
+.badge-prewedding {
+  background-color: var(--color-orange-100);
+  color: var(--color-orange-800);
+}
+
+.badge-reception {
+  background-color: var(--color-earth-100);
+  color: var(--color-earth-700);
+}
+
+/* Visually hidden (screen reader only) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

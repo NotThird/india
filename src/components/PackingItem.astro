@@ -1,0 +1,132 @@
+---
+/**
+ * PackingItem.astro
+ *
+ * Purpose: Display a single packing list item with checkbox and localStorage persistence.
+ *
+ * Features:
+ * - Checkbox input with localStorage state persistence
+ * - Item label with strikethrough when checked
+ * - Visual feedback on hover
+ * - Data attributes for JavaScript persistence integration
+ *
+ * Props:
+ * - item: PackingItem object from packing.json
+ * - categoryId: Parent category ID for progress tracking
+ *
+ * Phase 2 Enhancement:
+ * - Added data-item-id for localStorage key generation
+ * - Added data-category-id for per-category progress tracking
+ */
+
+import type { PackingItem } from "../types/data";
+
+interface Props {
+  item: PackingItem;
+  categoryId: string;
+}
+
+const { item, categoryId } = Astro.props;
+---
+
+<label class="packing-item" for={item.id}>
+  <input
+    type="checkbox"
+    id={item.id}
+    name={item.id}
+    class="packing-checkbox"
+    data-item-id={item.id}
+    data-category-id={categoryId}
+  />
+  <span class="checkmark">
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+  </span>
+  <span class="item-name">{item.name}</span>
+</label>
+
+<style>
+  .packing-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    padding: var(--spacing-3) var(--spacing-4);
+    background-color: white;
+    border-radius: var(--radius-button);
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    user-select: none;
+  }
+
+  .packing-item:hover {
+    background-color: var(--color-cream-100);
+  }
+
+  .packing-item:active {
+    transform: scale(0.99);
+  }
+
+  .packing-checkbox {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .checkmark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--color-earth-300);
+    border-radius: var(--radius-button);
+    background-color: white;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .checkmark svg {
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.2s ease;
+    color: white;
+  }
+
+  .packing-checkbox:checked + .checkmark {
+    background-color: var(--color-gold-500);
+    border-color: var(--color-gold-500);
+  }
+
+  .packing-checkbox:checked + .checkmark svg {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .packing-checkbox:focus-visible + .checkmark {
+    outline: 2px solid var(--color-gold-400);
+    outline-offset: 2px;
+  }
+
+  .item-name {
+    font-size: var(--font-size-base);
+    color: var(--color-earth-800);
+    transition: color 0.2s ease, text-decoration 0.2s ease;
+  }
+
+  .packing-checkbox:checked ~ .item-name {
+    color: var(--color-text-muted);
+    text-decoration: line-through;
+  }
+
+  /* Hover states */
+  .packing-item:hover .checkmark {
+    border-color: var(--color-gold-400);
+  }
+
+  .packing-item:hover .packing-checkbox:checked + .checkmark {
+    background-color: var(--color-gold-600);
+    border-color: var(--color-gold-600);
+  }
+</style>

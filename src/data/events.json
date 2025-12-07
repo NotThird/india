@@ -1,0 +1,66 @@
+{
+  "events": [
+    {
+      "id": "mehendi",
+      "name": "Mehendi Ceremony",
+      "date": "2026-01-25",
+      "startTime": "11:00",
+      "endTime": "15:00",
+      "venue": "Keys Prima by Lemon Tree",
+      "address": "11/23 Kalakshetra Rd, Thiruvanmiyur, Chennai",
+      "area": "Thiruvanmiyur",
+      "type": "pre-wedding",
+      "description": "Traditional henna ceremony",
+      "coordinates": {
+        "lat": 12.9821,
+        "lng": 80.2582
+      }
+    },
+    {
+      "id": "wedding",
+      "name": "Wedding Ceremony",
+      "date": "2026-01-28",
+      "startTime": "09:00",
+      "endTime": "10:30",
+      "venue": null,
+      "address": null,
+      "area": null,
+      "type": "ceremony",
+      "description": "Main wedding ceremony",
+      "venueTBC": true,
+      "coordinates": null
+    },
+    {
+      "id": "lunch",
+      "name": "Wedding Lunch",
+      "date": "2026-01-28",
+      "startTime": "11:00",
+      "endTime": null,
+      "venue": "Dwarka Grand Palace",
+      "address": "63 1st Seaward Rd, Thiruvanmiyur, Chennai",
+      "area": "Thiruvanmiyur",
+      "type": "reception",
+      "description": "Wedding reception lunch",
+      "coordinates": {
+        "lat": 12.9847,
+        "lng": 80.2589
+      }
+    },
+    {
+      "id": "cocktail",
+      "name": "Cocktail Party",
+      "date": "2026-01-29",
+      "startTime": "19:00",
+      "endTime": null,
+      "venue": "Origami at Green Meadows Resort",
+      "address": "Palavakkam, Chennai",
+      "area": "Palavakkam",
+      "type": "post-wedding",
+      "description": "Evening cocktail celebration",
+      "coordinates": {
+        "lat": 12.9578,
+        "lng": 80.2579
+      }
+    }
+  ]
+}

@@ -1,0 +1,590 @@
+{
+  "areas": [
+    {
+      "id": "t-nagar",
+      "name": "T. Nagar (Thyagaraya Nagar)",
+      "description": "Chennai's premier shopping district and one of Asia's most densely commercial neighborhoods. This is THE destination for silk sarees, wedding attire, and jewelry. The main shopping stretch along Usman Road and Ranganathan Street offers everything from luxury silk showrooms to budget-friendly options.",
+      "coordinates": {
+        "lat": 13.0418,
+        "lng": 80.2341
+      },
+      "tips": [
+        "Visit on weekday mornings (10 AM - 12 PM) to avoid crowds",
+        "Most shops closed on Tuesdays - plan accordingly",
+        "Carry cash for better bargaining power at smaller shops",
+        "Large showrooms like Nalli and Pothys have fixed prices - no bargaining",
+        "Allow 3-4 hours minimum for serious wedding shopping",
+        "Take the Chennai Metro to T. Nagar station for easy access",
+        "Start with the big showrooms to understand quality and pricing, then explore smaller shops"
+      ],
+      "shops": [
+        {
+          "id": "nalli-silks",
+          "name": "Nalli Silks",
+          "address": "9, Nageswara Rao Road, T. Nagar, Chennai - 600017",
+          "coordinates": {
+            "lat": 13.0401,
+            "lng": 80.2339
+          },
+          "priceRange": "mid-high",
+          "specialties": [
+            "Kanchipuram silk sarees",
+            "Bridal sarees",
+            "Pure silk fabrics",
+            "Wedding silk dhotis",
+            "Silk shirts for men"
+          ],
+          "forGender": ["women", "men"],
+          "tips": [
+            "Fixed prices - no bargaining needed",
+            "Ask for the bridal collection on the 2nd floor",
+            "Staff can explain different silk grades and zari work",
+            "They provide silk authenticity certificates",
+            "Accepts all cards and has ATM nearby"
+          ],
+          "openingHours": "9:00 AM - 9:00 PM (Closed Tuesdays)",
+          "website": "https://www.nalli.com"
+        },
+        {
+          "id": "pothys",
+          "name": "Pothys",
+          "address": "15, Usman Road, T. Nagar, Chennai - 600017",
+          "coordinates": {
+            "lat": 13.0427,
+            "lng": 80.2333
+          },
+          "priceRange": "mid",
+          "specialties": [
+            "Kanchipuram sarees",
+            "Soft silk sarees",
+            "Wedding sarees",
+            "Sherwanis",
+            "Kurta sets for men",
+            "Ready-made ethnic wear"
+          ],
+          "forGender": ["women", "men"],
+          "tips": [
+            "Fixed prices in main showroom",
+            "Great range of mid-budget wedding sarees",
+            "Men's ethnic wear section is comprehensive",
+            "Good alterations service available",
+            "Air-conditioned multi-floor showroom"
+          ],
+          "openingHours": "9:30 AM - 9:30 PM (Closed Tuesdays)",
+          "website": "https://www.pothys.com"
+        },
+        {
+          "id": "kumaran-silks",
+          "name": "Kumaran Silks",
+          "address": "12, Usman Road, T. Nagar, Chennai - 600017",
+          "coordinates": {
+            "lat": 13.0422,
+            "lng": 80.2337
+          },
+          "priceRange": "mid-high",
+          "specialties": [
+            "Traditional Kanchipuram sarees",
+            "Handwoven silk sarees",
+            "Bridal collections",
+            "Pattu sarees",
+            "Exclusive zari work sarees"
+          ],
+          "forGender": ["women"],
+          "tips": [
+            "Known for authentic handwoven Kanchipuram sarees",
+            "Ask to see their exclusive bridal collection",
+            "Fixed prices but quality is consistent",
+            "Staff knowledge of silk types is excellent"
+          ],
+          "openingHours": "9:00 AM - 9:00 PM (Closed Tuesdays)",
+          "website": null
+        },
+        {
+          "id": "rmkv-silks",
+          "name": "RMKV Silks",
+          "address": "75, Usman Road, T. Nagar, Chennai - 600017",
+          "coordinates": {
+            "lat": 13.0436,
+            "lng": 80.2328
+          },
+          "priceRange": "mid-high",
+          "specialties": [
+            "Kanchipuram sarees",
+            "Wedding collections",
+            "Pure silk sarees",
+            "Designer blouse pieces",
+            "Silk dhotis and angavastrams"
+          ],
+          "forGender": ["women", "men"],
+          "tips": [
+            "Excellent for traditional wedding sarees",
+            "Good selection of matching blouse pieces",
+            "Men's traditional wear section on ground floor",
+            "Fixed prices, trustworthy quality"
+          ],
+          "openingHours": "9:30 AM - 9:00 PM (Closed Tuesdays)",
+          "website": "https://www.rmkvsilks.com"
+        },
+        {
+          "id": "saravana-stores",
+          "name": "Saravana Stores",
+          "address": "Ranganathan Street, T. Nagar, Chennai - 600017",
+          "coordinates": {
+            "lat": 13.0407,
+            "lng": 80.2323
+          },
+          "priceRange": "budget",
+          "specialties": [
+            "Budget sarees",
+            "Churidar sets",
+            "Ready-made kurtas",
+            "Cotton fabrics",
+            "Everyday ethnic wear"
+          ],
+          "forGender": ["women", "men"],
+          "tips": [
+            "Best for budget shopping, not for premium silk",
+            "Expect crowds - very popular destination",
+            "Fixed prices, no bargaining",
+            "Great for cotton sarees and daily wear",
+            "Men's kurtas and churidars at good prices"
+          ],
+          "openingHours": "9:00 AM - 10:00 PM",
+          "website": null
+        },
+        {
+          "id": "kalyan-silks",
+          "name": "Kalyan Silks",
+          "address": "28, North Usman Road, T. Nagar, Chennai - 600017",
+          "coordinates": {
+            "lat": 13.0445,
+            "lng": 80.2342
+          },
+          "priceRange": "mid",
+          "specialties": [
+            "Kerala Kasavu sarees",
+            "Kanchipuram sarees",
+            "Wedding sarees",
+            "Men's silk dhotis",
+            "Traditional South Indian attire"
+          ],
+          "forGender": ["women", "men"],
+          "tips": [
+            "Good variety of South Indian traditional wear",
+            "Known for Kerala-style sarees as well",
+            "Men's veshti and dhoti selection is good",
+            "Competitive pricing"
+          ],
+          "openingHours": "10:00 AM - 9:00 PM (Closed Tuesdays)",
+          "website": null
+        }
+      ]
+    },
+    {
+      "id": "mylapore",
+      "name": "Mylapore",
+      "description": "Historic Chennai neighborhood known for the iconic Kapaleeshwarar Temple and traditional shopping. Less hectic than T. Nagar with a more authentic old Chennai vibe. Famous for temple jewelry, traditional silk, and artisanal crafts.",
+      "coordinates": {
+        "lat": 13.0368,
+        "lng": 80.2676
+      },
+      "tips": [
+        "Combine shopping with a visit to the beautiful Kapaleeshwarar Temple",
+        "Mada Streets around the temple are great for traditional items",
+        "Less crowded than T. Nagar, more relaxed shopping experience",
+        "Many shops here are family-run for generations",
+        "Good for temple jewelry and traditional accessories",
+        "Visit in the morning for a peaceful experience"
+      ],
+      "shops": [
+        {
+          "id": "sundari-silks",
+          "name": "Sundari Silks",
+          "address": "20, North Mada Street, Mylapore, Chennai - 600004",
+          "coordinates": {
+            "lat": 13.0339,
+            "lng": 80.2696
+          },
+          "priceRange": "mid-high",
+          "specialties": [
+            "Kanchipuram sarees",
+            "Traditional wedding sarees",
+            "Handloom sarees",
+            "Exclusive designer pieces",
+            "Bridal collections"
+          ],
+          "forGender": ["women"],
+          "tips": [
+            "Known for personalized service and expertise",
+            "Can customize sarees for wedding requirements",
+            "Quieter shopping experience than T. Nagar",
+            "Staff can explain the significance of different motifs"
+          ],
+          "openingHours": "10:00 AM - 8:30 PM (Closed Tuesdays)",
+          "website": null
+        },
+        {
+          "id": "radha-silks-mylapore",
+          "name": "Radha Silk Emporium",
+          "address": "57, South Mada Street, Mylapore, Chennai - 600004",
+          "coordinates": {
+            "lat": 13.0328,
+            "lng": 80.2683
+          },
+          "priceRange": "mid",
+          "specialties": [
+            "Traditional silk sarees",
+            "Cotton sarees",
+            "Handloom collections",
+            "Temple jewelry accessories"
+          ],
+          "forGender": ["women"],
+          "tips": [
+            "Good mix of silk and cotton sarees",
+            "Helpful for understanding traditional Tamil wedding saree requirements",
+            "Family-run business with decades of experience"
+          ],
+          "openingHours": "9:30 AM - 8:00 PM (Closed Tuesdays)",
+          "website": null
+        },
+        {
+          "id": "sri-kumaran-stores",
+          "name": "Sri Kumaran Stores",
+          "address": "15, Bazaar Road, Mylapore, Chennai - 600004",
+          "coordinates": {
+            "lat": 13.0355,
+            "lng": 80.2668
+          },
+          "priceRange": "mid",
+          "specialties": [
+            "Men's traditional wear",
+            "Silk dhotis",
+            "Veshtis",
+            "Kurta pajamas",
+            "Angavastrams"
+          ],
+          "forGender": ["men"],
+          "tips": [
+            "Excellent for men's traditional Tamil wedding attire",
+            "Good range of silk veshtis and dhotis",
+            "Can advise on proper traditional wear for wedding guests",
+            "Reasonable prices compared to T. Nagar"
+          ],
+          "openingHours": "9:00 AM - 9:00 PM (Closed Tuesdays)",
+          "website": null
+        }
+      ]
+    },
+    {
+      "id": "kanchipuram",
+      "name": "Kanchipuram (Day Trip)",
+      "description": "The silk capital of South India, about 75km from Chennai. Home to the world-famous Kanchipuram silk sarees, woven by master craftsmen for generations. A day trip here offers the chance to buy directly from weavers and witness the artistry firsthand.",
+      "coordinates": {
+        "lat": 12.8342,
+        "lng": 79.7036
+      },
+      "tips": [
+        "Plan a full day - drive takes 1.5-2 hours each way",
+        "Visit weaving cooperatives to see sarees being made",
+        "Prices are often 15-20% lower than Chennai showrooms",
+        "Look for the Silk Mark label for authenticity",
+        "Combine with temple visits - Kanchipuram has magnificent temples",
+        "Hire a local guide to visit authentic weaver families",
+        "Best to visit on weekdays when weavers are actively working",
+        "Book a car through your hotel for convenience"
+      ],
+      "shops": [
+        {
+          "id": "kanchipuram-silk-palace",
+          "name": "Kanchipuram Silk Palace",
+          "address": "130, Gandhi Road, Kanchipuram - 631501",
+          "coordinates": {
+            "lat": 12.8356,
+            "lng": 79.7058
+          },
+          "priceRange": "mid-high",
+          "specialties": [
+            "Authentic Kanchipuram silk",
+            "Wedding sarees",
+            "Temple border sarees",
+            "Pure zari work",
+            "Custom orders"
+          ],
+          "forGender": ["women"],
+          "tips": [
+            "Direct from weavers - authentic quality guaranteed",
+            "Can commission custom saree designs",
+            "Ask to see the weaving process if time permits",
+            "Negotiate for multiple purchases"
+          ],
+          "openingHours": "9:00 AM - 8:00 PM",
+          "website": null
+        },
+        {
+          "id": "weavers-cooperative",
+          "name": "Kanchipuram Handloom Weavers Cooperative Society",
+          "address": "49, Railway Station Road, Kanchipuram - 631501",
+          "coordinates": {
+            "lat": 12.8298,
+            "lng": 79.7012
+          },
+          "priceRange": "mid",
+          "specialties": [
+            "Handloom Kanchipuram sarees",
+            "Cooperative pricing",
+            "Traditional designs",
+            "Silk authenticity guaranteed"
+          ],
+          "forGender": ["women"],
+          "tips": [
+            "Government-supported cooperative with fair prices",
+            "All sarees are handloom certified",
+            "Best place for guaranteed authenticity",
+            "Fixed prices but excellent value"
+          ],
+          "openingHours": "10:00 AM - 6:00 PM (Closed Sundays)",
+          "website": null
+        },
+        {
+          "id": "sarangi-silks",
+          "name": "Sarangi Silks",
+          "address": "85, Nellukkara Street, Kanchipuram - 631501",
+          "coordinates": {
+            "lat": 12.8312,
+            "lng": 79.7089
+          },
+          "priceRange": "high",
+          "specialties": [
+            "Premium bridal sarees",
+            "Heavy zari work",
+            "Exclusive designs",
+            "Heritage weaving patterns",
+            "Collector pieces"
+          ],
+          "forGender": ["women"],
+          "tips": [
+            "Known for exclusive high-end bridal sarees",
+            "Premium pricing but exceptional quality",
+            "Good for special occasion investment pieces",
+            "Can arrange weaver visits"
+          ],
+          "openingHours": "10:00 AM - 7:00 PM (Closed Tuesdays)",
+          "website": null
+        }
+      ]
+    },
+    {
+      "id": "chennai-menswear",
+      "name": "Chennai Men's Wear Specialists",
+      "description": "Dedicated shops for men's Indian wedding attire including sherwanis, kurta pajamas, Indo-western wear, and traditional Tamil veshti/dhoti. These shops specialize in tailoring and can create custom pieces.",
+      "coordinates": {
+        "lat": 13.0418,
+        "lng": 80.2341
+      },
+      "tips": [
+        "Allow 5-7 days for custom tailoring of sherwanis",
+        "Bring a reference photo for custom designs",
+        "Get measurements taken early in your trip",
+        "Many shops offer express 48-hour service for simple alterations",
+        "For Tamil weddings, traditional veshti is appropriate for most guests",
+        "Sherwani or bandhgala suit for groom's party members"
+      ],
+      "shops": [
+        {
+          "id": "jade-blue",
+          "name": "Jade Blue",
+          "address": "Express Avenue Mall, Express Estate, Whites Road, Chennai - 600014",
+          "coordinates": {
+            "lat": 13.0594,
+            "lng": 80.2644
+          },
+          "priceRange": "high",
+          "specialties": [
+            "Designer sherwanis",
+            "Bandhgala suits",
+            "Indo-western wear",
+            "Wedding kurta sets",
+            "Accessories and mojris"
+          ],
+          "forGender": ["men"],
+          "tips": [
+            "High-end designer wear for groom and groomsmen",
+            "Ready-to-wear and custom options available",
+            "Complete wedding ensemble styling",
+            "AC mall environment for comfortable shopping"
+          ],
+          "openingHours": "10:00 AM - 9:30 PM",
+          "website": "https://www.jadeblue.com"
+        },
+        {
+          "id": "manyavar-chennai",
+          "name": "Manyavar",
+          "address": "100 Feet Road, Nungambakkam, Chennai - 600034",
+          "coordinates": {
+            "lat": 13.0602,
+            "lng": 80.2417
+          },
+          "priceRange": "mid-high",
+          "specialties": [
+            "Sherwanis",
+            "Kurta pajamas",
+            "Nehru jackets",
+            "Wedding collections",
+            "Matching accessories"
+          ],
+          "forGender": ["men"],
+          "tips": [
+            "Pan-India brand with consistent quality",
+            "Good range for all budgets",
+            "Ready-to-wear with minor alterations",
+            "Complete styling advice available"
+          ],
+          "openingHours": "10:30 AM - 9:00 PM",
+          "website": "https://www.manyavar.com"
+        },
+        {
+          "id": "chennai-sherwani-house",
+          "name": "Sherwani House",
+          "address": "23, Pantheon Road, Egmore, Chennai - 600008",
+          "coordinates": {
+            "lat": 13.0735,
+            "lng": 80.2574
+          },
+          "priceRange": "mid",
+          "specialties": [
+            "Custom sherwanis",
+            "Wedding kurtas",
+            "Traditional dhoti sets",
+            "Jodhpuri suits",
+            "Tailoring services"
+          ],
+          "forGender": ["men"],
+          "tips": [
+            "Specializes in custom tailoring",
+            "Can recreate designs from photos",
+            "Good for budget-conscious shoppers",
+            "Allow 4-5 days for custom orders"
+          ],
+          "openingHours": "10:00 AM - 8:30 PM",
+          "website": null
+        },
+        {
+          "id": "vr-chennai",
+          "name": "VR Chennai (Phoenix Marketcity)",
+          "address": "Phoenix Marketcity, Velachery Main Road, Chennai - 600042",
+          "coordinates": {
+            "lat": 12.9917,
+            "lng": 80.2197
+          },
+          "priceRange": "mid-high",
+          "specialties": [
+            "Multiple brand options",
+            "Ethnic wear stores",
+            "Designer boutiques",
+            "Wedding accessories"
+          ],
+          "forGender": ["men", "women"],
+          "tips": [
+            "Multiple stores in one location - convenient comparison shopping",
+            "Brands include FabIndia, Manyavar, and others",
+            "Good food court for breaks",
+            "AC comfort for extended shopping"
+          ],
+          "openingHours": "10:00 AM - 10:00 PM",
+          "website": null
+        }
+      ]
+    }
+  ],
+  "generalTips": {
+    "bargaining": [
+      "Large showrooms like Nalli, Pothys, RMKV have fixed prices - do not bargain",
+      "Smaller independent shops and street vendors expect bargaining - start at 60-70% of quoted price",
+      "In Kanchipuram, mild negotiation (10-15%) is acceptable even at established shops",
+      "Buying multiple items together can get you a discount even at fixed-price stores"
+    ],
+    "quality": [
+      "Pure Kanchipuram silk has a unique sheen and weight - ask staff to demonstrate",
+      "Check the Silk Mark India label for authenticity certification",
+      "Real zari (gold/silver thread) will not tarnish when rubbed",
+      "Burn test: pure silk smells like burning hair and leaves ash, synthetic melts",
+      "Weight matters: pure Kanchipuram sarees typically weigh 600g-1kg"
+    ],
+    "timing": [
+      "Most silk shops are closed on Tuesdays - major exception to remember",
+      "Festival seasons (Diwali, Pongal) offer sales but also extreme crowds",
+      "Weekday mornings (10 AM - 12 PM) are best for personalized attention",
+      "Wedding season (January-February) means premium stock but also higher demand"
+    ],
+    "payment": [
+      "Large showrooms accept all major credit/debit cards",
+      "Smaller shops prefer cash - some give 2-5% cash discount",
+      "ATMs available throughout T. Nagar and major shopping areas",
+      "Keep receipts for customs declarations when leaving India"
+    ],
+    "transport": [
+      "Chennai Metro has a T. Nagar station - most convenient option",
+      "Auto-rickshaws are plentiful but use Ola/Uber for fair pricing",
+      "Parking in T. Nagar is extremely difficult - avoid driving if possible",
+      "For Kanchipuram day trip, book a car through hotel or use IntrCity buses"
+    ]
+  },
+  "attireGuide": {
+    "womenGuests": {
+      "recommended": [
+        "Silk saree (Kanchipuram or Bangalore silk)",
+        "Semi-silk or art silk saree for budget option",
+        "Churidar with dupatta for less formal events"
+      ],
+      "colors": "Bright colors preferred - jewel tones, gold, red, pink, green. Avoid white/black for wedding ceremonies.",
+      "tips": [
+        "Get blouse stitched in Chennai - allow 2-3 days",
+        "Pre-pleated sarees available for those unfamiliar with draping",
+        "Matching jewelry enhances the look - temple jewelry is traditional"
+      ]
+    },
+    "menGuests": {
+      "recommended": [
+        "Silk veshti (dhoti) with silk shirt for traditional look",
+        "Kurta pajama for comfortable ethnic wear",
+        "Sherwani or Nehru jacket for formal occasions"
+      ],
+      "colors": "White/cream veshti is traditional. Colored silk shirts (gold, maroon, blue) work well. Kurtas in any rich color.",
+      "tips": [
+        "Veshti can be tricky to tie - YouTube tutorials help or ask hotel staff",
+        "Angavastram (shoulder cloth) completes the traditional look",
+        "Mojris or formal sandals appropriate with ethnic wear"
+      ]
+    },
+    "priceRanges": {
+      "budget": {
+        "symbol": "Rs",
+        "sarees": "Rs 2,000 - Rs 8,000",
+        "sherwanis": "Rs 4,000 - Rs 10,000",
+        "kurtas": "Rs 1,500 - Rs 4,000",
+        "veshtis": "Rs 500 - Rs 2,000"
+      },
+      "mid": {
+        "symbol": "Rs Rs",
+        "sarees": "Rs 8,000 - Rs 25,000",
+        "sherwanis": "Rs 10,000 - Rs 25,000",
+        "kurtas": "Rs 4,000 - Rs 10,000",
+        "veshtis": "Rs 2,000 - Rs 5,000"
+      },
+      "midHigh": {
+        "symbol": "Rs Rs Rs",
+        "sarees": "Rs 25,000 - Rs 75,000",
+        "sherwanis": "Rs 25,000 - Rs 50,000",
+        "kurtas": "Rs 10,000 - Rs 20,000",
+        "veshtis": "Rs 5,000 - Rs 12,000"
+      },
+      "luxury": {
+        "symbol": "Rs Rs Rs Rs",
+        "sarees": "Rs 75,000+",
+        "sherwanis": "Rs 50,000+",
+        "kurtas": "Rs 20,000+",
+        "veshtis": "Rs 12,000+"
+      }
+    }
+  }
+}

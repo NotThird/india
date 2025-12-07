@@ -1,0 +1,109 @@
+---
+/**
+ * Card.astro
+ *
+ * Purpose: Reusable card component for content sections with consistent styling.
+ *
+ * Features:
+ * - Subtle box shadow for depth
+ * - Consistent padding and 8px border radius
+ * - Optional title and subtitle in header
+ * - Slot for flexible content
+ * - Hover state with enhanced shadow
+ *
+ * Props:
+ * - title: Card header title (optional)
+ * - subtitle: Secondary text below title (optional)
+ * - noPadding: Remove default padding for custom layouts (optional)
+ * - class: Additional CSS classes (optional)
+ */
+
+interface Props {
+  title?: string;
+  subtitle?: string;
+  noPadding?: boolean;
+  class?: string;
+}
+
+const { title, subtitle, noPadding = false, class: className = "" } = Astro.props;
+---
+
+<article
+  class:list={["card", { "no-padding": noPadding }, className]}
+>
+  {
+    (title || subtitle) && (
+      <header class="card-header">
+        {title && <h3 class="card-title">{title}</h3>}
+        {subtitle && <p class="card-subtitle">{subtitle}</p>}
+      </header>
+    )
+  }
+  <div class:list={["card-content", { "has-header": title || subtitle }]}>
+    <slot />
+  </div>
+</article>
+
+<style>
+  .card {
+    background-color: white;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 0.2s ease;
+  }
+
+  .card:hover {
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  .card-header {
+    padding: var(--spacing-4) var(--spacing-6);
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .card-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-earth-900);
+    margin: 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .card-subtitle {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: var(--spacing-1) 0 0 0;
+  }
+
+  .card-content {
+    padding: var(--spacing-6);
+  }
+
+  .card-content.has-header {
+    padding-top: var(--spacing-4);
+  }
+
+  /* No padding variant */
+  .card.no-padding .card-content {
+    padding: 0;
+  }
+
+  .card.no-padding .card-header {
+    border-bottom: none;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 767px) {
+    .card-header {
+      padding: var(--spacing-3) var(--spacing-4);
+    }
+
+    .card-content {
+      padding: var(--spacing-4);
+    }
+
+    .card-content.has-header {
+      padding-top: var(--spacing-3);
+    }
+  }
+</style>

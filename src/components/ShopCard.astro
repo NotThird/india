@@ -1,0 +1,431 @@
+---
+/**
+ * ShopCard.astro
+ *
+ * Purpose: Display individual shop information for the shopping guide.
+ *
+ * Features:
+ * - Shop name and address display
+ * - Price range indicator using rupee symbols
+ * - Specialty tags showing what the shop is known for
+ * - Gender indicators (men's/women's wear)
+ * - Bargaining and shopping tips
+ * - Opening hours
+ * - Get Directions button linking to Google Maps
+ *
+ * Props:
+ * - shop: ShopData - Complete shop information
+ *
+ * Dependencies: Card.astro, deepLinks utility
+ */
+
+import Card from "./Card.astro";
+import type { ShopData, PriceRange } from "../types/data";
+import { generateGoogleMapsUrl } from "../utils/deepLinks";
+
+interface Props {
+  shop: ShopData;
+}
+
+const { shop } = Astro.props;
+
+// Generate directions URL
+const directionsUrl = generateGoogleMapsUrl(shop.coordinates, shop.name);
+
+// Price range display helper
+function getPriceDisplay(range: PriceRange): { symbols: string; label: string } {
+  const priceMap: Record<PriceRange, { symbols: string; label: string }> = {
+    budget: { symbols: "Rs", label: "Budget-Friendly" },
+    mid: { symbols: "Rs Rs", label: "Mid-Range" },
+    "mid-high": { symbols: "Rs Rs Rs", label: "Mid-High" },
+    high: { symbols: "Rs Rs Rs Rs", label: "High-End" },
+    luxury: { symbols: "Rs Rs Rs Rs Rs", label: "Luxury" },
+  };
+  return priceMap[range] || priceMap.mid;
+}
+
+const priceInfo = getPriceDisplay(shop.priceRange);
+
+// Gender display helper
+function getGenderLabel(genders: string[]): string {
+  if (genders.includes("women") && genders.includes("men")) {
+    return "Women & Men";
+  }
+  if (genders.includes("women")) {
+    return "Women's Wear";
+  }
+  if (genders.includes("men")) {
+    return "Men's Wear";
+  }
+  return "";
+}
+
+const genderLabel = getGenderLabel(shop.forGender);
+---
+
+<Card class="shop-card">
+  <div class="shop-content">
+    <!-- Shop Header -->
+    <div class="shop-header">
+      <div class="shop-title-row">
+        <h3 class="shop-name">{shop.name}</h3>
+        <div class="price-badge" title={priceInfo.label}>
+          <span class="price-symbols">{priceInfo.symbols}</span>
+        </div>
+      </div>
+
+      {genderLabel && (
+        <div class="gender-badge">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z" />
+          </svg>
+          <span>{genderLabel}</span>
+        </div>
+      )}
+    </div>
+
+    <!-- Address -->
+    <a href={directionsUrl} target="_blank" rel="noopener noreferrer" class="shop-address">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+        <circle cx="12" cy="10" r="3"></circle>
+      </svg>
+      <span>{shop.address}</span>
+    </a>
+
+    <!-- Opening Hours -->
+    <div class="shop-hours">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12 6 12 12 16 14"></polyline>
+      </svg>
+      <span>{shop.openingHours}</span>
+    </div>
+
+    <!-- Specialties -->
+    <div class="shop-specialties">
+      <h4 class="specialties-title">Specialties</h4>
+      <div class="specialty-tags">
+        {shop.specialties.map((specialty) => (
+          <span class="specialty-tag">{specialty}</span>
+        ))}
+      </div>
+    </div>
+
+    <!-- Tips -->
+    {shop.tips.length > 0 && (
+      <div class="shop-tips">
+        <h4 class="tips-title">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M9 18l6-6-6-6"></path>
+          </svg>
+          Tips
+        </h4>
+        <ul class="tips-list">
+          {shop.tips.slice(0, 3).map((tip) => (
+            <li>{tip}</li>
+          ))}
+        </ul>
+      </div>
+    )}
+
+    <!-- Actions -->
+    <div class="shop-actions">
+      <a href={directionsUrl} target="_blank" rel="noopener noreferrer" class="directions-btn">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+        </svg>
+        <span>Get Directions</span>
+      </a>
+
+      {shop.website && (
+        <a href={shop.website} target="_blank" rel="noopener noreferrer" class="website-btn">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+          </svg>
+          <span>Website</span>
+        </a>
+      )}
+    </div>
+  </div>
+</Card>
+
+<style>
+  .shop-card {
+    height: 100%;
+  }
+
+  .shop-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+  }
+
+  /* Header */
+  .shop-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+
+  .shop-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--spacing-3);
+  }
+
+  .shop-name {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-earth-900);
+    margin: 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .price-badge {
+    background-color: var(--color-gold-100);
+    color: var(--color-gold-700);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .price-symbols {
+    letter-spacing: 1px;
+  }
+
+  .gender-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    background-color: var(--color-cream-200);
+    color: var(--color-earth-700);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    width: fit-content;
+  }
+
+  /* Address */
+  .shop-address {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-2);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .shop-address:hover {
+    color: var(--color-gold-700);
+  }
+
+  .shop-address svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: var(--color-orange-500);
+  }
+
+  /* Opening Hours */
+  .shop-hours {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+  }
+
+  .shop-hours svg {
+    color: var(--color-earth-500);
+  }
+
+  /* Specialties */
+  .shop-specialties {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+
+  .specialties-title {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-earth-700);
+    margin: 0;
+  }
+
+  .specialty-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+  }
+
+  .specialty-tag {
+    background-color: var(--color-orange-100);
+    color: var(--color-orange-700);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+  }
+
+  /* Tips */
+  .shop-tips {
+    background-color: var(--color-cream-100);
+    padding: var(--spacing-3);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--color-gold-400);
+  }
+
+  .tips-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-earth-800);
+    margin: 0 0 var(--spacing-2) 0;
+  }
+
+  .tips-title svg {
+    color: var(--color-gold-600);
+  }
+
+  .tips-list {
+    margin: 0;
+    padding-left: var(--spacing-4);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+  }
+
+  .tips-list li::marker {
+    color: var(--color-gold-500);
+  }
+
+  /* Actions */
+  .shop-actions {
+    display: flex;
+    gap: var(--spacing-3);
+    margin-top: auto;
+    padding-top: var(--spacing-2);
+    border-top: 1px solid var(--color-border-light);
+  }
+
+  .directions-btn,
+  .website-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-3);
+    border-radius: var(--radius-button);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .directions-btn {
+    background-color: var(--color-gold-500);
+    color: white;
+  }
+
+  .directions-btn:hover {
+    background-color: var(--color-gold-600);
+    text-decoration: none;
+  }
+
+  .website-btn {
+    background-color: var(--color-cream-200);
+    color: var(--color-earth-700);
+  }
+
+  .website-btn:hover {
+    background-color: var(--color-cream-300);
+    text-decoration: none;
+  }
+
+  /* Responsive */
+  @media (max-width: 767px) {
+    .shop-name {
+      font-size: var(--font-size-base);
+    }
+
+    .shop-actions {
+      flex-direction: column;
+    }
+
+    .directions-btn,
+    .website-btn {
+      justify-content: center;
+    }
+  }
+</style>

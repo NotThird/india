@@ -1,0 +1,456 @@
+---
+/**
+ * Home Page (index.astro)
+ *
+ * Purpose: Landing page for Chennai Wedding Trip 2026
+ *
+ * Sections:
+ * - Hero: Trip title with date range
+ * - Quick Stats: Days until departure, number of events, trip duration
+ * - Wedding Events Overview: Brief listing of event dates
+ * - Quick Links: Navigation to Itinerary and Bookings pages
+ *
+ * Data Sources:
+ * - trip.json: Trip metadata
+ * - events.json: Wedding events
+ */
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Card from "../components/Card.astro";
+import Badge from "../components/Badge.astro";
+
+import tripData from "../data/trip.json";
+import eventsData from "../data/events.json";
+
+import type { Trip, WeddingEvent } from "../types/data";
+
+// Type assertions for imported JSON
+const trip = tripData as Trip;
+const events = eventsData.events as WeddingEvent[];
+
+// Calculate days until departure
+const departureDate = new Date(trip.travelStart);
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+departureDate.setHours(0, 0, 0, 0);
+
+const daysUntilDeparture = Math.ceil(
+  (departureDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+);
+
+// Format dates for display
+function formatDateRange(start: string, end: string): string {
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+  const options: Intl.DateTimeFormatOptions = {
+    month: "long",
+    day: "numeric",
+  };
+  const startFormatted = startDate.toLocaleDateString("en-US", options);
+  const endFormatted = endDate.toLocaleDateString("en-US", {
+    ...options,
+    year: "numeric",
+  });
+  return `${startFormatted} - ${endFormatted}`;
+}
+
+function formatTime(time: string): string {
+  const [hours, minutes] = time.split(":");
+  const hour = parseInt(hours, 10);
+  const ampm = hour >= 12 ? "PM" : "AM";
+  const displayHour = hour % 12 || 12;
+  return `${displayHour}:${minutes} ${ampm}`;
+}
+
+const dateRange = formatDateRange(trip.travelStart, trip.travelEnd);
+---
+
+<BaseLayout title="Home" description="Plan your Chennai Wedding Trip 2026 - January 20 to February 5">
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">Chennai Wedding Trip 2026</h1>
+      <p class="hero-dates">{dateRange}</p>
+      <p class="hero-purpose">{trip.purpose}</p>
+    </div>
+  </section>
+
+  <!-- Quick Stats Section -->
+  <section class="stats-section">
+    <h2 class="section-title">Trip Overview</h2>
+    <div class="stats-grid">
+      <Card class="stat-card">
+        <div class="stat-content">
+          <span class="stat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+          </span>
+          <span class="stat-value">{daysUntilDeparture}</span>
+          <span class="stat-label">Days Until Departure</span>
+        </div>
+      </Card>
+
+      <Card class="stat-card">
+        <div class="stat-content">
+          <span class="stat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+          </span>
+          <span class="stat-value">{events.length}</span>
+          <span class="stat-label">Wedding Events</span>
+        </div>
+      </Card>
+
+      <Card class="stat-card">
+        <div class="stat-content">
+          <span class="stat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          </span>
+          <span class="stat-value">{trip.durationDays}</span>
+          <span class="stat-label">Days in India</span>
+        </div>
+      </Card>
+    </div>
+  </section>
+
+  <!-- Wedding Events Overview -->
+  <section class="events-section">
+    <h2 class="section-title">Wedding Events</h2>
+    <div class="events-list">
+      {events.map((event) => (
+        <Card class="event-preview-card">
+          <div class="event-preview">
+            <div class="event-preview-date">
+              <span class="event-day">{new Date(event.date).getDate()}</span>
+              <span class="event-month">{new Date(event.date).toLocaleDateString("en-US", { month: "short" })}</span>
+            </div>
+            <div class="event-preview-info">
+              <h3 class="event-name">{event.name}</h3>
+              <p class="event-time">{formatTime(event.startTime)}</p>
+              <Badge variant={event.type} size="sm">{event.type.replace("-", " ")}</Badge>
+            </div>
+          </div>
+        </Card>
+      ))}
+    </div>
+  </section>
+
+  <!-- Quick Links Section -->
+  <section class="quick-links-section">
+    <h2 class="section-title">Quick Links</h2>
+    <div class="quick-links-grid">
+      <a href="/itinerary" class="quick-link-card">
+        <Card>
+          <div class="quick-link-content">
+            <span class="quick-link-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+            </span>
+            <h3 class="quick-link-title">Itinerary</h3>
+            <p class="quick-link-description">View your day-by-day schedule</p>
+          </div>
+        </Card>
+      </a>
+
+      <a href="/bookings" class="quick-link-card">
+        <Card>
+          <div class="quick-link-content">
+            <span class="quick-link-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                <polyline points="7.5 4.21 12 6.81 16.5 4.21"></polyline>
+                <polyline points="7.5 19.79 7.5 14.6 3 12"></polyline>
+                <polyline points="21 12 16.5 14.6 16.5 19.79"></polyline>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+              </svg>
+            </span>
+            <h3 class="quick-link-title">Bookings</h3>
+            <p class="quick-link-description">Flights, visa, and accommodation</p>
+          </div>
+        </Card>
+      </a>
+
+      <a href="/packing" class="quick-link-card">
+        <Card>
+          <div class="quick-link-content">
+            <span class="quick-link-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 11l3 3L22 4"></path>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+              </svg>
+            </span>
+            <h3 class="quick-link-title">Packing List</h3>
+            <p class="quick-link-description">Check off what to bring</p>
+          </div>
+        </Card>
+      </a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Hero Section */
+  .hero {
+    background: linear-gradient(
+      135deg,
+      var(--color-gold-500) 0%,
+      var(--color-orange-500) 100%
+    );
+    border-radius: var(--radius-card);
+    padding: var(--spacing-12) var(--spacing-8);
+    margin-bottom: var(--spacing-8);
+    text-align: center;
+    color: white;
+  }
+
+  .hero-title {
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--spacing-3);
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .hero-dates {
+    font-size: var(--font-size-xl);
+    opacity: 0.95;
+    margin-bottom: var(--spacing-2);
+  }
+
+  .hero-purpose {
+    font-size: var(--font-size-lg);
+    opacity: 0.85;
+    margin-bottom: 0;
+  }
+
+  /* Section Styling */
+  .section-title {
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--spacing-6);
+    color: var(--color-earth-900);
+  }
+
+  /* Stats Section */
+  .stats-section {
+    margin-bottom: var(--spacing-8);
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-4);
+  }
+
+  .stat-card {
+    text-align: center;
+  }
+
+  .stat-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-2);
+  }
+
+  .stat-icon {
+    color: var(--color-gold-600);
+  }
+
+  .stat-value {
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-earth-900);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* Events Section */
+  .events-section {
+    margin-bottom: var(--spacing-8);
+  }
+
+  .events-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-4);
+  }
+
+  .event-preview-card {
+    transition: transform 0.2s ease;
+  }
+
+  .event-preview-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .event-preview {
+    display: flex;
+    gap: var(--spacing-4);
+    align-items: center;
+  }
+
+  .event-preview-date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    background-color: var(--color-gold-100);
+    border-radius: var(--radius-card);
+    flex-shrink: 0;
+  }
+
+  .event-day {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-gold-700);
+    line-height: 1;
+  }
+
+  .event-month {
+    font-size: var(--font-size-xs);
+    color: var(--color-gold-600);
+    text-transform: uppercase;
+    font-weight: var(--font-weight-medium);
+  }
+
+  .event-preview-info {
+    flex: 1;
+  }
+
+  .event-name {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-1);
+    color: var(--color-earth-900);
+  }
+
+  .event-time {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-2);
+  }
+
+  /* Quick Links Section */
+  .quick-links-section {
+    margin-bottom: var(--spacing-8);
+  }
+
+  .quick-links-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-4);
+  }
+
+  .quick-link-card {
+    display: block;
+    text-decoration: none;
+    transition: transform 0.2s ease;
+  }
+
+  .quick-link-card:hover {
+    transform: translateY(-4px);
+    text-decoration: none;
+  }
+
+  .quick-link-content {
+    text-align: center;
+    padding: var(--spacing-4) 0;
+  }
+
+  .quick-link-icon {
+    display: inline-block;
+    color: var(--color-gold-600);
+    margin-bottom: var(--spacing-3);
+  }
+
+  .quick-link-title {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-2);
+    color: var(--color-earth-900);
+  }
+
+  .quick-link-description {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: 0;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1023px) {
+    .quick-links-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .hero {
+      padding: var(--spacing-8) var(--spacing-4);
+    }
+
+    .hero-title {
+      font-size: var(--font-size-3xl);
+    }
+
+    .hero-dates {
+      font-size: var(--font-size-lg);
+    }
+
+    .hero-purpose {
+      font-size: var(--font-size-base);
+    }
+
+    .stats-grid {
+      grid-template-columns: 1fr;
+      gap: var(--spacing-3);
+    }
+
+    .stat-card {
+      padding: var(--spacing-4);
+    }
+
+    .stat-content {
+      flex-direction: row;
+      justify-content: flex-start;
+      text-align: left;
+      gap: var(--spacing-4);
+    }
+
+    .stat-value {
+      font-size: var(--font-size-2xl);
+      min-width: 50px;
+    }
+
+    .stat-label {
+      font-size: var(--font-size-sm);
+    }
+
+    .events-list {
+      grid-template-columns: 1fr;
+    }
+
+    .quick-links-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

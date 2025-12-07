@@ -1,0 +1,170 @@
+---
+/**
+ * BaseLayout.astro
+ *
+ * Purpose: Wrap all pages with consistent HTML structure, meta tags, and navigation.
+ *
+ * Structure:
+ * - HTML document with SEO/Open Graph meta tags
+ * - Sidebar navigation (fixed left, 240px on desktop)
+ * - Main content area with proper padding
+ * - Responsive behavior for mobile devices
+ *
+ * Props:
+ * - title: Page title (required)
+ * - description: Meta description for SEO (optional)
+ * - ogImage: Open Graph image URL (optional)
+ */
+
+import "../styles/global.css";
+import Sidebar from "../components/Sidebar.astro";
+import MobileMenu from "../components/MobileMenu.astro";
+import FlightTracker from "../components/FlightTracker.astro";
+
+interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+}
+
+const {
+  title,
+  description = "Plan and document your Chennai Wedding Trip 2026 - itinerary, bookings, packing lists, and more.",
+  ogImage = "/og-image.jpg",
+} = Astro.props;
+
+const siteTitle = `${title} | Chennai Wedding Trip 2026`;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || "https://india-trip.netlify.app");
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Primary Meta Tags -->
+    <title>{siteTitle}</title>
+    <meta name="title" content={siteTitle} />
+    <meta name="description" content={description} />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={siteTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonicalURL} />
+    <meta property="twitter:title" content={siteTitle} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={ogImage} />
+
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#D4A843" />
+  </head>
+  <body>
+    <!-- Flight Tracker Banner (always visible, looks cool) -->
+    <FlightTracker />
+
+    <!-- Mobile Menu (hidden by default, shown via JS toggle) -->
+    <MobileMenu />
+
+    <!-- Desktop Sidebar -->
+    <Sidebar />
+
+    <!-- Main Content Area -->
+    <main class="main-content" id="main-content">
+      <slot />
+    </main>
+
+    <!-- Mobile Menu Toggle Script -->
+    <script>
+      function initMobileMenu() {
+        const menuToggle = document.getElementById("mobile-menu-toggle");
+        const mobileMenu = document.getElementById("mobile-menu");
+        const closeButton = document.getElementById("mobile-menu-close");
+        const menuLinks = mobileMenu?.querySelectorAll("a");
+
+        if (!menuToggle || !mobileMenu || !closeButton) return;
+
+        function openMenu() {
+          mobileMenu.classList.remove("hidden");
+          mobileMenu.classList.add("flex");
+          document.body.style.overflow = "hidden";
+          closeButton.focus();
+        }
+
+        function closeMenu() {
+          mobileMenu.classList.add("hidden");
+          mobileMenu.classList.remove("flex");
+          document.body.style.overflow = "";
+          menuToggle.focus();
+        }
+
+        menuToggle.addEventListener("click", openMenu);
+        closeButton.addEventListener("click", closeMenu);
+
+        // Close menu when clicking a link
+        menuLinks?.forEach((link) => {
+          link.addEventListener("click", closeMenu);
+        });
+
+        // Close menu on Escape key
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape" && !mobileMenu.classList.contains("hidden")) {
+            closeMenu();
+          }
+        });
+
+        // Close menu when clicking outside
+        mobileMenu.addEventListener("click", (e) => {
+          if (e.target === mobileMenu) {
+            closeMenu();
+          }
+        });
+      }
+
+      // Initialize on page load
+      document.addEventListener("DOMContentLoaded", initMobileMenu);
+      // Re-initialize on Astro page transitions (if using View Transitions)
+      document.addEventListener("astro:page-load", initMobileMenu);
+    </script>
+  </body>
+</html>
+
+<style>
+  /* Layout structure */
+  body {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  .main-content {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    padding: var(--spacing-6);
+    padding-top: calc(var(--spacing-6) + 180px); /* Account for fixed flight tracker */
+    min-height: 100vh;
+    background-color: var(--color-bg-primary);
+  }
+
+  /* Mobile: no sidebar offset, account for both mobile header and tracker */
+  @media (max-width: 767px) {
+    .main-content {
+      margin-left: 0;
+      padding: var(--spacing-4);
+      /* Mobile header (56px) + collapsed tracker (~48px) + padding */
+      padding-top: calc(56px + 48px + var(--spacing-4));
+    }
+  }
+</style>

@@ -1,0 +1,97 @@
+{
+  "locations": [
+    {
+      "id": "chennai-airport",
+      "name": "Chennai International Airport (MAA)",
+      "type": "airport",
+      "coordinates": {
+        "lat": 12.9941,
+        "lng": 80.1709
+      },
+      "address": "GST Road, Meenambakkam, Chennai, Tamil Nadu 600027",
+      "area": "Meenambakkam",
+      "description": "Primary international airport serving Chennai"
+    },
+    {
+      "id": "park-hyatt-chennai",
+      "name": "Park Hyatt Chennai",
+      "type": "hotel",
+      "coordinates": {
+        "lat": 13.0108,
+        "lng": 80.2236
+      },
+      "address": "39, Velachery Main Road, Guindy, Chennai, Tamil Nadu 600032",
+      "area": "Guindy",
+      "description": "Accommodation (considering)"
+    },
+    {
+      "id": "keys-prima",
+      "name": "Keys Prima by Lemon Tree",
+      "type": "venue",
+      "coordinates": {
+        "lat": 12.9821,
+        "lng": 80.2582
+      },
+      "address": "11/23 Kalakshetra Rd, Thiruvanmiyur, Chennai",
+      "area": "Thiruvanmiyur",
+      "description": "Mehendi Ceremony venue",
+      "eventName": "Mehendi Ceremony",
+      "eventDate": "2026-01-25",
+      "eventTime": "11:00"
+    },
+    {
+      "id": "dwarka-grand-palace",
+      "name": "Dwarka Grand Palace",
+      "type": "venue",
+      "coordinates": {
+        "lat": 12.9847,
+        "lng": 80.2589
+      },
+      "address": "63 1st Seaward Rd, Thiruvanmiyur, Chennai",
+      "area": "Thiruvanmiyur",
+      "description": "Wedding Lunch venue",
+      "eventName": "Wedding Lunch",
+      "eventDate": "2026-01-28",
+      "eventTime": "11:00"
+    },
+    {
+      "id": "origami-green-meadows",
+      "name": "Origami at Green Meadows Resort",
+      "type": "venue",
+      "coordinates": {
+        "lat": 12.9578,
+        "lng": 80.2579
+      },
+      "address": "Palavakkam, Chennai",
+      "area": "Palavakkam",
+      "description": "Cocktail Party venue",
+      "eventName": "Cocktail Party",
+      "eventDate": "2026-01-29",
+      "eventTime": "19:00"
+    },
+    {
+      "id": "t-nagar",
+      "name": "T. Nagar Shopping District",
+      "type": "shopping",
+      "coordinates": {
+        "lat": 13.0418,
+        "lng": 80.2341
+      },
+      "address": "Usman Road, T. Nagar, Chennai, Tamil Nadu 600017",
+      "area": "T. Nagar",
+      "description": "Premier shopping destination for silk sarees, jewelry, and traditional attire"
+    },
+    {
+      "id": "mylapore",
+      "name": "Mylapore Shopping Area",
+      "type": "shopping",
+      "coordinates": {
+        "lat": 13.0368,
+        "lng": 80.2676
+      },
+      "address": "Mylapore, Chennai, Tamil Nadu 600004",
+      "area": "Mylapore",
+      "description": "Historic neighborhood with traditional shops, temples, and boutiques"
+    }
+  ]
+}

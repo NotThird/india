@@ -1,0 +1,62 @@
+{
+  "confirmationCode": "ES6BFF",
+  "airline": "Emirates",
+  "segments": [
+    {
+      "id": "outbound-1",
+      "direction": "outbound",
+      "from": "DFW",
+      "fromCity": "Dallas",
+      "to": "DXB",
+      "toCity": "Dubai",
+      "date": "2026-01-20",
+      "departureTime": "11:30",
+      "arrivalTime": "12:00",
+      "arrivalNextDay": true,
+      "duration": "14h 30m",
+      "flightNumber": "EK222"
+    },
+    {
+      "id": "outbound-2",
+      "direction": "outbound",
+      "from": "DXB",
+      "fromCity": "Dubai",
+      "to": "MAA",
+      "toCity": "Chennai",
+      "date": "2026-01-21",
+      "departureTime": "14:45",
+      "arrivalTime": "20:10",
+      "arrivalNextDay": false,
+      "duration": "3h 55m",
+      "flightNumber": "EK546"
+    },
+    {
+      "id": "return-1",
+      "direction": "return",
+      "from": "MAA",
+      "fromCity": "Chennai",
+      "to": "DXB",
+      "toCity": "Dubai",
+      "date": "2026-02-04",
+      "departureTime": "21:45",
+      "arrivalTime": "00:45",
+      "arrivalNextDay": true,
+      "duration": "4h 30m",
+      "flightNumber": "EK547"
+    },
+    {
+      "id": "return-2",
+      "direction": "return",
+      "from": "DXB",
+      "fromCity": "Dubai",
+      "to": "DFW",
+      "toCity": "Dallas",
+      "date": "2026-02-05",
+      "departureTime": "02:40",
+      "arrivalTime": "08:55",
+      "arrivalNextDay": false,
+      "duration": "16h 15m",
+      "flightNumber": "EK221"
+    }
+  ]
+}

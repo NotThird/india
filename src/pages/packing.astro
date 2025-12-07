@@ -1,0 +1,621 @@
+---
+/**
+ * Packing List Page (packing.astro)
+ *
+ * Purpose: Display categorized packing checklist for the trip with localStorage persistence.
+ *
+ * Features:
+ * - Category sections with headers and item counts
+ * - Checkbox items with localStorage persistence (Phase 2)
+ * - Per-category progress indicators
+ * - Bulk action buttons (Mark All Complete / Clear All)
+ * - Visual grouping by category
+ * - Animated progress bar
+ *
+ * Categories:
+ * - Essentials
+ * - Documents
+ * - Wedding Attire
+ * - Electronics
+ * - Shopping Supplies
+ *
+ * Data Source:
+ * - packing.json: Categorized packing items
+ *
+ * Phase 2 Enhancement:
+ * - localStorage persistence for checkbox states
+ * - Per-category progress indicators
+ * - Bulk category actions
+ * - Real-time progress updates
+ */
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Card from "../components/Card.astro";
+import PackingItem from "../components/PackingItem.astro";
+
+import packingData from "../data/packing.json";
+
+import type { PackingData, PackingCategory } from "../types/data";
+
+// Type assertion
+const packing = packingData as PackingData;
+
+// Calculate total items
+const totalItems = packing.categories.reduce(
+  (sum: number, cat: PackingCategory) => sum + cat.items.length,
+  0
+);
+---
+
+<BaseLayout title="Packing List" description="Packing checklist for your Chennai Wedding Trip 2026">
+  <!-- Page Header -->
+  <header class="page-header">
+    <h1 class="page-title">Packing List</h1>
+    <p class="page-description">
+      Everything you need to pack for your 17-day India trip.
+      <span class="item-count">{totalItems} items across {packing.categories.length} categories</span>
+    </p>
+  </header>
+
+  <!-- Category Sections -->
+  <div class="categories">
+    {packing.categories.map((category: PackingCategory) => (
+      <section class="category-section" data-category-section={category.id}>
+        <Card>
+          <div class="category-header">
+            <div class="category-info">
+              <span class="category-icon">
+                {category.id === "essentials" && (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                  </svg>
+                )}
+                {category.id === "documents" && (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                  </svg>
+                )}
+                {category.id === "wedding-attire" && (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                  </svg>
+                )}
+                {category.id === "electronics" && (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                  </svg>
+                )}
+                {category.id === "shopping-supplies" && (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <path d="M16 10a4 4 0 0 1-8 0"></path>
+                  </svg>
+                )}
+              </span>
+              <div class="category-title-group">
+                <h2 class="category-name">{category.name}</h2>
+                <span class="category-progress" data-category-progress={category.id}>
+                  0 of {category.items.length} packed
+                </span>
+              </div>
+            </div>
+            <div class="category-actions">
+              <span class="category-count">{category.items.length} items</span>
+              <div class="bulk-actions">
+                <button
+                  type="button"
+                  class="bulk-action-btn mark-all-btn"
+                  data-action="mark-all"
+                  data-category={category.id}
+                  title="Mark all items as packed"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 11 12 14 22 4"></polyline>
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                  </svg>
+                  <span class="btn-text">Mark All</span>
+                </button>
+                <button
+                  type="button"
+                  class="bulk-action-btn clear-all-btn"
+                  data-action="clear-all"
+                  data-category={category.id}
+                  title="Clear all checked items"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  </svg>
+                  <span class="btn-text">Clear All</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="category-items">
+            {category.items.map((item) => (
+              <PackingItem item={item} categoryId={category.id} />
+            ))}
+          </div>
+        </Card>
+      </section>
+    ))}
+  </div>
+
+  <!-- Progress Summary -->
+  <div class="progress-summary">
+    <Card>
+      <div class="progress-content">
+        <h3 class="progress-title">Packing Progress</h3>
+        <div class="progress-bar-container">
+          <div class="progress-bar" style="width: 0%"></div>
+        </div>
+        <p class="progress-text">0 of {totalItems} items packed</p>
+        <p class="progress-percentage">0%</p>
+      </div>
+    </Card>
+  </div>
+</BaseLayout>
+
+<script>
+  /**
+   * Packing List Persistence Script
+   *
+   * Purpose: Handle localStorage persistence for packing list checkbox states.
+   *
+   * Features:
+   * - Initialize checkbox states from localStorage on page load
+   * - Save checkbox states to localStorage on change
+   * - Update per-category progress indicators
+   * - Update overall progress bar
+   * - Handle bulk actions (Mark All / Clear All)
+   * - Graceful error handling for localStorage failures
+   */
+
+  // Storage key prefix for packing items
+  const STORAGE_PREFIX = 'packing-item-';
+
+  /**
+   * Safely read from localStorage with error handling
+   */
+  function getStoredState(itemId: string): boolean {
+    try {
+      const value = localStorage.getItem(`${STORAGE_PREFIX}${itemId}`);
+      return value === 'true';
+    } catch (error) {
+      console.warn('localStorage read error:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Safely write to localStorage with error handling
+   */
+  function setStoredState(itemId: string, checked: boolean): void {
+    try {
+      if (checked) {
+        localStorage.setItem(`${STORAGE_PREFIX}${itemId}`, 'true');
+      } else {
+        localStorage.removeItem(`${STORAGE_PREFIX}${itemId}`);
+      }
+    } catch (error) {
+      console.warn('localStorage write error:', error);
+    }
+  }
+
+  /**
+   * Update per-category progress indicator
+   */
+  function updateCategoryProgress(categoryId: string): void {
+    const categorySection = document.querySelector(`[data-category-section="${categoryId}"]`);
+    if (!categorySection) return;
+
+    const checkboxes = categorySection.querySelectorAll<HTMLInputElement>('.packing-checkbox');
+    const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+    const totalCount = checkboxes.length;
+
+    const progressElement = document.querySelector(`[data-category-progress="${categoryId}"]`);
+    if (progressElement) {
+      progressElement.textContent = `${checkedCount} of ${totalCount} packed`;
+
+      // Add visual feedback for completed categories
+      if (checkedCount === totalCount && totalCount > 0) {
+        progressElement.classList.add('category-complete');
+      } else {
+        progressElement.classList.remove('category-complete');
+      }
+    }
+  }
+
+  /**
+   * Update overall progress bar and text
+   */
+  function updateOverallProgress(): void {
+    const allCheckboxes = document.querySelectorAll<HTMLInputElement>('.packing-checkbox');
+    const checkedCount = Array.from(allCheckboxes).filter(cb => cb.checked).length;
+    const totalCount = allCheckboxes.length;
+    const percentage = totalCount > 0 ? Math.round((checkedCount / totalCount) * 100) : 0;
+
+    const progressBar = document.querySelector<HTMLElement>('.progress-bar');
+    const progressText = document.querySelector('.progress-text');
+    const progressPercentage = document.querySelector('.progress-percentage');
+
+    if (progressBar) {
+      progressBar.style.width = `${percentage}%`;
+    }
+    if (progressText) {
+      progressText.textContent = `${checkedCount} of ${totalCount} items packed`;
+    }
+    if (progressPercentage) {
+      progressPercentage.textContent = `${percentage}%`;
+
+      // Add visual feedback for completion milestones
+      progressPercentage.classList.remove('milestone-25', 'milestone-50', 'milestone-75', 'milestone-100');
+      if (percentage === 100) {
+        progressPercentage.classList.add('milestone-100');
+      } else if (percentage >= 75) {
+        progressPercentage.classList.add('milestone-75');
+      } else if (percentage >= 50) {
+        progressPercentage.classList.add('milestone-50');
+      } else if (percentage >= 25) {
+        progressPercentage.classList.add('milestone-25');
+      }
+    }
+  }
+
+  /**
+   * Update all progress indicators
+   */
+  function updateAllProgress(): void {
+    // Get unique category IDs
+    const categoryIds = new Set<string>();
+    document.querySelectorAll<HTMLInputElement>('.packing-checkbox').forEach(cb => {
+      const categoryId = cb.dataset.categoryId;
+      if (categoryId) categoryIds.add(categoryId);
+    });
+
+    // Update each category
+    categoryIds.forEach(categoryId => updateCategoryProgress(categoryId));
+
+    // Update overall progress
+    updateOverallProgress();
+  }
+
+  /**
+   * Handle checkbox change event
+   */
+  function handleCheckboxChange(event: Event): void {
+    const checkbox = event.target as HTMLInputElement;
+    const itemId = checkbox.dataset.itemId;
+    const categoryId = checkbox.dataset.categoryId;
+
+    if (itemId) {
+      setStoredState(itemId, checkbox.checked);
+    }
+
+    if (categoryId) {
+      updateCategoryProgress(categoryId);
+    }
+
+    updateOverallProgress();
+  }
+
+  /**
+   * Handle bulk action (Mark All / Clear All)
+   */
+  function handleBulkAction(event: Event): void {
+    const button = event.currentTarget as HTMLButtonElement;
+    const action = button.dataset.action;
+    const categoryId = button.dataset.category;
+
+    if (!categoryId) return;
+
+    const categorySection = document.querySelector(`[data-category-section="${categoryId}"]`);
+    if (!categorySection) return;
+
+    const checkboxes = categorySection.querySelectorAll<HTMLInputElement>('.packing-checkbox');
+    const isMarkAll = action === 'mark-all';
+
+    checkboxes.forEach(checkbox => {
+      checkbox.checked = isMarkAll;
+      const itemId = checkbox.dataset.itemId;
+      if (itemId) {
+        setStoredState(itemId, isMarkAll);
+      }
+    });
+
+    updateCategoryProgress(categoryId);
+    updateOverallProgress();
+  }
+
+  /**
+   * Initialize packing list persistence
+   */
+  function initPackingPersistence(): void {
+    // Initialize checkbox states from localStorage
+    const checkboxes = document.querySelectorAll<HTMLInputElement>('.packing-checkbox');
+
+    checkboxes.forEach(checkbox => {
+      const itemId = checkbox.dataset.itemId;
+      if (itemId) {
+        checkbox.checked = getStoredState(itemId);
+      }
+
+      // Attach change event listener
+      checkbox.addEventListener('change', handleCheckboxChange);
+    });
+
+    // Attach bulk action event listeners
+    const bulkActionButtons = document.querySelectorAll<HTMLButtonElement>('.bulk-action-btn');
+    bulkActionButtons.forEach(button => {
+      button.addEventListener('click', handleBulkAction);
+    });
+
+    // Initial progress update
+    updateAllProgress();
+  }
+
+  // Initialize on page load
+  document.addEventListener('DOMContentLoaded', initPackingPersistence);
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initPackingPersistence);
+</script>
+
+<style>
+  /* Page Header */
+  .page-header {
+    margin-bottom: var(--spacing-6);
+  }
+
+  .page-title {
+    font-size: var(--font-size-4xl);
+    margin-bottom: var(--spacing-2);
+  }
+
+  .page-description {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+  }
+
+  .item-count {
+    display: block;
+    font-size: var(--font-size-base);
+    margin-top: var(--spacing-1);
+    color: var(--color-text-muted);
+  }
+
+  /* Categories */
+  .categories {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-6);
+    margin-bottom: var(--spacing-8);
+  }
+
+  .category-section {
+    /* No additional styles needed */
+  }
+
+  .category-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding-bottom: var(--spacing-4);
+    margin-bottom: var(--spacing-4);
+    border-bottom: 1px solid var(--color-border-light);
+    flex-wrap: wrap;
+    gap: var(--spacing-3);
+  }
+
+  .category-info {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-3);
+  }
+
+  .category-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: var(--color-gold-100);
+    border-radius: var(--radius-card);
+    color: var(--color-gold-700);
+    flex-shrink: 0;
+  }
+
+  .category-title-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+  }
+
+  .category-name {
+    font-size: var(--font-size-xl);
+    margin: 0;
+    color: var(--color-earth-900);
+  }
+
+  .category-progress {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    transition: color 0.3s ease;
+  }
+
+  .category-progress.category-complete {
+    color: var(--color-gold-600);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .category-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    flex-wrap: wrap;
+  }
+
+  .category-count {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    background-color: var(--color-cream-200);
+    padding: var(--spacing-1) var(--spacing-3);
+    border-radius: var(--radius-button);
+  }
+
+  .bulk-actions {
+    display: flex;
+    gap: var(--spacing-2);
+  }
+
+  .bulk-action-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    padding: var(--spacing-1) var(--spacing-2);
+    background-color: transparent;
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-button);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .bulk-action-btn:hover {
+    background-color: var(--color-cream-100);
+    border-color: var(--color-gold-300);
+    color: var(--color-earth-800);
+  }
+
+  .bulk-action-btn:active {
+    transform: scale(0.98);
+  }
+
+  .mark-all-btn:hover {
+    background-color: var(--color-gold-50);
+    border-color: var(--color-gold-400);
+  }
+
+  .clear-all-btn:hover {
+    background-color: var(--color-cream-100);
+    border-color: var(--color-earth-300);
+  }
+
+  .btn-text {
+    white-space: nowrap;
+  }
+
+  .category-items {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-2);
+  }
+
+  /* Progress Summary */
+  .progress-summary {
+    position: sticky;
+    bottom: var(--spacing-4);
+  }
+
+  .progress-content {
+    text-align: center;
+  }
+
+  .progress-title {
+    font-size: var(--font-size-lg);
+    margin: 0 0 var(--spacing-4) 0;
+    color: var(--color-earth-900);
+  }
+
+  .progress-bar-container {
+    height: 12px;
+    background-color: var(--color-cream-200);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: var(--spacing-3);
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-gold-500), var(--color-orange-500));
+    border-radius: 6px;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .progress-text {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-earth-800);
+    margin: 0 0 var(--spacing-1) 0;
+  }
+
+  .progress-percentage {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-muted);
+    margin: 0;
+    transition: color 0.3s ease;
+  }
+
+  .progress-percentage.milestone-25 {
+    color: var(--color-earth-600);
+  }
+
+  .progress-percentage.milestone-50 {
+    color: var(--color-orange-500);
+  }
+
+  .progress-percentage.milestone-75 {
+    color: var(--color-gold-600);
+  }
+
+  .progress-percentage.milestone-100 {
+    color: var(--color-gold-500);
+  }
+
+  /* Responsive */
+  @media (max-width: 767px) {
+    .category-items {
+      grid-template-columns: 1fr;
+    }
+
+    .category-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .category-actions {
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .progress-summary {
+      position: relative;
+      bottom: auto;
+    }
+
+    .bulk-action-btn .btn-text {
+      display: none;
+    }
+
+    .bulk-action-btn {
+      padding: var(--spacing-2);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .category-info {
+      width: 100%;
+    }
+
+    .bulk-actions {
+      width: 100%;
+      justify-content: flex-end;
+    }
+  }
+</style>

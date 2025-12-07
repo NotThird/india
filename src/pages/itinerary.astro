@@ -1,0 +1,545 @@
+---
+/**
+ * Itinerary Page (itinerary.astro)
+ *
+ * Purpose: Display day-by-day timeline of the Chennai trip.
+ *
+ * Features:
+ * - Timeline view from Jan 20 to Feb 5, 2026 (17 days)
+ * - Visual distinction for travel days, event days, and free days
+ * - Wedding events integrated with venue and time details
+ * - Flight information on travel days
+ *
+ * Data Sources:
+ * - trip.json: Trip dates
+ * - events.json: Wedding events
+ * - flights.json: Flight segments
+ */
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Card from "../components/Card.astro";
+import Badge from "../components/Badge.astro";
+import EventCard from "../components/EventCard.astro";
+
+import tripData from "../data/trip.json";
+import eventsData from "../data/events.json";
+import flightsData from "../data/flights.json";
+
+import type { Trip, WeddingEvent, FlightSegment, DayType, ItineraryDay } from "../types/data";
+
+// Type assertions
+const trip = tripData as Trip;
+const events = eventsData.events as WeddingEvent[];
+const flights = flightsData as { confirmationCode: string; airline: string; segments: FlightSegment[] };
+
+// Generate all days between start and end dates
+function generateDays(startDate: string, endDate: string): Date[] {
+  const days: Date[] = [];
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+    days.push(new Date(d));
+  }
+
+  return days;
+}
+
+// Format date for display
+function formatDate(date: Date): string {
+  return date.toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+// Format short date for comparison
+function toDateString(date: Date): string {
+  return date.toISOString().split("T")[0];
+}
+
+// Get events for a specific date
+function getEventsForDate(date: Date): WeddingEvent[] {
+  const dateStr = toDateString(date);
+  return events.filter((event) => event.date === dateStr);
+}
+
+// Get flights for a specific date
+function getFlightsForDate(date: Date): FlightSegment[] {
+  const dateStr = toDateString(date);
+  return flights.segments.filter((segment) => segment.date === dateStr);
+}
+
+// Determine day type based on events and flights
+function getDayType(date: Date): DayType {
+  const dateStr = toDateString(date);
+  const hasFlights = flights.segments.some((s) => s.date === dateStr);
+  const hasEvents = events.some((e) => e.date === dateStr);
+
+  if (hasFlights) return "travel";
+  if (hasEvents) return "event";
+  return "free";
+}
+
+// Format time for display
+function formatTime(time: string): string {
+  const [hours, minutes] = time.split(":");
+  const hour = parseInt(hours, 10);
+  const ampm = hour >= 12 ? "PM" : "AM";
+  const displayHour = hour % 12 || 12;
+  return `${displayHour}:${minutes} ${ampm}`;
+}
+
+// Generate itinerary data
+const allDays = generateDays(trip.travelStart, trip.travelEnd);
+const itinerary: ItineraryDay[] = allDays.map((date, index) => ({
+  date: toDateString(date),
+  dayType: getDayType(date),
+  dayNumber: index + 1,
+  events: getEventsForDate(date),
+  flights: getFlightsForDate(date),
+}));
+
+// Day type labels and icons
+const dayTypeConfig: Record<DayType, { label: string; color: string; bgColor: string }> = {
+  travel: { label: "Travel Day", color: "var(--color-info)", bgColor: "var(--color-info-light)" },
+  event: { label: "Event Day", color: "var(--color-gold-700)", bgColor: "var(--color-gold-100)" },
+  free: { label: "Free Day", color: "var(--color-earth-600)", bgColor: "var(--color-earth-100)" },
+};
+---
+
+<BaseLayout title="Itinerary" description="Day-by-day schedule for your Chennai Wedding Trip 2026">
+  <!-- Page Header -->
+  <header class="page-header">
+    <h1 class="page-title">Itinerary</h1>
+    <p class="page-description">
+      Your 17-day journey from Dallas to Chennai and back.
+      {trip.durationDays} days of celebration, exploration, and shopping.
+    </p>
+  </header>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-item">
+      <span class="legend-icon legend-travel">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"></path>
+        </svg>
+      </span>
+      <span>Travel Day</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-icon legend-event">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+        </svg>
+      </span>
+      <span>Event Day</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-icon legend-free">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </span>
+      <span>Free Day</span>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="timeline">
+    {itinerary.map((day) => {
+      const date = new Date(day.date);
+      const config = dayTypeConfig[day.dayType];
+
+      return (
+        <article class="day-entry" data-type={day.dayType}>
+          <!-- Day Header -->
+          <header class="day-header">
+            <div class="day-marker" style={`background-color: ${config.bgColor}; border-color: ${config.color};`}>
+              <span class="day-number" style={`color: ${config.color};`}>Day {day.dayNumber}</span>
+              {day.dayType === "travel" && (
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style={`color: ${config.color};`}>
+                  <path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"></path>
+                </svg>
+              )}
+              {day.dayType === "event" && (
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style={`color: ${config.color};`}>
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+              )}
+            </div>
+            <div class="day-info">
+              <h2 class="day-date">{formatDate(date)}</h2>
+              <span class="day-type-badge" style={`background-color: ${config.bgColor}; color: ${config.color};`}>
+                {config.label}
+              </span>
+            </div>
+          </header>
+
+          <!-- Day Content -->
+          <div class="day-content">
+            {/* Flight information */}
+            {day.flights.length > 0 && (
+              <div class="flight-section">
+                {day.flights.map((flight) => (
+                  <Card class="flight-card">
+                    <div class="flight-info">
+                      <div class="flight-route">
+                        <span class="flight-city">{flight.fromCity}</span>
+                        <span class="flight-code">({flight.from})</span>
+                        <span class="flight-arrow">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                          </svg>
+                        </span>
+                        <span class="flight-city">{flight.toCity}</span>
+                        <span class="flight-code">({flight.to})</span>
+                      </div>
+                      <div class="flight-details">
+                        <span class="flight-number">
+                          <Badge variant="info" size="sm">{flight.flightNumber}</Badge>
+                        </span>
+                        <span class="flight-times">
+                          {formatTime(flight.departureTime)} - {formatTime(flight.arrivalTime)}
+                          {flight.arrivalNextDay && <span class="next-day">(+1 day)</span>}
+                        </span>
+                        <span class="flight-duration">{flight.duration}</span>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
+
+            {/* Events */}
+            {day.events.length > 0 && (
+              <div class="events-section">
+                {day.events.map((event) => (
+                  <EventCard event={event} />
+                ))}
+              </div>
+            )}
+
+            {/* Free day message */}
+            {day.dayType === "free" && day.flights.length === 0 && day.events.length === 0 && (
+              <div class="free-day-message">
+                <p>Free day for exploration, shopping, or relaxation.</p>
+                <p class="free-day-hint">Check out local markets for cloth shopping or explore Chennai's attractions.</p>
+              </div>
+            )}
+
+            {/* Arrival day special message */}
+            {day.dayNumber === 2 && day.flights.length > 0 && (
+              <div class="arrival-message">
+                <p>Welcome to Chennai! Rest and settle in after your journey.</p>
+              </div>
+            )}
+
+            {/* Departure day message */}
+            {day.date === trip.travelEnd && (
+              <div class="departure-message">
+                <p>Safe travels home! Your India adventure concludes.</p>
+              </div>
+            )}
+          </div>
+        </article>
+      );
+    })}
+  </div>
+</BaseLayout>
+
+<style>
+  /* Page Header */
+  .page-header {
+    margin-bottom: var(--spacing-8);
+  }
+
+  .page-title {
+    font-size: var(--font-size-4xl);
+    margin-bottom: var(--spacing-2);
+  }
+
+  .page-description {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+  }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    gap: var(--spacing-6);
+    margin-bottom: var(--spacing-8);
+    padding: var(--spacing-4);
+    background-color: white;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .legend-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+  }
+
+  .legend-travel {
+    background-color: var(--color-info-light);
+    color: var(--color-info);
+  }
+
+  .legend-event {
+    background-color: var(--color-gold-100);
+    color: var(--color-gold-700);
+  }
+
+  .legend-free {
+    background-color: var(--color-earth-100);
+    color: var(--color-earth-600);
+  }
+
+  /* Timeline */
+  .timeline {
+    position: relative;
+  }
+
+  .timeline::before {
+    content: "";
+    position: absolute;
+    left: 20px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: var(--color-earth-200);
+  }
+
+  /* Day Entry */
+  .day-entry {
+    position: relative;
+    padding-left: 60px;
+    padding-bottom: var(--spacing-6);
+  }
+
+  .day-entry:last-child {
+    padding-bottom: 0;
+  }
+
+  .day-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .day-marker {
+    position: absolute;
+    left: 0;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 3px solid;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+  }
+
+  .day-number {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+  }
+
+  .day-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    flex-wrap: wrap;
+  }
+
+  .day-date {
+    font-size: var(--font-size-xl);
+    margin: 0;
+  }
+
+  .day-type-badge {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-button);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  /* Day Content */
+  .day-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+  }
+
+  /* Flight Section */
+  .flight-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+  }
+
+  .flight-card {
+    border-left: 4px solid var(--color-info);
+  }
+
+  .flight-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+
+  .flight-route {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-size: var(--font-size-lg);
+  }
+
+  .flight-city {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-earth-900);
+  }
+
+  .flight-code {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+  }
+
+  .flight-arrow {
+    color: var(--color-earth-400);
+    margin: 0 var(--spacing-2);
+  }
+
+  .flight-details {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+    flex-wrap: wrap;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .flight-times {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+  }
+
+  .next-day {
+    color: var(--color-orange-600);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .flight-duration {
+    color: var(--color-text-muted);
+  }
+
+  /* Events Section */
+  .events-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+  }
+
+  /* Free Day Message */
+  .free-day-message,
+  .arrival-message,
+  .departure-message {
+    padding: var(--spacing-4);
+    background-color: var(--color-cream-100);
+    border-radius: var(--radius-card);
+  }
+
+  .free-day-message p,
+  .arrival-message p,
+  .departure-message p {
+    margin: 0;
+    color: var(--color-text-secondary);
+  }
+
+  .free-day-hint {
+    font-size: var(--font-size-sm);
+    margin-top: var(--spacing-2) !important;
+    color: var(--color-text-muted);
+  }
+
+  .arrival-message,
+  .departure-message {
+    background-color: var(--color-gold-50);
+    border-left: 3px solid var(--color-gold-400);
+  }
+
+  /* Responsive */
+  @media (max-width: 767px) {
+    .legend {
+      flex-direction: column;
+      gap: var(--spacing-3);
+    }
+
+    .timeline::before {
+      left: 16px;
+    }
+
+    .day-entry {
+      padding-left: 48px;
+    }
+
+    .day-marker {
+      width: 34px;
+      height: 34px;
+    }
+
+    .day-number {
+      font-size: 9px;
+    }
+
+    .day-marker svg {
+      display: none;
+    }
+
+    .day-info {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--spacing-2);
+    }
+
+    .day-date {
+      font-size: var(--font-size-lg);
+    }
+
+    .flight-route {
+      flex-wrap: wrap;
+      font-size: var(--font-size-base);
+    }
+
+    .flight-details {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--spacing-2);
+    }
+  }
+</style>

@@ -1,0 +1,611 @@
+---
+/**
+ * Interactive Map Page (map.astro)
+ *
+ * Purpose: Display an interactive Leaflet map with all trip locations and routes.
+ *
+ * Features:
+ * - Interactive map centered on Chennai
+ * - Color-coded markers for venues, hotel, airport, and shopping areas
+ * - Route polylines between hotel and key destinations
+ * - Route panel with transport options (taxi, auto-rickshaw, walking)
+ * - Popup information with venue details and directions
+ * - Full-screen toggle capability
+ * - Map legend explaining marker colors
+ * - Responsive layout for mobile and desktop
+ *
+ * Route: /map
+ *
+ * Dependencies:
+ * - InteractiveMap.astro component
+ * - RoutePanel.astro component
+ * - locations.json data file
+ * - routes.json data file
+ * - Leaflet library (loaded via CDN)
+ */
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Card from "../components/Card.astro";
+import InteractiveMap from "../components/InteractiveMap.astro";
+import RoutePanel from "../components/RoutePanel.astro";
+import locationsData from "../data/locations.json";
+import routesData from "../data/routes.json";
+
+import type { MapLocation, LocationsData, RouteSegment, RoutesData } from "../types/data";
+
+// Type-cast the imported JSON data
+const { locations } = locationsData as LocationsData;
+const { routes } = routesData as RoutesData;
+
+// Chennai center coordinates (between all venues)
+const chennaiCenter = { lat: 13.0000, lng: 80.2400 };
+
+// Group locations by type for quick reference
+const venueLocations = locations.filter((loc) => loc.type === "venue");
+const hotelLocations = locations.filter((loc) => loc.type === "hotel");
+const airportLocations = locations.filter((loc) => loc.type === "airport");
+const shoppingLocations = locations.filter((loc) => loc.type === "shopping");
+---
+
+<BaseLayout
+  title="Map"
+  description="Interactive map showing all Chennai wedding trip locations including venues, hotel, airport, and shopping areas"
+>
+  <div class="map-page-container">
+    <!-- Page Header -->
+    <header class="page-header">
+      <h1 class="page-title">
+        <span class="title-icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+        </span>
+        <span>Chennai Trip Map</span>
+      </h1>
+      <p class="page-description">
+        Explore all wedding venues, accommodation, and shopping destinations.
+        Click on markers for details and directions, or toggle routes to see travel options.
+      </p>
+    </header>
+
+    <!-- Map and Routes Layout -->
+    <div class="map-routes-layout">
+      <!-- Interactive Map Section -->
+      <section class="map-section">
+        <InteractiveMap
+          locations={locations}
+          routes={routes}
+          center={chennaiCenter}
+          zoom={11}
+          height="600px"
+          showRoutes={true}
+        />
+      </section>
+
+      <!-- Route Panel Section -->
+      <aside class="routes-section">
+        <RoutePanel routes={routes} />
+      </aside>
+    </div>
+
+    <!-- Location Quick Links -->
+    <section class="locations-section">
+      <h2 class="section-title">All Locations</h2>
+
+      <!-- Wedding Venues -->
+      {venueLocations.length > 0 && (
+        <div class="location-group">
+          <h3 class="group-title">
+            <span class="group-marker" style="background-color: #D4A843;"></span>
+            Wedding Venues
+          </h3>
+          <div class="location-cards">
+            {venueLocations.map((venue) => (
+              <Card class="location-card">
+                <div class="location-content">
+                  <h4 class="location-name">{venue.name}</h4>
+                  {venue.eventName && (
+                    <p class="location-event">{venue.eventName}</p>
+                  )}
+                  {venue.address && (
+                    <p class="location-address">{venue.address}</p>
+                  )}
+                  {venue.area && (
+                    <span class="location-area">{venue.area}</span>
+                  )}
+                  <a
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${venue.coordinates.lat},${venue.coordinates.lng}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="directions-link"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+                    </svg>
+                    Get Directions
+                  </a>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <!-- Hotel -->
+      {hotelLocations.length > 0 && (
+        <div class="location-group">
+          <h3 class="group-title">
+            <span class="group-marker" style="background-color: #3B82F6;"></span>
+            Accommodation
+          </h3>
+          <div class="location-cards">
+            {hotelLocations.map((hotel) => (
+              <Card class="location-card">
+                <div class="location-content">
+                  <h4 class="location-name">{hotel.name}</h4>
+                  {hotel.description && (
+                    <p class="location-description">{hotel.description}</p>
+                  )}
+                  {hotel.address && (
+                    <p class="location-address">{hotel.address}</p>
+                  )}
+                  {hotel.area && (
+                    <span class="location-area">{hotel.area}</span>
+                  )}
+                  <a
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${hotel.coordinates.lat},${hotel.coordinates.lng}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="directions-link"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+                    </svg>
+                    Get Directions
+                  </a>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <!-- Airport -->
+      {airportLocations.length > 0 && (
+        <div class="location-group">
+          <h3 class="group-title">
+            <span class="group-marker" style="background-color: #F97316;"></span>
+            Airport
+          </h3>
+          <div class="location-cards">
+            {airportLocations.map((airport) => (
+              <Card class="location-card">
+                <div class="location-content">
+                  <h4 class="location-name">{airport.name}</h4>
+                  {airport.address && (
+                    <p class="location-address">{airport.address}</p>
+                  )}
+                  {airport.area && (
+                    <span class="location-area">{airport.area}</span>
+                  )}
+                  <a
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${airport.coordinates.lat},${airport.coordinates.lng}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="directions-link"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+                    </svg>
+                    Get Directions
+                  </a>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <!-- Shopping Areas -->
+      {shoppingLocations.length > 0 && (
+        <div class="location-group">
+          <h3 class="group-title">
+            <span class="group-marker" style="background-color: #22C55E;"></span>
+            Shopping Areas
+          </h3>
+          <div class="location-cards">
+            {shoppingLocations.map((shop) => (
+              <Card class="location-card">
+                <div class="location-content">
+                  <h4 class="location-name">{shop.name}</h4>
+                  {shop.description && (
+                    <p class="location-description">{shop.description}</p>
+                  )}
+                  {shop.address && (
+                    <p class="location-address">{shop.address}</p>
+                  )}
+                  {shop.area && (
+                    <span class="location-area">{shop.area}</span>
+                  )}
+                  <a
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${shop.coordinates.lat},${shop.coordinates.lng}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="directions-link"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+                    </svg>
+                    Get Directions
+                  </a>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+    </section>
+
+    <!-- Map Tips -->
+    <section class="tips-section">
+      <Card>
+        <h3 class="tips-title">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+          <span>Map Tips</span>
+        </h3>
+        <ul class="tips-list">
+          <li>Click on any marker to see venue details and get directions</li>
+          <li>Toggle routes in the panel to see travel options between locations</li>
+          <li>Click on route lines to see transport options with times and costs</li>
+          <li>Costs are shown in Indian Rupees (Rs.) - prices are approximate</li>
+          <li>Use the fullscreen button (top-right) for a larger view</li>
+          <li>Directions links will open in Google Maps for navigation</li>
+        </ul>
+      </Card>
+    </section>
+
+    <!-- Back to Home Link -->
+    <div class="back-link-container">
+      <a href="/" class="back-link">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        <span>Back to Home</span>
+      </a>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .map-page-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* Page Header */
+  .page-header {
+    text-align: center;
+    margin-bottom: var(--spacing-8);
+  }
+
+  .page-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-3);
+    font-size: var(--font-size-3xl);
+    color: var(--color-earth-900);
+    margin-bottom: var(--spacing-3);
+  }
+
+  .title-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-gold-600);
+  }
+
+  .page-description {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  /* Map and Routes Layout */
+  .map-routes-layout {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: var(--spacing-6);
+    margin-bottom: var(--spacing-8);
+    align-items: start;
+  }
+
+  /* Map Section */
+  .map-section {
+    min-width: 0; /* Prevent grid blowout */
+  }
+
+  /* Routes Section */
+  .routes-section {
+    position: sticky;
+    top: var(--spacing-4);
+  }
+
+  /* Locations Section */
+  .locations-section {
+    margin-bottom: var(--spacing-8);
+  }
+
+  .section-title {
+    font-size: var(--font-size-2xl);
+    color: var(--color-earth-900);
+    margin-bottom: var(--spacing-6);
+  }
+
+  .location-group {
+    margin-bottom: var(--spacing-6);
+  }
+
+  .group-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-earth-800);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .group-marker {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .location-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--spacing-4);
+  }
+
+  .location-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .location-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .location-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+
+  .location-name {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-earth-900);
+    margin: 0;
+  }
+
+  .location-event {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gold-700);
+    margin: 0;
+  }
+
+  .location-description {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  .location-address {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .location-area {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    background-color: var(--color-bg-tertiary);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-badge);
+    align-self: flex-start;
+  }
+
+  .directions-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gold-700);
+    text-decoration: none;
+    padding: var(--spacing-2) var(--spacing-3);
+    background-color: var(--color-gold-100);
+    border-radius: var(--radius-button);
+    transition: all 0.2s ease;
+    margin-top: var(--spacing-2);
+    align-self: flex-start;
+  }
+
+  .directions-link:hover {
+    background-color: var(--color-gold-200);
+    color: var(--color-gold-800);
+    text-decoration: none;
+  }
+
+  /* Tips Section */
+  .tips-section {
+    margin-bottom: var(--spacing-8);
+  }
+
+  .tips-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-earth-900);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .tips-title svg {
+    color: var(--color-gold-600);
+  }
+
+  .tips-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+
+  .tips-list li {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    padding-left: var(--spacing-4);
+    position: relative;
+  }
+
+  .tips-list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.5em;
+    width: 6px;
+    height: 6px;
+    background-color: var(--color-gold-500);
+    border-radius: 50%;
+  }
+
+  /* Back Link */
+  .back-link-container {
+    text-align: center;
+    padding-top: var(--spacing-4);
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    color: var(--color-gold-700);
+    font-weight: var(--font-weight-medium);
+    padding: var(--spacing-3) var(--spacing-6);
+    border-radius: var(--radius-button);
+    transition: all 0.2s ease;
+  }
+
+  .back-link:hover {
+    color: var(--color-gold-800);
+    background-color: var(--color-gold-100);
+    text-decoration: none;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .map-routes-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .routes-section {
+      position: static;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .page-title {
+      font-size: var(--font-size-2xl);
+    }
+
+    .page-description {
+      font-size: var(--font-size-base);
+    }
+
+    .location-cards {
+      grid-template-columns: 1fr;
+    }
+
+    .map-routes-layout {
+      gap: var(--spacing-4);
+    }
+  }
+</style>

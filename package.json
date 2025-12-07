@@ -1,0 +1,26 @@
+{
+  "name": "india-trip-website",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "lint": "eslint src/**/*.{astro,ts,js}",
+    "format": "prettier --write src/**/*.{astro,ts,js,json,css}"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.6",
+    "@tailwindcss/vite": "^4.1.17",
+    "astro": "^5.16.4",
+    "tailwindcss": "^4.1.17",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.1",
+    "eslint-plugin-astro": "^1.5.0",
+    "prettier": "^3.7.4",
+    "prettier-plugin-astro": "^0.14.1"
+  }
+}

@@ -1,0 +1,15 @@
+task_groups:
+  - name: Packing List Persistence
+    claude_code_subagent: implementer
+  - name: Leaflet Map Setup and Venue Markers
+    claude_code_subagent: travel-web-architect
+  - name: OpenRouteService API and Route Display
+    claude_code_subagent: travel-web-architect
+  - name: Venue Maps and Navigation Deep Links
+    claude_code_subagent: travel-web-architect
+  - name: Chennai Shopping Research and Implementation
+    claude_code_subagent: south-india-wedding-shopping-guide
+  - name: Flight Status Tracking
+    claude_code_subagent: travel-web-architect
+  - name: Integration and Final Polish
+    claude_code_subagent: project-health-auditor

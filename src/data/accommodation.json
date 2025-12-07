@@ -1,0 +1,21 @@
+{
+  "accommodations": [
+    {
+      "id": "park-hyatt",
+      "name": "Park Hyatt Chennai",
+      "area": "Guindy",
+      "city": "Chennai",
+      "status": "considering",
+      "checkIn": null,
+      "checkOut": null,
+      "confirmationNumber": null,
+      "notes": "Closest major hotel to wedding venues (~9-15 min drive)",
+      "amenities": [],
+      "contact": {
+        "phone": null,
+        "email": null,
+        "website": "https://www.hyatt.com/en-US/hotel/india/park-hyatt-chennai/maagh"
+      }
+    }
+  ]
+}

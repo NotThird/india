@@ -1,0 +1,15 @@
+task_groups:
+  - name: Project Initialization
+    claude_code_subagent: implementer
+  - name: Design System and Theming
+    claude_code_subagent: travel-web-architect
+  - name: JSON Data Layer
+    claude_code_subagent: south-india-wedding-shopping-guide
+  - name: Layout and Navigation Components
+    claude_code_subagent: travel-web-architect
+  - name: Core Page Implementation
+    claude_code_subagent: travel-web-architect
+  - name: Placeholder Pages
+    claude_code_subagent: implementer
+  - name: Final Polish and Deployment
+    claude_code_subagent: project-health-auditor

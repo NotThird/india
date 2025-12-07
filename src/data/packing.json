@@ -1,0 +1,68 @@
+{
+  "categories": [
+    {
+      "id": "essentials",
+      "name": "Essentials",
+      "items": [
+        { "id": "ess-1", "name": "Passport", "packed": false },
+        { "id": "ess-2", "name": "Visa ETA printout", "packed": false },
+        { "id": "ess-3", "name": "Flight tickets/confirmation", "packed": false },
+        { "id": "ess-4", "name": "Travel insurance documents", "packed": false },
+        { "id": "ess-5", "name": "Credit/debit cards", "packed": false },
+        { "id": "ess-6", "name": "Cash (USD for exchange)", "packed": false },
+        { "id": "ess-7", "name": "Medications", "packed": false },
+        { "id": "ess-8", "name": "Toiletries", "packed": false },
+        { "id": "ess-9", "name": "Sunscreen", "packed": false },
+        { "id": "ess-10", "name": "Insect repellent", "packed": false }
+      ]
+    },
+    {
+      "id": "documents",
+      "name": "Documents",
+      "items": [
+        { "id": "doc-1", "name": "Passport copies (digital and physical)", "packed": false },
+        { "id": "doc-2", "name": "Visa approval email", "packed": false },
+        { "id": "doc-3", "name": "Hotel reservation confirmation", "packed": false },
+        { "id": "doc-4", "name": "Wedding invitation", "packed": false },
+        { "id": "doc-5", "name": "Emergency contact list", "packed": false },
+        { "id": "doc-6", "name": "Travel itinerary printout", "packed": false }
+      ]
+    },
+    {
+      "id": "wedding-attire",
+      "name": "Wedding Attire",
+      "items": [
+        { "id": "wed-1", "name": "Formal outfit for wedding ceremony", "packed": false },
+        { "id": "wed-2", "name": "Outfit for Mehendi ceremony", "packed": false },
+        { "id": "wed-3", "name": "Cocktail party attire", "packed": false },
+        { "id": "wed-4", "name": "Dress shoes", "packed": false },
+        { "id": "wed-5", "name": "Accessories (watch, cufflinks)", "packed": false },
+        { "id": "wed-6", "name": "Traditional kurta (optional)", "packed": false }
+      ]
+    },
+    {
+      "id": "electronics",
+      "name": "Electronics",
+      "items": [
+        { "id": "elec-1", "name": "Phone and charger", "packed": false },
+        { "id": "elec-2", "name": "Power adapter (Type C/D/M for India)", "packed": false },
+        { "id": "elec-3", "name": "Portable power bank", "packed": false },
+        { "id": "elec-4", "name": "Camera and charger", "packed": false },
+        { "id": "elec-5", "name": "Laptop/tablet (optional)", "packed": false },
+        { "id": "elec-6", "name": "Headphones", "packed": false },
+        { "id": "elec-7", "name": "Universal adapter", "packed": false }
+      ]
+    },
+    {
+      "id": "shopping-supplies",
+      "name": "Shopping Supplies",
+      "items": [
+        { "id": "shop-1", "name": "Extra duffle bag (for purchases)", "packed": false },
+        { "id": "shop-2", "name": "Packing cubes", "packed": false },
+        { "id": "shop-3", "name": "Reusable shopping bags", "packed": false },
+        { "id": "shop-4", "name": "Size/measurement notes for family", "packed": false },
+        { "id": "shop-5", "name": "Wish list for cloth shopping", "packed": false }
+      ]
+    }
+  ]
+}

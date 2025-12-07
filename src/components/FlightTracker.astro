@@ -1,0 +1,999 @@
+---
+/**
+ * FlightTracker.astro
+ *
+ * Purpose: Display flight countdown and status information in a visually appealing banner.
+ *
+ * Features:
+ * - Live countdown timer to next flight (client-side updates)
+ * - Displays all 4 Emirates flights with route information
+ * - Boarding-pass inspired aesthetic with India color palette
+ * - Responsive design (collapsible on mobile)
+ * - Smooth animations and transitions
+ *
+ * Data Source: Static flight data from src/data/flights.json
+ * Status: Always shows "Scheduled" (static mode - no API required)
+ */
+
+import type { FlightsData, FlightSegment } from "../types/data";
+import flightsData from "../data/flights.json";
+
+const flights = flightsData as FlightsData;
+
+/**
+ * Build ISO datetime string from flight segment date and time
+ */
+function buildDateTime(segment: FlightSegment): string {
+  // Convert 24-hour time to ISO format
+  // Note: Using local time zone assumption (CST for DFW departures, local for others)
+  return `${segment.date}T${segment.departureTime}:00`;
+}
+
+/**
+ * Get human-readable status label
+ */
+function getStatusLabel(status: string): string {
+  const labels: Record<string, string> = {
+    scheduled: "Scheduled",
+    "on-time": "On Time",
+    delayed: "Delayed",
+    cancelled: "Cancelled",
+  };
+  return labels[status] || "Scheduled";
+}
+
+// Prepare flight data with full datetime for client-side countdown
+const flightSchedule = flights.segments.map((segment) => ({
+  ...segment,
+  departureDateTime: buildDateTime(segment),
+  status: "scheduled" as const,
+}));
+
+// Find the next upcoming flight (for initial server render)
+const now = new Date();
+const upcomingFlights = flightSchedule.filter(
+  (f) => new Date(f.departureDateTime) > now
+);
+const nextFlight = upcomingFlights[0] || flightSchedule[0];
+---
+
+<div class="flight-tracker" id="flight-tracker" data-flights={JSON.stringify(flightSchedule)}>
+  <!-- Collapsed Mobile View Toggle -->
+  <button
+    class="tracker-toggle"
+    id="tracker-toggle"
+    aria-expanded="false"
+    aria-controls="tracker-content"
+  >
+    <span class="toggle-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"></path>
+      </svg>
+    </span>
+    <span class="toggle-label" id="toggle-label">Flight Countdown</span>
+    <span class="toggle-countdown" id="toggle-countdown"></span>
+    <span class="toggle-chevron">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </span>
+  </button>
+
+  <!-- Expanded Content -->
+  <div class="tracker-content" id="tracker-content">
+    <!-- Main Countdown Display -->
+    <div class="countdown-section">
+      <div class="countdown-header">
+        <span class="next-flight-label">Next Flight</span>
+        <span class="flight-badge" id="current-flight-number">{nextFlight.flightNumber}</span>
+      </div>
+
+      <div class="countdown-route" id="countdown-route">
+        <span class="route-from">{nextFlight.from}</span>
+        <span class="route-arrow">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"></path>
+          </svg>
+        </span>
+        <span class="route-to">{nextFlight.to}</span>
+      </div>
+
+      <div class="countdown-timer" id="countdown-timer">
+        <div class="countdown-unit">
+          <span class="countdown-value" id="countdown-days">--</span>
+          <span class="countdown-label">Days</span>
+        </div>
+        <div class="countdown-separator">:</div>
+        <div class="countdown-unit">
+          <span class="countdown-value" id="countdown-hours">--</span>
+          <span class="countdown-label">Hours</span>
+        </div>
+        <div class="countdown-separator">:</div>
+        <div class="countdown-unit">
+          <span class="countdown-value" id="countdown-minutes">--</span>
+          <span class="countdown-label">Mins</span>
+        </div>
+        <div class="countdown-separator">:</div>
+        <div class="countdown-unit">
+          <span class="countdown-value" id="countdown-seconds">--</span>
+          <span class="countdown-label">Secs</span>
+        </div>
+      </div>
+
+      <div class="flight-datetime" id="flight-datetime">
+        <span class="flight-date"></span>
+        <span class="flight-time"></span>
+      </div>
+    </div>
+
+    <!-- Flight List -->
+    <div class="flights-list">
+      <div class="flights-header">
+        <span class="confirmation-code">
+          <span class="code-label">Confirmation:</span>
+          <span class="code-value">{flights.confirmationCode}</span>
+        </span>
+        <span class="airline-logo">Emirates</span>
+      </div>
+
+      <div class="flights-grid" id="flights-grid">
+        {flightSchedule.map((flight, index) => (
+          <div
+            class="flight-card"
+            data-flight-id={flight.id}
+            data-direction={flight.direction}
+          >
+            <div class="flight-card-header">
+              <span class="flight-number">{flight.flightNumber}</span>
+              <span class={`flight-status status-${flight.status}`}>
+                {getStatusLabel(flight.status)}
+              </span>
+            </div>
+
+            <div class="flight-route">
+              <div class="route-point">
+                <span class="airport-code">{flight.from}</span>
+                <span class="city-name">{flight.fromCity}</span>
+                <span class="flight-time-display">{flight.departureTime}</span>
+              </div>
+
+              <div class="route-line">
+                <span class="route-duration">{flight.duration}</span>
+                <div class="route-track">
+                  <div class="route-dot"></div>
+                  <div class="route-dash"></div>
+                  <div class="route-plane">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
+                    </svg>
+                  </div>
+                  <div class="route-dash"></div>
+                  <div class="route-dot"></div>
+                </div>
+              </div>
+
+              <div class="route-point">
+                <span class="airport-code">{flight.to}</span>
+                <span class="city-name">{flight.toCity}</span>
+                <span class="flight-time-display">
+                  {flight.arrivalTime}
+                  {flight.arrivalNextDay && <sup class="next-day">+1</sup>}
+                </span>
+              </div>
+            </div>
+
+            <div class="flight-card-footer">
+              <span class="flight-date-display">{flight.date}</span>
+              <span class="flight-direction">
+                {flight.direction === "outbound" ? "Outbound" : "Return"}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Trip Complete Message (hidden by default) -->
+    <div class="trip-complete" id="trip-complete" style="display: none;">
+      <div class="complete-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+      </div>
+      <span class="complete-text">Trip Complete!</span>
+      <span class="complete-subtext">Chennai Wedding 2026</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  /**
+   * Flight Tracker Client-Side Logic
+   *
+   * Handles:
+   * - Live countdown timer updates (every second)
+   * - Flight carousel/highlighting
+   * - Mobile toggle behavior
+   * - Trip completion detection
+   */
+
+  interface FlightData {
+    id: string;
+    flightNumber: string;
+    from: string;
+    fromCity: string;
+    to: string;
+    toCity: string;
+    date: string;
+    departureTime: string;
+    arrivalTime: string;
+    duration: string;
+    departureDateTime: string;
+    direction: "outbound" | "return";
+    status: string;
+  }
+
+  function initFlightTracker() {
+    const tracker = document.getElementById("flight-tracker");
+    if (!tracker) return;
+
+    const flightsData: FlightData[] = JSON.parse(
+      tracker.dataset.flights || "[]"
+    );
+
+    if (flightsData.length === 0) return;
+
+    // DOM elements
+    const countdownDays = document.getElementById("countdown-days");
+    const countdownHours = document.getElementById("countdown-hours");
+    const countdownMinutes = document.getElementById("countdown-minutes");
+    const countdownSeconds = document.getElementById("countdown-seconds");
+    const currentFlightNumber = document.getElementById("current-flight-number");
+    const countdownRoute = document.getElementById("countdown-route");
+    const flightDatetime = document.getElementById("flight-datetime");
+    const tripComplete = document.getElementById("trip-complete");
+    const countdownSection = document.querySelector(".countdown-section");
+    const toggleCountdown = document.getElementById("toggle-countdown");
+    const toggleLabel = document.getElementById("toggle-label");
+
+    let currentFlightIndex = 0;
+
+    /**
+     * Find the next upcoming flight
+     */
+    function findNextFlight(): number {
+      const now = new Date();
+      for (let i = 0; i < flightsData.length; i++) {
+        const flightDate = new Date(flightsData[i].departureDateTime);
+        if (flightDate > now) {
+          return i;
+        }
+      }
+      return -1; // All flights are in the past
+    }
+
+    /**
+     * Calculate countdown values
+     */
+    function calculateCountdown(targetDate: Date): {
+      days: number;
+      hours: number;
+      minutes: number;
+      seconds: number;
+      total: number;
+    } {
+      const now = new Date();
+      const diff = targetDate.getTime() - now.getTime();
+
+      if (diff <= 0) {
+        return { days: 0, hours: 0, minutes: 0, seconds: 0, total: 0 };
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      return { days, hours, minutes, seconds, total: diff };
+    }
+
+    /**
+     * Format a number with leading zero
+     */
+    function pad(num: number): string {
+      return num.toString().padStart(2, "0");
+    }
+
+    /**
+     * Format date for display
+     */
+    function formatDate(dateStr: string): string {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+    }
+
+    /**
+     * Update countdown display
+     */
+    function updateCountdown() {
+      currentFlightIndex = findNextFlight();
+
+      if (currentFlightIndex === -1) {
+        // Trip is complete
+        if (countdownSection) countdownSection.style.display = "none";
+        if (tripComplete) tripComplete.style.display = "flex";
+        if (toggleLabel) toggleLabel.textContent = "Trip Complete!";
+        if (toggleCountdown) toggleCountdown.textContent = "";
+        return;
+      }
+
+      const flight = flightsData[currentFlightIndex];
+      const targetDate = new Date(flight.departureDateTime);
+      const countdown = calculateCountdown(targetDate);
+
+      // Update countdown numbers with animation
+      if (countdownDays) {
+        const newValue = pad(countdown.days);
+        if (countdownDays.textContent !== newValue) {
+          countdownDays.classList.add("updating");
+          countdownDays.textContent = newValue;
+          setTimeout(() => countdownDays.classList.remove("updating"), 200);
+        }
+      }
+
+      if (countdownHours) {
+        const newValue = pad(countdown.hours);
+        if (countdownHours.textContent !== newValue) {
+          countdownHours.classList.add("updating");
+          countdownHours.textContent = newValue;
+          setTimeout(() => countdownHours.classList.remove("updating"), 200);
+        }
+      }
+
+      if (countdownMinutes) {
+        const newValue = pad(countdown.minutes);
+        if (countdownMinutes.textContent !== newValue) {
+          countdownMinutes.classList.add("updating");
+          countdownMinutes.textContent = newValue;
+          setTimeout(() => countdownMinutes.classList.remove("updating"), 200);
+        }
+      }
+
+      if (countdownSeconds) {
+        const newValue = pad(countdown.seconds);
+        if (countdownSeconds.textContent !== newValue) {
+          countdownSeconds.classList.add("updating");
+          countdownSeconds.textContent = newValue;
+          setTimeout(() => countdownSeconds.classList.remove("updating"), 200);
+        }
+      }
+
+      // Update flight info
+      if (currentFlightNumber) {
+        currentFlightNumber.textContent = flight.flightNumber;
+      }
+
+      if (countdownRoute) {
+        const routeFrom = countdownRoute.querySelector(".route-from");
+        const routeTo = countdownRoute.querySelector(".route-to");
+        if (routeFrom) routeFrom.textContent = flight.from;
+        if (routeTo) routeTo.textContent = flight.to;
+      }
+
+      if (flightDatetime) {
+        const dateSpan = flightDatetime.querySelector(".flight-date");
+        const timeSpan = flightDatetime.querySelector(".flight-time");
+        if (dateSpan) dateSpan.textContent = formatDate(flight.departureDateTime);
+        if (timeSpan) timeSpan.textContent = `Departs ${flight.departureTime}`;
+      }
+
+      // Update mobile toggle preview
+      if (toggleCountdown) {
+        toggleCountdown.textContent = `${pad(countdown.days)}d ${pad(countdown.hours)}h ${pad(countdown.minutes)}m`;
+      }
+
+      if (toggleLabel) {
+        toggleLabel.textContent = `${flight.flightNumber}: ${flight.from} - ${flight.to}`;
+      }
+
+      // Highlight current flight in list
+      const flightCards = document.querySelectorAll(".flight-card");
+      flightCards.forEach((card, index) => {
+        card.classList.toggle("current", index === currentFlightIndex);
+        card.classList.toggle("past", index < currentFlightIndex);
+      });
+    }
+
+    /**
+     * Initialize mobile toggle
+     */
+    function initToggle() {
+      const toggle = document.getElementById("tracker-toggle");
+      const content = document.getElementById("tracker-content");
+
+      if (!toggle || !content) return;
+
+      toggle.addEventListener("click", () => {
+        const isExpanded = toggle.getAttribute("aria-expanded") === "true";
+        toggle.setAttribute("aria-expanded", String(!isExpanded));
+        content.classList.toggle("expanded", !isExpanded);
+        toggle.classList.toggle("expanded", !isExpanded);
+      });
+    }
+
+    // Initialize
+    updateCountdown();
+    initToggle();
+
+    // Update countdown every second
+    setInterval(updateCountdown, 1000);
+  }
+
+  // Initialize on page load
+  document.addEventListener("DOMContentLoaded", initFlightTracker);
+  // Re-initialize on Astro page transitions
+  document.addEventListener("astro:page-load", initFlightTracker);
+</script>
+
+<style>
+  /* ==========================================================================
+     Flight Tracker Container
+     ========================================================================== */
+
+  .flight-tracker {
+    position: fixed;
+    top: 0;
+    left: var(--sidebar-width);
+    right: 0;
+    background: linear-gradient(135deg, var(--color-earth-800) 0%, var(--color-earth-900) 100%);
+    border-bottom: 3px solid var(--color-gold-500);
+    color: var(--color-cream-100);
+    overflow: hidden;
+    z-index: 90;
+  }
+
+  @media (max-width: 767px) {
+    .flight-tracker {
+      left: 0;
+      top: 56px; /* Below mobile header */
+    }
+  }
+
+  /* ==========================================================================
+     Mobile Toggle Button
+     ========================================================================== */
+
+  .tracker-toggle {
+    display: none;
+    width: 100%;
+    padding: var(--spacing-3) var(--spacing-4);
+    align-items: center;
+    gap: var(--spacing-2);
+    background: transparent;
+    color: var(--color-cream-100);
+    border: none;
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .toggle-icon {
+    display: flex;
+    align-items: center;
+    color: var(--color-gold-400);
+  }
+
+  .toggle-label {
+    flex: 1;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .toggle-countdown {
+    font-size: var(--font-size-xs);
+    color: var(--color-gold-400);
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .toggle-chevron {
+    display: flex;
+    align-items: center;
+    color: var(--color-earth-400);
+    transition: transform 0.2s ease;
+  }
+
+  .tracker-toggle.expanded .toggle-chevron {
+    transform: rotate(180deg);
+  }
+
+  /* ==========================================================================
+     Tracker Content
+     ========================================================================== */
+
+  .tracker-content {
+    padding: var(--spacing-4) var(--spacing-6);
+    display: flex;
+    gap: var(--spacing-6);
+    align-items: flex-start;
+  }
+
+  /* ==========================================================================
+     Countdown Section
+     ========================================================================== */
+
+  .countdown-section {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--spacing-4);
+    background: linear-gradient(135deg, var(--color-gold-600) 0%, var(--color-gold-700) 100%);
+    border-radius: var(--radius-card);
+    min-width: 280px;
+  }
+
+  .countdown-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-2);
+  }
+
+  .next-flight-label {
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-gold-200);
+  }
+
+  .flight-badge {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    padding: var(--spacing-1) var(--spacing-2);
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-button);
+    color: white;
+  }
+
+  .countdown-route {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-3);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .route-from,
+  .route-to {
+    color: white;
+  }
+
+  .route-arrow {
+    display: flex;
+    align-items: center;
+    color: var(--color-gold-300);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+
+  /* Countdown Timer */
+  .countdown-timer {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    margin-bottom: var(--spacing-3);
+  }
+
+  .countdown-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 48px;
+  }
+
+  .countdown-value {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    color: white;
+    line-height: 1;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease, color 0.2s ease;
+  }
+
+  .countdown-value.updating {
+    transform: scale(1.1);
+    color: var(--color-gold-200);
+  }
+
+  .countdown-label {
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-gold-200);
+    margin-top: var(--spacing-1);
+  }
+
+  .countdown-separator {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-gold-300);
+    margin-bottom: var(--spacing-4);
+    animation: blink 1s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.3; }
+  }
+
+  .flight-datetime {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: var(--font-size-sm);
+    color: var(--color-gold-200);
+  }
+
+  .flight-datetime .flight-date {
+    font-weight: var(--font-weight-medium);
+  }
+
+  .flight-datetime .flight-time {
+    font-size: var(--font-size-xs);
+    opacity: 0.8;
+  }
+
+  /* ==========================================================================
+     Flights List
+     ========================================================================== */
+
+  .flights-list {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .flights-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-3);
+    padding-bottom: var(--spacing-2);
+    border-bottom: 1px solid var(--color-earth-700);
+  }
+
+  .confirmation-code {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+  }
+
+  .code-label {
+    font-size: var(--font-size-xs);
+    color: var(--color-earth-400);
+  }
+
+  .code-value {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    color: var(--color-gold-400);
+    letter-spacing: 0.1em;
+  }
+
+  .airline-logo {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-earth-400);
+  }
+
+  .flights-grid {
+    display: flex;
+    gap: var(--spacing-3);
+    overflow-x: auto;
+    padding-bottom: var(--spacing-2);
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .flights-grid::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .flights-grid::-webkit-scrollbar-track {
+    background: var(--color-earth-700);
+    border-radius: 2px;
+  }
+
+  .flights-grid::-webkit-scrollbar-thumb {
+    background: var(--color-earth-500);
+    border-radius: 2px;
+  }
+
+  /* ==========================================================================
+     Flight Card (Boarding Pass Style)
+     ========================================================================== */
+
+  .flight-card {
+    flex-shrink: 0;
+    width: 200px;
+    background: linear-gradient(135deg, var(--color-earth-700) 0%, var(--color-earth-800) 100%);
+    border-radius: var(--radius-card);
+    padding: var(--spacing-3);
+    scroll-snap-align: start;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .flight-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--color-earth-600);
+    transition: background 0.2s ease;
+  }
+
+  .flight-card.current::before {
+    background: linear-gradient(90deg, var(--color-gold-400) 0%, var(--color-orange-500) 100%);
+  }
+
+  .flight-card.current {
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .flight-card.past {
+    opacity: 0.5;
+  }
+
+  .flight-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-2);
+  }
+
+  .flight-number {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    color: white;
+  }
+
+  .flight-status {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 2px 6px;
+    border-radius: 2px;
+    font-weight: var(--font-weight-medium);
+  }
+
+  .status-scheduled {
+    background: var(--color-earth-600);
+    color: var(--color-earth-300);
+  }
+
+  .status-on-time {
+    background: var(--color-success-light);
+    color: var(--color-success);
+  }
+
+  .status-delayed {
+    background: var(--color-warning-light);
+    color: var(--color-orange-700);
+  }
+
+  .status-cancelled {
+    background: #FEE2E2;
+    color: #DC2626;
+  }
+
+  /* Flight Route */
+  .flight-route {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-2);
+  }
+
+  .route-point {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .airport-code {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-bold);
+    color: white;
+  }
+
+  .city-name {
+    font-size: 9px;
+    color: var(--color-earth-400);
+    max-width: 50px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .flight-time-display {
+    font-size: var(--font-size-xs);
+    color: var(--color-gold-400);
+    font-weight: var(--font-weight-medium);
+    margin-top: 2px;
+  }
+
+  .next-day {
+    font-size: 8px;
+    color: var(--color-orange-400);
+  }
+
+  /* Route Line */
+  .route-line {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 var(--spacing-2);
+  }
+
+  .route-duration {
+    font-size: 8px;
+    color: var(--color-earth-400);
+    margin-bottom: 2px;
+  }
+
+  .route-track {
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+
+  .route-dot {
+    width: 4px;
+    height: 4px;
+    background: var(--color-earth-500);
+    border-radius: 50%;
+  }
+
+  .route-dash {
+    flex: 1;
+    height: 1px;
+    background: repeating-linear-gradient(
+      90deg,
+      var(--color-earth-500) 0,
+      var(--color-earth-500) 3px,
+      transparent 3px,
+      transparent 6px
+    );
+  }
+
+  .route-plane {
+    color: var(--color-gold-400);
+    padding: 0 2px;
+  }
+
+  /* Flight Card Footer */
+  .flight-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--spacing-2);
+    border-top: 1px dashed var(--color-earth-600);
+    margin-top: var(--spacing-2);
+  }
+
+  .flight-date-display {
+    font-size: var(--font-size-xs);
+    color: var(--color-earth-400);
+  }
+
+  .flight-direction {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-earth-500);
+  }
+
+  /* ==========================================================================
+     Trip Complete
+     ========================================================================== */
+
+  .trip-complete {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-8);
+    text-align: center;
+    color: var(--color-gold-400);
+  }
+
+  .complete-icon {
+    margin-bottom: var(--spacing-3);
+    color: var(--color-success);
+  }
+
+  .complete-text {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: white;
+    margin-bottom: var(--spacing-1);
+  }
+
+  .complete-subtext {
+    font-size: var(--font-size-sm);
+    color: var(--color-earth-400);
+  }
+
+  /* ==========================================================================
+     Responsive Styles
+     ========================================================================== */
+
+  @media (max-width: 1024px) {
+    .tracker-content {
+      flex-direction: column;
+      gap: var(--spacing-4);
+    }
+
+    .countdown-section {
+      width: 100%;
+      min-width: unset;
+    }
+
+    .flights-list {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .tracker-toggle {
+      display: flex;
+    }
+
+    .tracker-content {
+      display: none;
+      padding: var(--spacing-4);
+    }
+
+    .tracker-content.expanded {
+      display: flex;
+    }
+
+    .countdown-section {
+      padding: var(--spacing-3);
+    }
+
+    .countdown-value {
+      font-size: var(--font-size-2xl);
+    }
+
+    .countdown-unit {
+      min-width: 40px;
+    }
+
+    .flight-card {
+      width: 180px;
+    }
+  }
+</style>

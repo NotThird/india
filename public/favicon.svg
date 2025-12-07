@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- India-themed favicon: Stylized Diya (oil lamp) with flame -->
+  <!-- Gold/orange colors representing celebrations and the wedding theme -->
+
+  <!-- Diya base (lamp bowl) -->
+  <ellipse cx="32" cy="48" rx="20" ry="8" fill="#D4A843"/>
+  <ellipse cx="32" cy="44" rx="16" ry="6" fill="#E07C3E"/>
+  <path d="M16 44 C16 36, 48 36, 48 44 L48 48 C48 50, 16 50, 16 48 Z" fill="#D4A843"/>
+
+  <!-- Flame -->
+  <path d="M32 8
+           C28 16, 24 20, 24 28
+           C24 36, 28 40, 32 40
+           C36 40, 40 36, 40 28
+           C40 20, 36 16, 32 8"
+        fill="#E07C3E"/>
+  <path d="M32 14
+           C30 18, 28 22, 28 28
+           C28 34, 30 36, 32 36
+           C34 36, 36 34, 36 28
+           C36 22, 34 18, 32 14"
+        fill="#FBF2DC"/>
+
+  <!-- Wick -->
+  <rect x="31" y="38" width="2" height="6" fill="#5C4033"/>
+</svg>

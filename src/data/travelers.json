@@ -1,0 +1,28 @@
+{
+  "travelers": [
+    {
+      "id": "austin",
+      "name": "Austin Coleman Franklin",
+      "passport": "678129367",
+      "dob": "1991-11-07",
+      "nationality": "United States of America",
+      "visa": {
+        "type": "e-Tourist Visa",
+        "etaNumber": "902B1538P",
+        "applicationId": "I008V4163725",
+        "issueDate": "2025-11-18",
+        "expiryDate": "2030-11-17",
+        "entries": "multiple",
+        "maxStay": "180 days per calendar year",
+        "activities": "Meeting Friends/Relatives",
+        "status": "GRANTED",
+        "notes": [
+          "Carry ETA email or printed copy",
+          "Biometrics captured on arrival",
+          "Yellow fever card required if arriving from affected countries",
+          "Not valid for land border crossings"
+        ]
+      }
+    }
+  ]
+}

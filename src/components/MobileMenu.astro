@@ -1,0 +1,390 @@
+---
+/**
+ * MobileMenu.astro
+ *
+ * Purpose: Full-screen overlay navigation menu for mobile devices.
+ *
+ * Features:
+ * - Full-screen dark overlay
+ * - Close button in top-right corner
+ * - Same navigation items as Sidebar
+ * - Closes on link click, Escape key, or overlay click
+ *
+ * State Management: Controlled via JavaScript in BaseLayout.astro
+ */
+
+interface NavItem {
+  label: string;
+  href: string;
+  icon: string;
+  comingSoon?: boolean;
+}
+
+const navItems: NavItem[] = [
+  { label: "Home", href: "/", icon: "home" },
+  { label: "Itinerary", href: "/itinerary", icon: "calendar" },
+  { label: "Bookings", href: "/bookings", icon: "plane" },
+  { label: "Packing List", href: "/packing", icon: "list" },
+  { label: "Map", href: "/map", icon: "map" },
+  { label: "Shopping", href: "/shopping", icon: "shopping" },
+];
+
+const currentPath = Astro.url.pathname;
+
+function isActive(href: string): boolean {
+  if (href === "/") {
+    return currentPath === "/";
+  }
+  return currentPath.startsWith(href);
+}
+---
+
+<div
+  id="mobile-menu"
+  class="mobile-menu hidden"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Navigation menu"
+>
+  <div class="menu-backdrop"></div>
+  <div class="menu-content">
+    <div class="menu-header">
+      <div class="menu-logo">
+        <span class="logo-icon">&#127758;</span>
+        <div class="logo-text">
+          <span class="logo-title">Chennai Trip</span>
+          <span class="logo-subtitle">2026</span>
+        </div>
+      </div>
+      <button
+        id="mobile-menu-close"
+        class="close-button"
+        aria-label="Close navigation menu"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <nav class="menu-nav" role="navigation">
+      <ul role="list">
+        {
+          navItems.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class:list={[
+                  "menu-link",
+                  { active: isActive(item.href) },
+                  { "coming-soon": item.comingSoon },
+                ]}
+                aria-current={isActive(item.href) ? "page" : undefined}
+              >
+                <span class="nav-icon" aria-hidden="true">
+                  {item.icon === "home" && (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                      <polyline points="9 22 9 12 15 12 15 22" />
+                    </svg>
+                  )}
+                  {item.icon === "calendar" && (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                      <line x1="16" y1="2" x2="16" y2="6" />
+                      <line x1="8" y1="2" x2="8" y2="6" />
+                      <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                  )}
+                  {item.icon === "plane" && (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" />
+                    </svg>
+                  )}
+                  {item.icon === "list" && (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <line x1="8" y1="6" x2="21" y2="6" />
+                      <line x1="8" y1="12" x2="21" y2="12" />
+                      <line x1="8" y1="18" x2="21" y2="18" />
+                      <line x1="3" y1="6" x2="3.01" y2="6" />
+                      <line x1="3" y1="12" x2="3.01" y2="12" />
+                      <line x1="3" y1="18" x2="3.01" y2="18" />
+                    </svg>
+                  )}
+                  {item.icon === "map" && (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
+                      <line x1="8" y1="2" x2="8" y2="18" />
+                      <line x1="16" y1="6" x2="16" y2="22" />
+                    </svg>
+                  )}
+                  {item.icon === "shopping" && (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <circle cx="9" cy="21" r="1" />
+                      <circle cx="20" cy="21" r="1" />
+                      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                    </svg>
+                  )}
+                </span>
+                <span class="nav-label">{item.label}</span>
+                {item.comingSoon && (
+                  <span class="coming-soon-badge">Coming Soon</span>
+                )}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="menu-footer">
+      <p class="trip-dates">January 20 - February 5, 2026</p>
+      <p class="trip-location">Chennai, India</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .mobile-menu {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    flex-direction: column;
+  }
+
+  .mobile-menu.hidden {
+    display: none;
+  }
+
+  .menu-backdrop {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .menu-content {
+    position: relative;
+    width: 100%;
+    max-width: 320px;
+    height: 100%;
+    background-color: var(--color-earth-800);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .menu-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-4) var(--spacing-5);
+    border-bottom: 1px solid var(--color-earth-700);
+  }
+
+  .menu-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+  }
+
+  .logo-icon {
+    font-size: 1.5rem;
+  }
+
+  .logo-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .logo-title {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-gold-400);
+  }
+
+  .logo-subtitle {
+    font-size: var(--font-size-sm);
+    color: var(--color-earth-400);
+  }
+
+  .close-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    color: var(--color-cream-200);
+    border-radius: var(--radius-button);
+    transition: background-color 0.15s ease;
+  }
+
+  .close-button:hover {
+    background-color: var(--color-earth-700);
+  }
+
+  /* Navigation */
+  .menu-nav {
+    flex: 1;
+    padding: var(--spacing-4) 0;
+  }
+
+  .menu-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .menu-link {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+    padding: var(--spacing-4) var(--spacing-5);
+    color: var(--color-cream-200);
+    text-decoration: none;
+    font-size: var(--font-size-lg);
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .menu-link:hover:not(.coming-soon) {
+    background-color: var(--color-earth-700);
+    color: var(--color-cream-50);
+    text-decoration: none;
+  }
+
+  .menu-link.active {
+    background-color: var(--color-gold-600);
+    color: white;
+    font-weight: var(--font-weight-medium);
+  }
+
+  .menu-link.active:hover {
+    background-color: var(--color-gold-500);
+  }
+
+  /* Coming Soon Links - muted but navigable */
+  .menu-link.coming-soon {
+    color: var(--color-earth-500);
+  }
+
+  .menu-link.coming-soon:hover {
+    background-color: var(--color-earth-700);
+    color: var(--color-earth-400);
+    text-decoration: none;
+  }
+
+  .coming-soon-badge {
+    margin-left: auto;
+    font-size: var(--font-size-xs);
+    padding: 4px 8px;
+    background-color: var(--color-earth-600);
+    color: var(--color-earth-400);
+    border-radius: var(--radius-button);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .nav-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+
+  .nav-label {
+    flex: 1;
+  }
+
+  /* Footer */
+  .menu-footer {
+    padding: var(--spacing-5);
+    border-top: 1px solid var(--color-earth-700);
+    text-align: center;
+  }
+
+  .trip-dates {
+    font-size: var(--font-size-sm);
+    color: var(--color-cream-300);
+    margin: 0 0 var(--spacing-1) 0;
+  }
+
+  .trip-location {
+    font-size: var(--font-size-sm);
+    color: var(--color-earth-400);
+    margin: 0;
+  }
+</style>
