@@ -1,0 +1,751 @@
+---
+/**
+ * Travel Guide Page (guide.astro)
+ *
+ * Comprehensive guide including:
+ * - Tamil phrases for shopping, directions, greetings
+ * - Restaurant recommendations near venues
+ * - Cultural tips for weddings and temples
+ * - Day-by-day suggestions for free days
+ */
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Card from "../components/Card.astro";
+
+// Tamil phrases organized by category
+const tamilPhrases = {
+  greetings: [
+    { tamil: "Vanakkam", pronunciation: "Vuh-nuh-kum", english: "Hello / Greetings" },
+    { tamil: "Nandri", pronunciation: "Nun-dree", english: "Thank you" },
+    { tamil: "Poitu varuven", pronunciation: "Poy-tu vah-ru-ven", english: "I'll go and come back (goodbye)" },
+    { tamil: "Eppadi irukkinga?", pronunciation: "Ep-puh-di ee-ruk-king-ah", english: "How are you?" },
+    { tamil: "Nalla irukken", pronunciation: "Nuh-la ee-ruk-ken", english: "I'm fine" },
+  ],
+  shopping: [
+    { tamil: "Evvalavu?", pronunciation: "Ev-vuh-luh-vu", english: "How much?" },
+    { tamil: "Romba jaasthi", pronunciation: "Rohm-ba jaas-thi", english: "Too expensive" },
+    { tamil: "Konjam kammi pannunga", pronunciation: "Kon-jum kum-mi pun-nung-ah", english: "Please reduce a little" },
+    { tamil: "Sari, eduthukaren", pronunciation: "Suh-ri eh-doo-thoo-kuh-ren", english: "Okay, I'll take it" },
+    { tamil: "Vena, thanks", pronunciation: "Vay-na thanks", english: "No need, thanks" },
+    { tamil: "Bill poduga", pronunciation: "Bill poh-du-ga", english: "Give me the bill" },
+    { tamil: "Card accept pannuvingala?", pronunciation: "Card accept pun-nu-ving-ah-la", english: "Do you accept card?" },
+  ],
+  directions: [
+    { tamil: "Inga evvalavu dooram?", pronunciation: "Ing-ah ev-vuh-luh-vu doo-rum", english: "How far is it from here?" },
+    { tamil: "Valatu pakam", pronunciation: "Vuh-luh-thu puh-kum", english: "Right side" },
+    { tamil: "Edatu pakam", pronunciation: "Eh-duh-thu puh-kum", english: "Left side" },
+    { tamil: "Nerae ponga", pronunciation: "Nay-ray pohn-ga", english: "Go straight" },
+    { tamil: "Stop pannunga", pronunciation: "Stop pun-nung-ah", english: "Please stop" },
+    { tamil: "Meter podu", pronunciation: "Meter poh-du", english: "Use the meter" },
+  ],
+  food: [
+    { tamil: "Saapadu ready-aa?", pronunciation: "Saa-paa-du ready-ah", english: "Is food ready?" },
+    { tamil: "Kaaramaa venaaam", pronunciation: "Kaa-ruh-maa vay-naam", english: "Not too spicy please" },
+    { tamil: "Tanni kudunga", pronunciation: "Thun-ni ku-dung-ah", english: "Give me water" },
+    { tamil: "Romba nalla irukku", pronunciation: "Rohm-ba nuh-la ee-ruk-ku", english: "Very tasty / Very good" },
+    { tamil: "Vegetarian saapadu", pronunciation: "Vegetarian saa-paa-du", english: "Vegetarian food" },
+  ],
+};
+
+// Restaurant recommendations near venues
+const restaurants = [
+  {
+    name: "Dakshin - ITC Grand Chola",
+    area: "Near Park Hyatt",
+    cuisine: "South Indian Fine Dining",
+    mustTry: "Chettinad Chicken, Appam with Stew",
+    priceRange: "Rs. 2000-3000 for two",
+    note: "Upscale, great for celebration dinner",
+  },
+  {
+    name: "Murugan Idli Shop",
+    area: "Multiple locations (T. Nagar, Mylapore)",
+    cuisine: "Traditional South Indian",
+    mustTry: "Ghee Pongal, Filter Coffee, Idli",
+    priceRange: "Rs. 200-400 for two",
+    note: "Best for authentic breakfast",
+  },
+  {
+    name: "Saravana Bhavan",
+    area: "T. Nagar (near shopping)",
+    cuisine: "Vegetarian South Indian",
+    mustTry: "Thali, Masala Dosa, Rava Kesari",
+    priceRange: "Rs. 400-600 for two",
+    note: "Famous chain, consistent quality",
+  },
+  {
+    name: "Peshawri - ITC Grand Chola",
+    area: "Near Park Hyatt",
+    cuisine: "North Indian / Punjabi",
+    mustTry: "Dal Bukhara, Tandoori Raan",
+    priceRange: "Rs. 3000-4000 for two",
+    note: "Award-winning, must reserve ahead",
+  },
+  {
+    name: "Ratna Cafe",
+    area: "Triplicane (near Mylapore)",
+    cuisine: "Traditional Tamil",
+    mustTry: "Sambar Rice, Curd Rice, Paruppu",
+    priceRange: "Rs. 150-300 for two",
+    note: "Iconic since 1948, cash only",
+  },
+  {
+    name: "Annalakshmi",
+    area: "Anna Salai",
+    cuisine: "Vegetarian Multi-Cuisine",
+    mustTry: "Thali, Paneer dishes",
+    priceRange: "Pay what you feel",
+    note: "Unique concept - pay what you want",
+  },
+  {
+    name: "Buhari",
+    area: "Mount Road",
+    cuisine: "Biryani / Mughlai",
+    mustTry: "Chicken Biryani, Mutton Chops",
+    priceRange: "Rs. 600-900 for two",
+    note: "Chennai's iconic biryani spot since 1951",
+  },
+  {
+    name: "Cream Centre",
+    area: "T. Nagar",
+    cuisine: "Vegetarian Multi-Cuisine",
+    mustTry: "Paneer Tikka, Sizzlers",
+    priceRange: "Rs. 800-1200 for two",
+    note: "Great for when you want variety",
+  },
+];
+
+// Cultural tips
+const culturalTips = {
+  wedding: [
+    "Remove shoes before entering wedding hall/mandapam",
+    "Dress modestly - men in formal kurta/shirt, women in saree/salwar",
+    "Arrive on time for ceremonies - Indian Standard Time (IST) often runs late but don't assume",
+    "Greet elders by touching their feet (optional but appreciated)",
+    "Gift giving: Cash in envelope is traditional (odd numbers like Rs. 5001)",
+    "Photography: Ask before photographing rituals",
+    "Food: Wait for hosts to invite you to eat",
+    "Sit on the floor during ceremonies if asked (chairs usually available)",
+  ],
+  temple: [
+    "Dress code: Covered shoulders and knees required",
+    "Remove footwear before entering (storage usually available)",
+    "Women: Avoid visiting during menstruation (traditional belief)",
+    "Photography often restricted inside sanctum",
+    "Walk clockwise around the sanctum (pradakshina)",
+    "Don't point feet toward deities or people",
+    "Accept prasad (blessed food) with right hand",
+    "Small donations appreciated but not required",
+  ],
+  general: [
+    "Use right hand for eating, giving, and receiving",
+    "Head wobble = yes/okay/understanding (not 'no')",
+    "Bargaining expected at markets but not in malls/fixed price shops",
+    "Tipping: 10% at restaurants, Rs. 20-50 for auto drivers (optional)",
+    "Avoid public displays of affection",
+    "Drinking tap water not recommended - stick to bottled",
+    "Traffic is chaotic - crossing roads takes practice",
+    "Always carry cash - many places don't accept cards",
+  ],
+};
+
+// Day-by-day suggestions for free days
+const freeDays = [
+  {
+    date: "Jan 21 (Wed)",
+    title: "Recovery & Explore Anna Nagar",
+    activities: [
+      "Sleep in - recover from jet lag",
+      "Late breakfast at hotel",
+      "Visit Tower Park if weather is nice",
+      "Evening: Light shopping at VR Chennai mall",
+      "Dinner at a hotel restaurant",
+    ],
+    tip: "Don't overdo it - let your body adjust to the time zone",
+  },
+  {
+    date: "Jan 22 (Thu)",
+    title: "T. Nagar Shopping Day",
+    activities: [
+      "Early start (10 AM) to beat crowds",
+      "Start at Nalli Silks for sarees",
+      "Break for lunch at Saravana Bhavan",
+      "Afternoon: Explore Pondy Bazaar",
+      "Evening: Return to hotel to rest",
+    ],
+    tip: "Wear comfortable shoes - lots of walking!",
+  },
+  {
+    date: "Jan 23 (Fri)",
+    title: "Mylapore Cultural Day",
+    activities: [
+      "Morning: Kapaleeshwarar Temple visit",
+      "Walk through Mylapore tank street",
+      "Traditional lunch at Ratna Cafe",
+      "Afternoon: More shopping at Sundari Silks",
+      "Evening: Carnatic music if available",
+    ],
+    tip: "Temple visits best before 11 AM - less crowded",
+  },
+  {
+    date: "Jan 24 (Sat)",
+    title: "Relaxation Day",
+    activities: [
+      "Morning: Hotel pool/spa time",
+      "Late brunch at hotel",
+      "Afternoon: Rest and prepare for wedding week",
+      "Get wedding outfits ready",
+      "Light dinner - wedding festivities start tomorrow!",
+    ],
+    tip: "Save energy for the wedding events ahead",
+  },
+  {
+    date: "Jan 30 (Thu)",
+    title: "Post-Wedding Recovery",
+    activities: [
+      "Sleep in after cocktail party",
+      "Late breakfast",
+      "Optional: Marina Beach evening walk",
+      "Light shopping for gifts to bring home",
+      "Pack gifts and new purchases",
+    ],
+    tip: "Good day to start organizing your luggage",
+  },
+  {
+    date: "Jan 31 (Fri)",
+    title: "Day Trip: Mahabalipuram Option",
+    activities: [
+      "2-hour drive to Mahabalipuram (optional)",
+      "Shore Temple - UNESCO World Heritage",
+      "Pancha Rathas (Five Chariots)",
+      "Lunch at seafood restaurant by beach",
+      "Return by evening",
+    ],
+    tip: "Book a car with driver through hotel - Rs. 3000-4000 for day",
+  },
+  {
+    date: "Feb 1 (Sat)",
+    title: "Men's Shopping Day",
+    activities: [
+      "Jade Blue for kurtas and sherwanis",
+      "VR Chennai or Phoenix Mall for Western wear",
+      "Lunch at mall food court",
+      "Afternoon: Any remaining souvenir shopping",
+      "Evening: Nice dinner out",
+    ],
+    tip: "Last chance for shopping - stores closed on Sunday for some",
+  },
+  {
+    date: "Feb 2 (Sun)",
+    title: "Chill Sunday",
+    activities: [
+      "Morning: Hotel breakfast",
+      "Visit Guindy National Park (optional)",
+      "San Thome Basilica if interested",
+      "Evening: Pack for departure",
+      "Early dinner at hotel",
+    ],
+    tip: "Start final packing - flight is in 2 days",
+  },
+  {
+    date: "Feb 3 (Mon)",
+    title: "Last Full Day",
+    activities: [
+      "Any last-minute shopping",
+      "Final temple visit if desired",
+      "Farewell lunch with local family",
+      "Evening: Final packing",
+      "Early night - long journey tomorrow",
+    ],
+    tip: "Confirm flight status and airport transfer",
+  },
+];
+---
+
+<BaseLayout title="Travel Guide" description="Essential guide for your Chennai trip - Tamil phrases, restaurants, cultural tips, and day-by-day suggestions">
+  <section class="hero-section">
+    <h1 class="page-title">Chennai Travel Guide</h1>
+    <p class="page-subtitle">Everything you need to know for a smooth trip</p>
+  </section>
+
+  <!-- Quick Navigation -->
+  <nav class="quick-nav">
+    <a href="#tamil" class="nav-chip">Tamil Phrases</a>
+    <a href="#restaurants" class="nav-chip">Restaurants</a>
+    <a href="#cultural" class="nav-chip">Cultural Tips</a>
+    <a href="#free-days" class="nav-chip">Day-by-Day Guide</a>
+  </nav>
+
+  <!-- Tamil Phrases Section -->
+  <section id="tamil" class="guide-section">
+    <h2 class="section-title">
+      <span class="section-icon">🗣️</span>
+      Essential Tamil Phrases
+    </h2>
+    <p class="section-intro">You don't need to be fluent - these phrases will help you connect with locals and navigate daily situations.</p>
+
+    <div class="phrases-grid">
+      {Object.entries(tamilPhrases).map(([category, phrases]) => (
+        <Card class="phrases-card">
+          <h3 class="phrases-category">{category.charAt(0).toUpperCase() + category.slice(1)}</h3>
+          <div class="phrases-list">
+            {phrases.map((phrase) => (
+              <div class="phrase-item">
+                <div class="phrase-tamil">{phrase.tamil}</div>
+                <div class="phrase-pronunciation">{phrase.pronunciation}</div>
+                <div class="phrase-english">{phrase.english}</div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      ))}
+    </div>
+
+    <div class="tip-box">
+      <strong>Pro Tip:</strong> Most people in Chennai understand English, especially in shops and restaurants. But trying even a few Tamil words will earn you smiles and possibly better prices!
+    </div>
+  </section>
+
+  <!-- Restaurants Section -->
+  <section id="restaurants" class="guide-section">
+    <h2 class="section-title">
+      <span class="section-icon">🍽️</span>
+      Restaurant Recommendations
+    </h2>
+    <p class="section-intro">From street food to fine dining - the best places to eat near your venues.</p>
+
+    <div class="restaurants-grid">
+      {restaurants.map((restaurant) => (
+        <Card class="restaurant-card">
+          <div class="restaurant-header">
+            <h3 class="restaurant-name">{restaurant.name}</h3>
+            <span class="restaurant-price">{restaurant.priceRange}</span>
+          </div>
+          <div class="restaurant-area">{restaurant.area}</div>
+          <div class="restaurant-cuisine">{restaurant.cuisine}</div>
+          <div class="restaurant-musttry">
+            <strong>Must Try:</strong> {restaurant.mustTry}
+          </div>
+          <div class="restaurant-note">{restaurant.note}</div>
+        </Card>
+      ))}
+    </div>
+
+    <div class="tip-box">
+      <strong>Food Safety:</strong> Stick to busy restaurants, drink only bottled water, and avoid raw salads at street stalls. Your stomach will thank you!
+    </div>
+  </section>
+
+  <!-- Cultural Tips Section -->
+  <section id="cultural" class="guide-section">
+    <h2 class="section-title">
+      <span class="section-icon">🙏</span>
+      Cultural Tips & Etiquette
+    </h2>
+    <p class="section-intro">Understanding local customs will help you navigate the wedding and your daily experiences.</p>
+
+    <div class="cultural-grid">
+      <Card class="cultural-card wedding">
+        <h3 class="cultural-category">
+          <span class="cultural-icon">💍</span>
+          Wedding Etiquette
+        </h3>
+        <ul class="cultural-list">
+          {culturalTips.wedding.map((tip) => (
+            <li>{tip}</li>
+          ))}
+        </ul>
+      </Card>
+
+      <Card class="cultural-card temple">
+        <h3 class="cultural-category">
+          <span class="cultural-icon">🛕</span>
+          Temple Visits
+        </h3>
+        <ul class="cultural-list">
+          {culturalTips.temple.map((tip) => (
+            <li>{tip}</li>
+          ))}
+        </ul>
+      </Card>
+
+      <Card class="cultural-card general">
+        <h3 class="cultural-category">
+          <span class="cultural-icon">🌏</span>
+          General Customs
+        </h3>
+        <ul class="cultural-list">
+          {culturalTips.general.map((tip) => (
+            <li>{tip}</li>
+          ))}
+        </ul>
+      </Card>
+    </div>
+  </section>
+
+  <!-- Day-by-Day Section -->
+  <section id="free-days" class="guide-section">
+    <h2 class="section-title">
+      <span class="section-icon">📅</span>
+      Day-by-Day Suggestions
+    </h2>
+    <p class="section-intro">Ideas for your free days (non-wedding days). Adjust based on energy levels and interests!</p>
+
+    <div class="days-timeline">
+      {freeDays.map((day, index) => (
+        <div class="day-card" style={`--delay: ${index * 0.1}s`}>
+          <div class="day-header">
+            <span class="day-date">{day.date}</span>
+            <h3 class="day-title">{day.title}</h3>
+          </div>
+          <ul class="day-activities">
+            {day.activities.map((activity) => (
+              <li>{activity}</li>
+            ))}
+          </ul>
+          <div class="day-tip">
+            <strong>Tip:</strong> {day.tip}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Emergency Info -->
+  <section class="guide-section">
+    <h2 class="section-title">
+      <span class="section-icon">🆘</span>
+      Emergency Information
+    </h2>
+
+    <div class="emergency-grid">
+      <Card class="emergency-card">
+        <h3>Emergency Numbers</h3>
+        <ul class="emergency-list">
+          <li><strong>Police:</strong> 100</li>
+          <li><strong>Ambulance:</strong> 108</li>
+          <li><strong>Fire:</strong> 101</li>
+          <li><strong>Tourist Helpline:</strong> 1363</li>
+        </ul>
+      </Card>
+
+      <Card class="emergency-card">
+        <h3>US Embassy Chennai</h3>
+        <ul class="emergency-list">
+          <li><strong>Address:</strong> 220 Anna Salai</li>
+          <li><strong>Phone:</strong> +91-44-2857-4000</li>
+          <li><strong>Emergency:</strong> +91-44-2857-4242</li>
+        </ul>
+      </Card>
+
+      <Card class="emergency-card">
+        <h3>Hospitals Near Park Hyatt</h3>
+        <ul class="emergency-list">
+          <li><strong>Apollo Hospital:</strong> 044-2829-0200</li>
+          <li><strong>Fortis Malar:</strong> 044-4289-2288</li>
+        </ul>
+      </Card>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero-section {
+    text-align: center;
+    padding: var(--spacing-8) 0;
+    margin-bottom: var(--spacing-6);
+  }
+
+  .page-title {
+    font-size: var(--font-size-4xl);
+    color: var(--color-earth-900);
+    margin: 0 0 var(--spacing-2) 0;
+  }
+
+  .page-subtitle {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  /* Quick Navigation */
+  .quick-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-8);
+    padding: var(--spacing-4);
+    background-color: var(--color-bg-secondary);
+    border-radius: var(--radius-card);
+  }
+
+  .nav-chip {
+    padding: var(--spacing-2) var(--spacing-4);
+    background-color: var(--color-bg-card);
+    color: var(--color-earth-800);
+    border: 1px solid var(--color-border);
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    transition: all 0.2s ease;
+  }
+
+  .nav-chip:hover {
+    background-color: var(--color-gold-500);
+    color: white;
+    border-color: var(--color-gold-500);
+  }
+
+  /* Guide Sections */
+  .guide-section {
+    margin-bottom: var(--spacing-12);
+    scroll-margin-top: var(--spacing-4);
+  }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    font-size: var(--font-size-2xl);
+    color: var(--color-earth-900);
+    margin-bottom: var(--spacing-3);
+  }
+
+  .section-icon {
+    font-size: var(--font-size-2xl);
+  }
+
+  .section-intro {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-6);
+    max-width: 700px;
+  }
+
+  /* Phrases */
+  .phrases-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-4);
+  }
+
+  .phrases-category {
+    font-size: var(--font-size-lg);
+    color: var(--color-gold-700);
+    margin: 0 0 var(--spacing-4) 0;
+    padding-bottom: var(--spacing-2);
+    border-bottom: 2px solid var(--color-gold-200);
+  }
+
+  .phrase-item {
+    padding: var(--spacing-3) 0;
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .phrase-item:last-child {
+    border-bottom: none;
+  }
+
+  .phrase-tamil {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-earth-900);
+  }
+
+  .phrase-pronunciation {
+    font-size: var(--font-size-sm);
+    color: var(--color-gold-600);
+    font-style: italic;
+  }
+
+  .phrase-english {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  /* Tip Box */
+  .tip-box {
+    margin-top: var(--spacing-6);
+    padding: var(--spacing-4);
+    background-color: var(--color-gold-50);
+    border-left: 4px solid var(--color-gold-500);
+    border-radius: 0 var(--radius-card) var(--radius-card) 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-earth-800);
+  }
+
+  /* Restaurants */
+  .restaurants-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-4);
+  }
+
+  .restaurant-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-2);
+  }
+
+  .restaurant-name {
+    font-size: var(--font-size-lg);
+    color: var(--color-earth-900);
+    margin: 0;
+  }
+
+  .restaurant-price {
+    font-size: var(--font-size-xs);
+    color: var(--color-gold-700);
+    background-color: var(--color-gold-100);
+    padding: 2px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+  }
+
+  .restaurant-area {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-1);
+  }
+
+  .restaurant-cuisine {
+    font-size: var(--font-size-sm);
+    color: var(--color-gold-600);
+    font-weight: var(--font-weight-medium);
+    margin-bottom: var(--spacing-2);
+  }
+
+  .restaurant-musttry {
+    font-size: var(--font-size-sm);
+    color: var(--color-earth-800);
+    margin-bottom: var(--spacing-2);
+  }
+
+  .restaurant-note {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+
+  /* Cultural Tips */
+  .cultural-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-4);
+  }
+
+  .cultural-category {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-size: var(--font-size-lg);
+    color: var(--color-earth-900);
+    margin: 0 0 var(--spacing-4) 0;
+  }
+
+  .cultural-icon {
+    font-size: var(--font-size-xl);
+  }
+
+  .cultural-list {
+    margin: 0;
+    padding-left: var(--spacing-5);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.8;
+  }
+
+  .cultural-list li {
+    margin-bottom: var(--spacing-2);
+  }
+
+  /* Day by Day */
+  .days-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+  }
+
+  .day-card {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    padding: var(--spacing-5);
+    border-left: 4px solid var(--color-gold-500);
+  }
+
+  .day-header {
+    margin-bottom: var(--spacing-3);
+  }
+
+  .day-date {
+    font-size: var(--font-size-sm);
+    color: var(--color-gold-600);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .day-title {
+    font-size: var(--font-size-lg);
+    color: var(--color-earth-900);
+    margin: var(--spacing-1) 0 0 0;
+  }
+
+  .day-activities {
+    margin: 0 0 var(--spacing-3) 0;
+    padding-left: var(--spacing-5);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.8;
+  }
+
+  .day-tip {
+    font-size: var(--font-size-sm);
+    color: var(--color-earth-700);
+    background-color: var(--color-bg-secondary);
+    padding: var(--spacing-3);
+    border-radius: var(--radius-sm);
+  }
+
+  /* Emergency */
+  .emergency-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-4);
+  }
+
+  .emergency-card h3 {
+    font-size: var(--font-size-base);
+    color: var(--color-earth-900);
+    margin: 0 0 var(--spacing-3) 0;
+  }
+
+  .emergency-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .emergency-list li {
+    margin-bottom: var(--spacing-2);
+  }
+
+  /* Responsive */
+  @media (max-width: 767px) {
+    .page-title {
+      font-size: var(--font-size-3xl);
+    }
+
+    .phrases-grid,
+    .restaurants-grid,
+    .cultural-grid,
+    .emergency-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

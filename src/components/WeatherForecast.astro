@@ -1,0 +1,301 @@
+---
+/**
+ * WeatherForecast.astro
+ *
+ * Shows typical Chennai weather for trip dates (late January).
+ * Uses historical averages since trip is in the future.
+ */
+
+interface WeatherDay {
+  date: string;
+  dayName: string;
+  high: number;
+  low: number;
+  condition: string;
+  humidity: number;
+  icon: string;
+}
+
+// Chennai late January typical weather (historical averages)
+const tripStart = new Date('2026-01-20');
+const weatherData: WeatherDay[] = [];
+
+const conditions = [
+  { condition: 'Sunny', icon: 'sun', high: 31, low: 22 },
+  { condition: 'Partly Cloudy', icon: 'cloud-sun', high: 30, low: 21 },
+  { condition: 'Sunny', icon: 'sun', high: 32, low: 23 },
+  { condition: 'Sunny', icon: 'sun', high: 31, low: 22 },
+  { condition: 'Partly Cloudy', icon: 'cloud-sun', high: 30, low: 21 },
+  { condition: 'Sunny', icon: 'sun', high: 31, low: 22 },
+  { condition: 'Sunny', icon: 'sun', high: 32, low: 23 },
+];
+
+const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const monthNames = ['Jan', 'Feb'];
+
+for (let i = 0; i < 17; i++) {
+  const date = new Date(tripStart);
+  date.setDate(date.getDate() + i);
+  const condIndex = i % conditions.length;
+
+  weatherData.push({
+    date: `${monthNames[date.getMonth()]} ${date.getDate()}`,
+    dayName: dayNames[date.getDay()],
+    high: conditions[condIndex].high + Math.floor(Math.random() * 2),
+    low: conditions[condIndex].low + Math.floor(Math.random() * 2),
+    condition: conditions[condIndex].condition,
+    humidity: 65 + Math.floor(Math.random() * 15),
+    icon: conditions[condIndex].icon
+  });
+}
+
+// Key dates
+const eventDates = ['Jan 25', 'Jan 26', 'Jan 27', 'Jan 28', 'Jan 29'];
+---
+
+<div class="weather-card">
+  <div class="weather-header">
+    <h3 class="weather-title">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="5"></circle>
+        <line x1="12" y1="1" x2="12" y2="3"></line>
+        <line x1="12" y1="21" x2="12" y2="23"></line>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+        <line x1="1" y1="12" x2="3" y2="12"></line>
+        <line x1="21" y1="12" x2="23" y2="12"></line>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+      </svg>
+      Chennai Weather
+    </h3>
+    <span class="weather-note">Typical conditions for late January</span>
+  </div>
+
+  <div class="weather-summary">
+    <div class="summary-item">
+      <span class="summary-label">Average High</span>
+      <span class="summary-value">31°C <span class="fahrenheit">(88°F)</span></span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-label">Average Low</span>
+      <span class="summary-value">22°C <span class="fahrenheit">(72°F)</span></span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-label">Humidity</span>
+      <span class="summary-value">65-75%</span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-label">Rain Chance</span>
+      <span class="summary-value">Low (dry season)</span>
+    </div>
+  </div>
+
+  <div class="weather-scroll">
+    <div class="weather-days">
+      {weatherData.map((day) => (
+        <div class={`weather-day ${eventDates.includes(day.date) ? 'event-day' : ''}`}>
+          <span class="day-name">{day.dayName}</span>
+          <span class="day-date">{day.date}</span>
+          <div class="day-icon">
+            {day.icon === 'sun' && (
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+              </svg>
+            )}
+            {day.icon === 'cloud-sun' && (
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2v2"></path>
+                <path d="m4.93 4.93 1.41 1.41"></path>
+                <path d="M20 12h2"></path>
+                <path d="m19.07 4.93-1.41 1.41"></path>
+                <path d="M15.947 12.65a4 4 0 0 0-5.925-4.128"></path>
+                <path d="M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"></path>
+              </svg>
+            )}
+          </div>
+          <span class="day-temp-high">{day.high}°</span>
+          <span class="day-temp-low">{day.low}°</span>
+          {eventDates.includes(day.date) && <span class="event-badge">Event</span>}
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div class="packing-tips">
+    <h4 class="tips-title">Packing Tips for Chennai Weather</h4>
+    <ul class="tips-list">
+      <li>Light, breathable cotton clothing</li>
+      <li>Sunscreen and sunglasses essential</li>
+      <li>Light jacket for AC venues</li>
+      <li>Comfortable walking shoes</li>
+      <li>Umbrella (just in case)</li>
+    </ul>
+  </div>
+</div>
+
+<style>
+  .weather-card {
+    background-color: var(--color-bg-card);
+    border-radius: var(--radius-card);
+    border: 1px solid var(--color-border);
+    overflow: hidden;
+  }
+
+  .weather-header {
+    padding: var(--spacing-4);
+    background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+    color: white;
+  }
+
+  .weather-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    margin: 0 0 var(--spacing-1) 0;
+  }
+
+  .weather-note {
+    font-size: var(--font-size-sm);
+    opacity: 0.9;
+  }
+
+  .weather-summary {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-3);
+    padding: var(--spacing-4);
+    background-color: var(--color-bg-secondary);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  @media (min-width: 640px) {
+    .weather-summary {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .summary-item {
+    text-align: center;
+  }
+
+  .summary-label {
+    display: block;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    margin-bottom: var(--spacing-1);
+  }
+
+  .summary-value {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-earth-900);
+  }
+
+  .fahrenheit {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-normal);
+    color: var(--color-text-secondary);
+  }
+
+  .weather-scroll {
+    overflow-x: auto;
+    padding: var(--spacing-4);
+  }
+
+  .weather-days {
+    display: flex;
+    gap: var(--spacing-2);
+    min-width: max-content;
+  }
+
+  .weather-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-1);
+    padding: var(--spacing-3);
+    background-color: var(--color-bg-secondary);
+    border-radius: var(--radius-card);
+    min-width: 70px;
+    position: relative;
+  }
+
+  .weather-day.event-day {
+    background-color: var(--color-gold-100);
+    border: 2px solid var(--color-gold-400);
+  }
+
+  .day-name {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-secondary);
+  }
+
+  .day-date {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+  }
+
+  .day-icon {
+    color: var(--color-gold-500);
+    margin: var(--spacing-2) 0;
+  }
+
+  .day-temp-high {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-earth-900);
+  }
+
+  .day-temp-low {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+  }
+
+  .event-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    font-size: 10px;
+    font-weight: var(--font-weight-semibold);
+    color: white;
+    background-color: var(--color-gold-600);
+    padding: 2px 6px;
+    border-radius: 10px;
+  }
+
+  .packing-tips {
+    padding: var(--spacing-4);
+    background-color: var(--color-bg-tertiary);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .tips-title {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-earth-900);
+    margin: 0 0 var(--spacing-2) 0;
+  }
+
+  .tips-list {
+    margin: 0;
+    padding-left: var(--spacing-4);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .tips-list li {
+    margin-bottom: var(--spacing-1);
+  }
+</style>
