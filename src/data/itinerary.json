@@ -246,13 +246,20 @@
         },
         {
           "id": "pack-checkout",
-          "time": null,
-          "title": "Pack for Bangalore",
-          "description": "Prepare luggage for tomorrow's checkout",
+          "time": "20:00",
+          "title": "Pack & Prepare",
+          "description": "Pack luggage, book taxi for 5:00 AM pickup to Chennai Central",
+          "type": "logistics"
+        },
+        {
+          "id": "early-sleep",
+          "time": "21:00",
+          "title": "Early Night",
+          "description": "Sleep early - 4:30 AM wake-up for train",
           "type": "logistics"
         }
       ],
-      "notes": "Last night at Hyatt Regency Chennai"
+      "notes": "Last night at Hyatt Regency. IMPORTANT: Book taxi tonight for 5:00 AM pickup. Train departs 5:50 AM!"
     },
     {
       "date": "2026-02-01",
@@ -260,28 +267,35 @@
       "title": "Travel to Bangalore",
       "activities": [
         {
-          "id": "hyatt-checkout",
-          "time": "12:00",
-          "title": "Checkout Hyatt Regency",
-          "description": "Check out of Hyatt Regency Chennai",
+          "id": "early-checkout",
+          "time": "04:30",
+          "title": "Early Checkout & Taxi",
+          "description": "Check out of Hyatt Regency Chennai. Taxi to MGR Chennai Central (6.5 km, ~15-20 min). Book taxi the night before.",
           "type": "logistics"
         },
         {
-          "id": "vande-bharat-blr",
-          "time": null,
-          "title": "Vande Bharat Train",
-          "description": "Train 20607 MYS VANDEBHARAT from Chennai (MAS) to Bangalore (SBC). PNR: 4938634702. Executive Class - Austin: E2/28 Window, Monica: E2/27 Aisle.",
+          "id": "vande-bharat-depart",
+          "time": "05:50",
+          "title": "Vande Bharat Departs",
+          "description": "Train 20607 MYS VANDEBHARAT departs Chennai Central. PNR: 4938634702. Austin: E2/28 Window, Monica: E2/27 Aisle.",
+          "type": "travel"
+        },
+        {
+          "id": "vande-bharat-arrive",
+          "time": "10:00",
+          "title": "Arrive Bangalore",
+          "description": "Arrive at KSR Bengaluru station. Breakfast included on train (Austin: Non-Veg, Monica: Veg/Diabetic).",
           "type": "travel"
         },
         {
           "id": "blr-checkin",
-          "time": null,
-          "title": "Arrive Bangalore",
-          "description": "Arrive at KSR Bengaluru station, check into accommodation",
+          "time": "11:00",
+          "title": "Check into Accommodation",
+          "description": "Check into Bangalore accommodation, settle in",
           "type": "logistics"
         }
       ],
-      "notes": "Vande Bharat: ~2.5 hrs, 362 km. Catering included (Austin: Non-Veg, Monica: Veg/Diabetic)"
+      "notes": "EARLY START! Leave Hyatt by 5:00 AM latest. Train journey: 4h 10m, 362 km."
     },
     {
       "date": "2026-02-02",

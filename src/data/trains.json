@@ -11,17 +11,28 @@
       "trainName": "MYS VANDEBHARAT",
       "class": "EXECUTIVE CLASS (EC)",
       "date": "2026-02-01",
-      "from": {
+      "departure": {
+        "time": "05:50",
         "station": "MGR CHENNAI CTL",
         "code": "MAS",
         "city": "Chennai"
       },
-      "to": {
+      "arrival": {
+        "time": "10:00",
         "station": "KSR BENGALURU",
         "code": "SBC",
         "city": "Bangalore"
       },
+      "duration": "4h 10m",
       "distance": "362 KM",
+      "transferToStation": {
+        "from": "Hyatt Regency Chennai",
+        "to": "MGR Chennai Central",
+        "distance": "6.5 km",
+        "estimatedTime": "15-20 min by taxi",
+        "recommendedDeparture": "05:00",
+        "notes": "Book taxi night before. Early morning traffic is light."
+      },
       "quota": "GENERAL (GN)",
       "bookingDate": "2026-01-10",
       "transactionId": "100006297130396",
