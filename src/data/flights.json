@@ -99,10 +99,23 @@
         {
           "name": "Ms. Monica Govindarajan",
           "seat": null,
-          "services": []
+          "services": ["International Connection Baggage 8kg"]
         }
       ],
-      "notes": "Connecting flight to Emirates EK547 (21:45). Check-in closes at 13:40. Allow time for terminal transfer at Chennai."
+      "fareType": "Super 6E Fare",
+      "baggage": {
+        "checkedBaggage": "20kg per person (1 piece only)",
+        "handBaggage": "7kg, 115cm (L+W+H) - or 12kg for Stretch/Stretch+",
+        "internationalConnection": "8kg extra per passenger",
+        "excessCharges": "INR 700/kg at airport"
+      },
+      "checkInPolicy": {
+        "counterCloses": "60 minutes before departure",
+        "boardingGateCloses": "25 minutes before departure",
+        "webCheckIn": "Not available for cards issued outside India",
+        "idRequired": "Valid photo ID in original required"
+      },
+      "notes": "Connecting to Emirates EK547 (21:45). ~6hr layover at Chennai. Bring printed/soft copy of boarding pass. Tag heavy suitcases with name + PNR on thick paper."
     }
   ]
 }
