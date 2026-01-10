@@ -125,6 +125,73 @@ export interface LegacyFlightsData {
 }
 
 // ============================================================================
+// Train Types
+// ============================================================================
+
+export interface TrainStation {
+  time: string; // 24-hour format: HH:MM
+  station: string;
+  code: string;
+  city: string;
+}
+
+export interface TrainTransfer {
+  from: string;
+  to: string;
+  distance: string;
+  estimatedTime: string;
+  recommendedDeparture: string;
+  notes: string;
+}
+
+export interface TrainPassenger {
+  name: string;
+  age: number;
+  gender: string;
+  seat: string;
+  position: string;
+  catering: string;
+  status: string;
+}
+
+export interface TrainFare {
+  ticketFare: number;
+  cateringCharges: number;
+  convenienceFee: number;
+  totalFare: number;
+  currency: string;
+}
+
+export interface TrainBooking {
+  id: string;
+  pnr: string;
+  trainNumber: string;
+  trainName: string;
+  class: string;
+  date: string;
+  departure: TrainStation;
+  arrival: TrainStation;
+  duration: string;
+  distance: string;
+  transferToStation: TrainTransfer;
+  quota: string;
+  bookingDate: string;
+  transactionId: string;
+  passengers: TrainPassenger[];
+  fare: TrainFare;
+  notes: string;
+  status: string;
+}
+
+export interface TrainsData {
+  _meta: {
+    description: string;
+    lastUpdated: string;
+  };
+  bookings: TrainBooking[];
+}
+
+// ============================================================================
 // Event Types
 // ============================================================================
 

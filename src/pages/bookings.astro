@@ -2,15 +2,17 @@
 /**
  * Bookings Page (bookings.astro)
  *
- * Purpose: Display all travel bookings including flights, visa, and accommodation.
+ * Purpose: Display all travel bookings including flights, trains, visa, and accommodation.
  *
  * Sections:
- * - Flights: Emirates confirmation and all 4 flight segments
+ * - Flights: Emirates + IndiGo confirmation and all flight segments
+ * - Trains: Vande Bharat booking with PNR and passenger details
  * - Visa: ETA details and status
- * - Accommodation: Hotel information
+ * - Accommodation: All hotel/stay information
  *
  * Data Sources:
  * - flights.json: Flight booking details
+ * - trains.json: Train booking details
  * - travelers.json: Visa information
  * - accommodation.json: Hotel details
  */
@@ -21,13 +23,15 @@ import Badge from "../components/Badge.astro";
 import FlightCard from "../components/FlightCard.astro";
 
 import flightsData from "../data/flights.json";
+import trainsData from "../data/trains.json";
 import travelersData from "../data/travelers.json";
 import accommodationData from "../data/accommodation.json";
 
-import type { FlightsData, TravelersData, AccommodationData, FlightSegment, FlightBooking } from "../types/data";
+import type { FlightsData, TrainsData, TravelersData, AccommodationData, FlightSegment, FlightBooking, Accommodation } from "../types/data";
 
 // Type assertions
 const flights = flightsData as FlightsData;
+const trains = trainsData as TrainsData;
 const travelers = travelersData as TravelersData;
 const accommodations = accommodationData as AccommodationData;
 
@@ -35,13 +39,16 @@ const accommodations = accommodationData as AccommodationData;
 const traveler = travelers.travelers[0];
 const visa = traveler.visa;
 
-// Get the primary accommodation
-const hotel = accommodations.accommodations[0];
+// Get all accommodations
+const allAccommodations = accommodations.accommodations;
 
-// Get all bookings
+// Get all flight bookings
 const allBookings = flights.bookings;
 const emiratesBooking = allBookings.find((b: FlightBooking) => b.airline === "Emirates");
 const indigoBooking = allBookings.find((b: FlightBooking) => b.airline === "IndiGo");
+
+// Get train booking
+const trainBooking = trains.bookings[0];
 
 // Group Emirates flights by direction
 const outboundFlights = emiratesBooking?.segments.filter((s: FlightSegment) => s.direction === "outbound") || [];
@@ -54,6 +61,25 @@ function formatDate(dateStr: string): string {
     month: "long",
     day: "numeric",
     year: "numeric",
+  });
+}
+
+// Format time for display (24h to 12h conversion)
+function formatTime(time: string): string {
+  const [hours, minutes] = time.split(":");
+  const hour = parseInt(hours, 10);
+  const ampm = hour >= 12 ? "PM" : "AM";
+  const displayHour = hour % 12 || 12;
+  return `${displayHour}:${minutes} ${ampm}`;
+}
+
+// Format short date for display
+function formatShortDate(dateStr: string): string {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
   });
 }
 
@@ -89,9 +115,60 @@ function getAccommodationStatusText(status: string): string {
   <header class="page-header">
     <h1 class="page-title">Bookings</h1>
     <p class="page-description">
-      All your travel arrangements in one place: flights, visa, and accommodation.
+      All your travel arrangements in one place: flights, trains, visa, and accommodation.
     </p>
   </header>
+
+  <!-- Quick Actions -->
+  <section class="quick-actions">
+    <h2 class="quick-actions-title">Quick Links</h2>
+    <div class="action-grid">
+      {emiratesBooking && (
+        <a href={`https://www.emirates.com/us/english/manage-booking/`} target="_blank" rel="noopener noreferrer" class="action-card emirates">
+          <span class="action-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"></path>
+            </svg>
+          </span>
+          <span class="action-label">Emirates</span>
+          <span class="action-code">{emiratesBooking.confirmationCode}</span>
+        </a>
+      )}
+      {indigoBooking && (
+        <a href={`https://www.goindigo.in/web-check-in.html`} target="_blank" rel="noopener noreferrer" class="action-card indigo">
+          <span class="action-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"></path>
+            </svg>
+          </span>
+          <span class="action-label">IndiGo</span>
+          <span class="action-code">{indigoBooking.confirmationCode}</span>
+        </a>
+      )}
+      {trainBooking && (
+        <a href={`https://www.irctc.co.in/online-charts/pnr-enquiry/${trainBooking.pnr}`} target="_blank" rel="noopener noreferrer" class="action-card train-link">
+          <span class="action-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="3" width="16" height="16" rx="2"></rect>
+              <path d="M4 11h16"></path>
+            </svg>
+          </span>
+          <span class="action-label">Train PNR</span>
+          <span class="action-code">{trainBooking.pnr}</span>
+        </a>
+      )}
+      <a href="https://indianvisaonline.gov.in/evisa/Registration" target="_blank" rel="noopener noreferrer" class="action-card visa-link">
+        <span class="action-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+          </svg>
+        </span>
+        <span class="action-label">e-Visa</span>
+        <span class="action-code">{visa.etaNumber.slice(-8)}</span>
+      </a>
+    </div>
+  </section>
 
   <!-- Flights Section -->
   <section class="section">
@@ -238,6 +315,112 @@ function getAccommodationStatusText(status: string): string {
     )}
   </section>
 
+  <!-- Train Section -->
+  {trainBooking && (
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <span class="section-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="3" width="16" height="16" rx="2"></rect>
+              <path d="M4 11h16"></path>
+              <path d="M12 3v8"></path>
+              <path d="m8 19-2 3"></path>
+              <path d="m18 22-2-3"></path>
+              <path d="M8 15h0"></path>
+              <path d="M16 15h0"></path>
+            </svg>
+          </span>
+          Train
+        </h2>
+        <Badge variant="confirmed" size="md">Confirmed</Badge>
+      </div>
+
+      <Card class="confirmation-card train">
+        <div class="confirmation-content">
+          <div class="confirmation-info">
+            <span class="confirmation-label">PNR Number</span>
+            <span class="confirmation-code">{trainBooking.pnr}</span>
+          </div>
+          <div class="airline-logo">
+            <span class="airline-name">{trainBooking.trainName}</span>
+          </div>
+        </div>
+      </Card>
+
+      <Card>
+        <div class="train-content">
+          <div class="train-header">
+            <div class="train-info">
+              <Badge variant="info" size="md">{trainBooking.trainNumber}</Badge>
+              <span class="train-class">{trainBooking.class}</span>
+            </div>
+            <span class="train-date">{formatShortDate(trainBooking.date)}</span>
+          </div>
+
+          <div class="train-route">
+            <div class="route-point">
+              <span class="station-code">{trainBooking.departure.code}</span>
+              <span class="station-name">{trainBooking.departure.station}</span>
+              <span class="time">{formatTime(trainBooking.departure.time)}</span>
+            </div>
+
+            <div class="route-line train-route-line">
+              <div class="line"></div>
+              <svg class="train-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 3L12 7L16 3"></path>
+                <path d="M12 7V21"></path>
+              </svg>
+              <span class="duration">{trainBooking.duration} • {trainBooking.distance}</span>
+            </div>
+
+            <div class="route-point">
+              <span class="station-code">{trainBooking.arrival.code}</span>
+              <span class="station-name">{trainBooking.arrival.station}</span>
+              <span class="time">{formatTime(trainBooking.arrival.time)}</span>
+            </div>
+          </div>
+
+          <div class="booking-details">
+            <div class="detail-section">
+              <h4>Passengers</h4>
+              <ul class="passenger-list">
+                {trainBooking.passengers.map((p) => (
+                  <li>
+                    <div class="passenger-row">
+                      <strong>{p.name}</strong>
+                      <span class="seat-badge train-seat">Seat {p.seat}</span>
+                      <span class="position-badge">{p.position}</span>
+                    </div>
+                    <div class="catering-info">Meal: {p.catering}</div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div class="detail-section">
+              <h4>Transfer to Station</h4>
+              <ul class="transfer-list">
+                <li><strong>From:</strong> {trainBooking.transferToStation.from}</li>
+                <li><strong>To:</strong> {trainBooking.transferToStation.to}</li>
+                <li><strong>Distance:</strong> {trainBooking.transferToStation.distance}</li>
+                <li><strong>Travel Time:</strong> {trainBooking.transferToStation.estimatedTime}</li>
+                <li><strong>Leave Hotel By:</strong> <span class="highlight-time">{formatTime(trainBooking.transferToStation.recommendedDeparture)}</span></li>
+              </ul>
+              <p class="transfer-note">{trainBooking.transferToStation.notes}</p>
+            </div>
+          </div>
+
+          {trainBooking.notes && (
+            <div class="booking-notes">
+              <strong>Note:</strong> {trainBooking.notes}
+            </div>
+          )}
+        </div>
+      </Card>
+    </section>
+  )}
+
   <!-- Visa Section -->
   <section class="section">
     <div class="section-header">
@@ -316,62 +499,175 @@ function getAccommodationStatusText(status: string): string {
         </span>
         Accommodation
       </h2>
-      <Badge variant={getAccommodationStatusVariant(hotel.status)} size="md">
-        {getAccommodationStatusText(hotel.status)}
-      </Badge>
     </div>
 
-    <Card>
-      <div class="accommodation-content">
-        <div class="accommodation-header">
-          <h3 class="hotel-name">{hotel.name}</h3>
-          <p class="hotel-location">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-              <circle cx="12" cy="10" r="3"></circle>
-            </svg>
-            {hotel.area}, {hotel.city}
-          </p>
-        </div>
+    <div class="accommodation-list">
+      {allAccommodations.map((accommodation: Accommodation) => (
+        <Card>
+          <div class="accommodation-content">
+            <div class="accommodation-header">
+              <div class="accommodation-title-row">
+                <h3 class="hotel-name">{accommodation.name}</h3>
+                <Badge variant={getAccommodationStatusVariant(accommodation.status)} size="sm">
+                  {getAccommodationStatusText(accommodation.status)}
+                </Badge>
+              </div>
+              <p class="hotel-location">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                {accommodation.area}, {accommodation.city}
+              </p>
+            </div>
 
-        {hotel.notes && (
-          <div class="accommodation-notes">
-            <p class="hotel-notes">{hotel.notes}</p>
-          </div>
-        )}
+            {(accommodation.checkIn || accommodation.checkOut) && (
+              <div class="accommodation-dates">
+                {accommodation.checkIn && (
+                  <div class="date-item">
+                    <span class="date-label">Check-in</span>
+                    <span class="date-value">{formatShortDate(accommodation.checkIn)}</span>
+                  </div>
+                )}
+                {accommodation.checkOut && (
+                  <div class="date-item">
+                    <span class="date-label">Check-out</span>
+                    <span class="date-value">{formatShortDate(accommodation.checkOut)}</span>
+                  </div>
+                )}
+              </div>
+            )}
 
-        {hotel.contact?.website && (
-          <div class="accommodation-actions">
-            <a href={hotel.contact.website} target="_blank" rel="noopener noreferrer" class="hotel-link">
-              View Hotel Website
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                <polyline points="15 3 21 3 21 9"></polyline>
-                <line x1="10" y1="14" x2="21" y2="3"></line>
-              </svg>
-            </a>
-          </div>
-        )}
+            {accommodation.confirmationNumber && (
+              <div class="confirmation-row">
+                <span class="confirmation-label-small">Confirmation #:</span>
+                <span class="confirmation-value">{accommodation.confirmationNumber}</span>
+              </div>
+            )}
 
-        {hotel.status === "considering" && (
-          <div class="status-notice">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="12" y1="8" x2="12" y2="12"></line>
-              <line x1="12" y1="16" x2="12.01" y2="16"></line>
-            </svg>
-            <span>This accommodation is under consideration and has not been booked yet.</span>
+            {accommodation.notes && (
+              <div class="accommodation-notes">
+                <p class="hotel-notes">{accommodation.notes}</p>
+              </div>
+            )}
+
+            {accommodation.amenities && accommodation.amenities.length > 0 && (
+              <div class="amenities-list">
+                {accommodation.amenities.map((amenity: string) => (
+                  <span class="amenity-tag">{amenity}</span>
+                ))}
+              </div>
+            )}
+
+            {accommodation.contact?.website && (
+              <div class="accommodation-actions">
+                <a href={accommodation.contact.website} target="_blank" rel="noopener noreferrer" class="hotel-link">
+                  View Hotel Website
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                  </svg>
+                </a>
+              </div>
+            )}
+
+            {accommodation.status === "considering" && (
+              <div class="status-notice">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <span>This accommodation is under consideration and has not been booked yet.</span>
+              </div>
+            )}
           </div>
-        )}
-      </div>
-    </Card>
+        </Card>
+      ))}
+    </div>
   </section>
 </BaseLayout>
 
 <style>
   /* Page Header */
   .page-header {
+    margin-bottom: var(--spacing-6);
+  }
+
+  /* Quick Actions */
+  .quick-actions {
     margin-bottom: var(--spacing-8);
+  }
+
+  .quick-actions-title {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: var(--spacing-3);
+  }
+
+  .action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--spacing-3);
+  }
+
+  .action-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-4);
+    border-radius: var(--radius-card);
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-align: center;
+    min-height: 100px;
+  }
+
+  .action-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  .action-card.emirates {
+    background: linear-gradient(135deg, #c4a35a 0%, #8b7235 100%);
+    color: white;
+  }
+
+  .action-card.indigo {
+    background: linear-gradient(135deg, #0033a0 0%, #002266 100%);
+    color: white;
+  }
+
+  .action-card.train-link {
+    background: linear-gradient(135deg, #1a5f7a 0%, #0d3d4d 100%);
+    color: white;
+  }
+
+  .action-card.visa-link {
+    background: linear-gradient(135deg, #2d5a27 0%, #1a3518 100%);
+    color: white;
+  }
+
+  .action-icon {
+    margin-bottom: var(--spacing-2);
+    opacity: 0.9;
+  }
+
+  .action-label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    margin-bottom: var(--spacing-1);
+  }
+
+  .action-code {
+    font-size: var(--font-size-xs);
+    font-family: monospace;
+    opacity: 0.9;
+    letter-spacing: 0.05em;
   }
 
   .page-title {
@@ -718,8 +1014,246 @@ function getAccommodationStatusText(status: string): string {
     color: var(--color-orange-800);
   }
 
+  /* Train Section */
+  .confirmation-card.train {
+    background: linear-gradient(135deg, #1a5f7a 0%, #0d3d4d 100%);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .train-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+  }
+
+  .train-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: var(--spacing-3);
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .train-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+  }
+
+  .train-class {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .train-date {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .train-route {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-4);
+    padding: var(--spacing-4) 0;
+  }
+
+  .station-code {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-earth-900);
+    line-height: 1;
+  }
+
+  .station-name {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    margin: var(--spacing-1) 0;
+    max-width: 120px;
+  }
+
+  .train-route-line {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-1);
+  }
+
+  .train-icon {
+    color: #1a5f7a;
+    margin: var(--spacing-1) 0;
+  }
+
+  .train-seat {
+    background-color: #1a5f7a !important;
+  }
+
+  .position-badge {
+    display: inline-block;
+    background-color: var(--color-cream-100);
+    color: var(--color-earth-700);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: var(--font-size-xs);
+    margin-left: var(--spacing-2);
+  }
+
+  .passenger-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-2);
+  }
+
+  .catering-info {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    margin-top: var(--spacing-1);
+  }
+
+  .transfer-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .transfer-list li {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-2);
+  }
+
+  .highlight-time {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-orange-600);
+  }
+
+  .transfer-note {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    font-style: italic;
+    margin-top: var(--spacing-2);
+  }
+
+  /* Accommodation List */
+  .accommodation-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+  }
+
+  .accommodation-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-3);
+    flex-wrap: wrap;
+  }
+
+  .accommodation-dates {
+    display: flex;
+    gap: var(--spacing-6);
+    padding: var(--spacing-3) 0;
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .date-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+  }
+
+  .date-label {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .date-value {
+    font-size: var(--font-size-base);
+    color: var(--color-earth-700);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .confirmation-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) 0;
+  }
+
+  .confirmation-label-small {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+  }
+
+  .confirmation-value {
+    font-size: var(--font-size-base);
+    font-family: monospace;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-gold-700);
+    letter-spacing: 0.05em;
+  }
+
+  .amenities-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+    margin-top: var(--spacing-2);
+  }
+
+  .amenity-tag {
+    display: inline-block;
+    background-color: var(--color-cream-100);
+    color: var(--color-earth-700);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: var(--font-size-xs);
+  }
+
   /* Responsive */
   @media (max-width: 767px) {
+    .page-header {
+      margin-bottom: var(--spacing-4);
+    }
+
+    .page-title {
+      font-size: var(--font-size-2xl);
+    }
+
+    .page-description {
+      font-size: var(--font-size-base);
+    }
+
+    .quick-actions {
+      margin-bottom: var(--spacing-6);
+    }
+
+    .action-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-2);
+    }
+
+    .action-card {
+      padding: var(--spacing-3);
+      min-height: 85px;
+    }
+
+    .action-icon svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .action-label {
+      font-size: var(--font-size-xs);
+    }
+
+    .action-code {
+      font-size: 10px;
+    }
+
     .confirmation-content {
       flex-direction: column;
       gap: var(--spacing-3);
@@ -727,7 +1261,16 @@ function getAccommodationStatusText(status: string): string {
     }
 
     .confirmation-code {
-      font-size: var(--font-size-2xl);
+      font-size: var(--font-size-xl);
+      letter-spacing: 0.05em;
+    }
+
+    .confirmation-label {
+      font-size: var(--font-size-xs);
+    }
+
+    .airline-name {
+      font-size: var(--font-size-lg);
     }
 
     .visa-details {
@@ -739,11 +1282,102 @@ function getAccommodationStatusText(status: string): string {
       align-items: flex-start;
       gap: var(--spacing-2);
     }
+
+    .section-title {
+      font-size: var(--font-size-xl);
+    }
+
+    .flight-group-title {
+      font-size: var(--font-size-base);
+    }
+
+    /* Train Mobile */
+    .train-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--spacing-2);
+    }
+
+    .train-route {
+      flex-direction: column;
+      gap: var(--spacing-4);
+    }
+
+    .route-point {
+      width: 100%;
+      text-align: center;
+    }
+
+    .station-name {
+      max-width: none;
+    }
+
+    .train-route-line {
+      width: 100%;
+      flex-direction: row;
+      justify-content: center;
+    }
+
+    .train-route-line .line {
+      width: 60%;
+    }
+
+    .passenger-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--spacing-1);
+    }
+
+    .position-badge {
+      margin-left: 0;
+    }
+
+    /* Accommodation Mobile */
+    .accommodation-title-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--spacing-2);
+    }
+
+    .accommodation-dates {
+      flex-direction: column;
+      gap: var(--spacing-3);
+    }
+
+    .amenities-list {
+      gap: var(--spacing-1);
+    }
+
+    .amenity-tag {
+      font-size: 10px;
+      padding: 3px 8px;
+    }
+
+    /* Booking Details Mobile */
+    .booking-details {
+      padding: var(--spacing-3);
+    }
+
+    .detail-section h4 {
+      font-size: var(--font-size-xs);
+    }
   }
 
   @media (max-width: 480px) {
     .visa-details {
       grid-template-columns: 1fr;
+    }
+
+    .confirmation-code {
+      font-size: var(--font-size-lg);
+    }
+
+    .station-code {
+      font-size: var(--font-size-xl);
+    }
+
+    .hotel-name {
+      font-size: var(--font-size-lg);
     }
   }
 </style>
