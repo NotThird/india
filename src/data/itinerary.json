@@ -350,25 +350,46 @@
     },
     {
       "date": "2026-02-04",
-      "location": "Bangalore / Chennai",
+      "location": "Bangalore → Chennai → Dubai",
       "title": "DEPARTURE DAY",
       "activities": [
         {
-          "id": "blr-maa-flight",
-          "time": null,
-          "title": "Flight: Bangalore to Chennai",
-          "description": "Domestic flight BLR to MAA (~1 hr)",
+          "id": "blr-checkout",
+          "time": "12:00",
+          "title": "Check out & Head to Airport",
+          "description": "Check out of Bangalore accommodation. Head to BLR Airport T1.",
+          "type": "logistics"
+        },
+        {
+          "id": "blr-checkin",
+          "time": "13:40",
+          "title": "Check-in Closes",
+          "description": "IndiGo 6E 506 check-in/bag drop deadline. Arrive by 12:30 PM.",
+          "type": "logistics"
+        },
+        {
+          "id": "indigo-blr-maa",
+          "time": "14:40",
+          "title": "IndiGo 6E 506 Departs",
+          "description": "Bangalore (BLR T1) → Chennai (MAA T1). PNR: CDCETH. Austin: Seat 1F (Super 6E + meal).",
+          "type": "travel"
+        },
+        {
+          "id": "arrive-maa",
+          "time": "15:45",
+          "title": "Arrive Chennai",
+          "description": "Land at Chennai Airport T1. Transfer to international terminal for Emirates.",
           "type": "travel"
         },
         {
           "id": "depart-chennai",
           "time": "21:45",
-          "title": "Depart Chennai",
-          "description": "Flight EK547 to Dubai",
+          "title": "Emirates EK547 Departs",
+          "description": "Chennai → Dubai. ~6 hour layover at Chennai Airport.",
           "type": "travel"
         }
       ],
-      "notes": "Fly home via Dubai"
+      "notes": "IndiGo PNR: CDCETH. Emirates PNR: ES6BFF. ~6 hour layover at Chennai - can use lounge."
     },
     {
       "date": "2026-02-05",
