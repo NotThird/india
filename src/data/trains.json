@@ -1,0 +1,59 @@
+{
+  "_meta": {
+    "description": "Train bookings for India trip",
+    "lastUpdated": "2026-01-09"
+  },
+  "bookings": [
+    {
+      "id": "vande-bharat-chennai-bangalore",
+      "pnr": "4938634702",
+      "trainNumber": "20607",
+      "trainName": "MYS VANDEBHARAT",
+      "class": "EXECUTIVE CLASS (EC)",
+      "date": "2026-02-01",
+      "from": {
+        "station": "MGR CHENNAI CTL",
+        "code": "MAS",
+        "city": "Chennai"
+      },
+      "to": {
+        "station": "KSR BENGALURU",
+        "code": "SBC",
+        "city": "Bangalore"
+      },
+      "distance": "362 KM",
+      "quota": "GENERAL (GN)",
+      "bookingDate": "2026-01-10",
+      "transactionId": "100006297130396",
+      "passengers": [
+        {
+          "name": "Austin Franklin",
+          "age": 34,
+          "gender": "M",
+          "seat": "E2/28",
+          "position": "WINDOW SIDE",
+          "catering": "NON VEG",
+          "status": "CNF"
+        },
+        {
+          "name": "Monica Govindara",
+          "age": 32,
+          "gender": "F",
+          "seat": "E2/27",
+          "position": "AISLE",
+          "catering": "VEG (DIABETIC)",
+          "status": "CNF"
+        }
+      ],
+      "fare": {
+        "ticketFare": 3442.00,
+        "cateringCharges": 348.00,
+        "convenienceFee": 35.40,
+        "totalFare": 3825.40,
+        "currency": "INR"
+      },
+      "notes": "Check timings before boarding. Departure/arrival times may change - verify at station or dial 139.",
+      "status": "confirmed"
+    }
+  ]
+}

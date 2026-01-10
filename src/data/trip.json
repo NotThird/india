@@ -1,11 +1,23 @@
 {
-  "destination": "Chennai, India",
-  "primaryAreas": ["Thiruvanmiyur", "Palavakkam"],
+  "destination": "Chennai & Bangalore, India",
+  "primaryAreas": ["Thiruvanmiyur", "Palavakkam", "Besant Nagar"],
+  "secondaryDestination": "Bangalore",
+  "bangaloreDates": {
+    "start": "2026-02-01",
+    "end": "2026-02-04"
+  },
   "travelStart": "2026-01-20",
   "travelEnd": "2026-02-05",
   "eventStart": "2026-01-25",
   "eventEnd": "2026-01-29",
   "purpose": "Wedding celebration + cloth shopping",
   "timezone": "Asia/Kolkata",
-  "durationDays": 17
+  "durationDays": 17,
+  "keyActivities": [
+    "Abhinaya's Wedding (Jan 28)",
+    "Wedding Shopping",
+    "Temple Visits",
+    "Austin's Bangalore Office Visit",
+    "Optional: Mysore Day Trip"
+  ]
 }

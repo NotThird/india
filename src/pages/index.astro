@@ -20,6 +20,9 @@ import Card from "../components/Card.astro";
 import Badge from "../components/Badge.astro";
 import WeatherForecast from "../components/WeatherForecast.astro";
 import CurrencyConverter from "../components/CurrencyConverter.astro";
+import CountdownTimer from "../components/CountdownTimer.astro";
+import EmergencyCard from "../components/EmergencyCard.astro";
+import DressCodeCard from "../components/DressCodeCard.astro";
 
 import tripData from "../data/trip.json";
 import eventsData from "../data/events.json";
@@ -71,9 +74,9 @@ const dateRange = formatDateRange(trip.travelStart, trip.travelEnd);
   <!-- Hero Section -->
   <section class="hero">
     <div class="hero-content">
-      <h1 class="hero-title">Chennai Wedding Trip 2026</h1>
+      <h1 class="hero-title">India Trip 2026</h1>
       <p class="hero-dates">{dateRange}</p>
-      <p class="hero-purpose">{trip.purpose}</p>
+      <CountdownTimer targetDate={trip.travelStart} />
     </div>
   </section>
 
@@ -216,6 +219,15 @@ const dateRange = formatDateRange(trip.travelStart, trip.travelEnd);
     </div>
   </section>
 
+  <!-- Quick Reference Cards -->
+  <section class="quick-ref-section">
+    <h2 class="section-title">Quick Reference</h2>
+    <div class="quick-ref-grid">
+      <DressCodeCard />
+      <EmergencyCard />
+    </div>
+  </section>
+
   <!-- Travel Guide Link -->
   <section class="guide-section">
     <a href="/guide" class="guide-banner">
@@ -264,13 +276,7 @@ const dateRange = formatDateRange(trip.travelStart, trip.travelEnd);
   .hero-dates {
     font-size: var(--font-size-xl);
     opacity: 0.95;
-    margin-bottom: var(--spacing-2);
-  }
-
-  .hero-purpose {
-    font-size: var(--font-size-lg);
-    opacity: 0.85;
-    margin-bottom: 0;
+    margin-bottom: var(--spacing-4);
   }
 
   /* Section Styling */
@@ -503,6 +509,23 @@ const dateRange = formatDateRange(trip.travelStart, trip.travelEnd);
 
   @media (max-width: 1023px) {
     .tools-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Quick Reference Section */
+  .quick-ref-section {
+    margin-bottom: var(--spacing-8);
+  }
+
+  .quick-ref-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-4);
+  }
+
+  @media (max-width: 900px) {
+    .quick-ref-grid {
       grid-template-columns: 1fr;
     }
   }

@@ -1,0 +1,39 @@
+{
+  "emergency": {
+    "police": "100",
+    "ambulance": "108",
+    "fire": "101",
+    "tourist_helpline": "1363",
+    "women_helpline": "1091"
+  },
+  "hospitals": [
+    {
+      "name": "Apollo Hospital",
+      "area": "Greams Road, Chennai",
+      "phone": "+91 44 2829 0200",
+      "emergency": true
+    },
+    {
+      "name": "Fortis Malar Hospital",
+      "area": "Adyar, Chennai",
+      "phone": "+91 44 4289 2222",
+      "emergency": true
+    }
+  ],
+  "embassy": {
+    "name": "U.S. Consulate General Chennai",
+    "address": "220 Anna Salai, Chennai 600006",
+    "phone": "+91 44 2857 4000",
+    "emergency_phone": "+91 44 2857 4000",
+    "hours": "Mon-Fri 8:00 AM - 5:00 PM"
+  },
+  "travel": {
+    "uber": "Download Uber app",
+    "ola": "Download Ola app",
+    "airport_taxi": "Prepaid taxi counter at airport"
+  },
+  "confirmations": {
+    "flights": "ES6BFF",
+    "hyatt": "TBD"
+  }
+}

@@ -1,0 +1,375 @@
+{
+  "_meta": {
+    "description": "Day-by-day itinerary for Baj and Austin's India trip",
+    "lastUpdated": "2026-01-05"
+  },
+  "days": [
+    {
+      "date": "2026-01-20",
+      "location": "Dallas",
+      "title": "Departure Day",
+      "activities": [
+        {
+          "id": "depart-dfw",
+          "time": "11:30",
+          "title": "Depart Dallas",
+          "description": "Flight EK222 to Dubai",
+          "type": "travel"
+        }
+      ],
+      "notes": null
+    },
+    {
+      "date": "2026-01-21",
+      "location": "Chennai",
+      "title": "Arrival in Chennai",
+      "activities": [
+        {
+          "id": "arrive-chennai",
+          "time": "20:10",
+          "title": "Arrive Chennai",
+          "description": "Land at Chennai Airport (MAA)",
+          "type": "travel"
+        },
+        {
+          "id": "drop-hyatt",
+          "time": null,
+          "title": "Check in at Hyatt",
+          "description": "Baj and Austin check into Hyatt",
+          "type": "logistics"
+        }
+      ],
+      "notes": "Rest and recover from jet lag"
+    },
+    {
+      "date": "2026-01-22",
+      "location": "Chennai",
+      "title": "Wedding Shopping",
+      "activities": [
+        {
+          "id": "shop-blouse",
+          "time": null,
+          "title": "Blouse Shopping",
+          "description": "Shop for blouse material",
+          "type": "shopping"
+        },
+        {
+          "id": "shop-saree",
+          "time": null,
+          "title": "Wedding Silk Saree",
+          "description": "Shop for wedding silk saree",
+          "type": "shopping"
+        }
+      ],
+      "notes": "Focus on women's wedding attire"
+    },
+    {
+      "date": "2026-01-23",
+      "location": "Chennai",
+      "title": "Ceremony & Men's Shopping",
+      "activities": [
+        {
+          "id": "sumangali",
+          "time": "09:00",
+          "title": "Sumangali Pongal",
+          "description": "Traditional ceremony",
+          "type": "ceremony"
+        },
+        {
+          "id": "manyavar",
+          "time": "14:00",
+          "title": "Manyavar",
+          "description": "Men's wedding shopping",
+          "type": "shopping"
+        }
+      ],
+      "notes": "Sherwanis, kurtas for the wedding"
+    },
+    {
+      "date": "2026-01-24",
+      "location": "Chennai",
+      "title": "Flexible Day",
+      "activities": [
+        {
+          "id": "option-shopping",
+          "time": null,
+          "title": "Option: More Shopping",
+          "description": "Continue wedding shopping if needed",
+          "type": "shopping"
+        },
+        {
+          "id": "option-mahabalipuram",
+          "time": null,
+          "title": "Option: Mahabalipuram",
+          "description": "UNESCO shore temples",
+          "type": "sightseeing"
+        },
+        {
+          "id": "option-dakshin",
+          "time": null,
+          "title": "Option: Dakshin Chitra",
+          "description": "Cultural heritage museum",
+          "type": "sightseeing"
+        }
+      ],
+      "notes": "Decide based on shopping progress"
+    },
+    {
+      "date": "2026-01-25",
+      "location": "Chennai",
+      "title": "MEHENDI",
+      "activities": [
+        {
+          "id": "mehendi-main",
+          "time": "11:00",
+          "title": "Mehendi Ceremony",
+          "description": "Pre-wedding henna function",
+          "type": "wedding-event"
+        }
+      ],
+      "notes": "Dress festive!"
+    },
+    {
+      "date": "2026-01-26",
+      "location": "Chennai",
+      "title": "Family & Sowcarpet",
+      "activities": [
+        {
+          "id": "geetha-akka",
+          "time": null,
+          "title": "Visit Geetha Akka",
+          "description": "Family visit",
+          "type": "family"
+        },
+        {
+          "id": "sowcarpet",
+          "time": null,
+          "title": "Sowcarpet",
+          "description": "Explore market area",
+          "type": "shopping"
+        }
+      ],
+      "notes": "Republic Day"
+    },
+    {
+      "date": "2026-01-27",
+      "location": "Salem",
+      "title": "Ayushhomam",
+      "activities": [
+        {
+          "id": "ayushhomam",
+          "time": "09:00",
+          "title": "Ayushhomam",
+          "description": "Salem Senu's grandson's ceremony",
+          "type": "ceremony"
+        }
+      ],
+      "notes": "Early morning travel to Salem"
+    },
+    {
+      "date": "2026-01-28",
+      "location": "Chennai",
+      "title": "WEDDING DAY",
+      "activities": [
+        {
+          "id": "wedding-ceremony",
+          "time": "09:00",
+          "title": "Abhinaya's Wedding",
+          "description": "Main wedding ceremony",
+          "type": "wedding-event"
+        },
+        {
+          "id": "wedding-lunch",
+          "time": "11:00",
+          "title": "Wedding Lunch",
+          "description": "Reception at Dwarka Grand Palace",
+          "type": "wedding-event"
+        },
+        {
+          "id": "sanju-dance",
+          "time": "18:00",
+          "title": "Sanju's Dance",
+          "description": "Evening dance programme",
+          "type": "cultural"
+        }
+      ],
+      "notes": "Full day event"
+    },
+    {
+      "date": "2026-01-29",
+      "location": "Chennai",
+      "title": "COCKTAIL PARTY",
+      "activities": [
+        {
+          "id": "cocktail-main",
+          "time": "19:00",
+          "title": "Cocktail Party",
+          "description": "Origami at Green Meadows Resort",
+          "type": "wedding-event"
+        }
+      ],
+      "notes": "Smart casual / Semi-formal"
+    },
+    {
+      "date": "2026-01-30",
+      "location": "Chennai",
+      "title": "Post-Wedding Rest",
+      "activities": [
+        {
+          "id": "rest-day",
+          "time": null,
+          "title": "Rest & Recovery",
+          "description": "Recover from wedding festivities",
+          "type": "free"
+        },
+        {
+          "id": "option-temple",
+          "time": null,
+          "title": "Option: Temple Visit",
+          "description": "Visit local temples or sightseeing",
+          "type": "sightseeing"
+        }
+      ],
+      "notes": "Flexible day - rest or explore Chennai"
+    },
+    {
+      "date": "2026-01-31",
+      "location": "Chennai",
+      "title": "Last Day in Chennai",
+      "activities": [
+        {
+          "id": "chennai-explore",
+          "time": null,
+          "title": "Explore Chennai",
+          "description": "Last minute shopping or sightseeing",
+          "type": "free"
+        },
+        {
+          "id": "pack-checkout",
+          "time": null,
+          "title": "Pack for Bangalore",
+          "description": "Prepare luggage for tomorrow's checkout",
+          "type": "logistics"
+        }
+      ],
+      "notes": "Last night at Hyatt Regency Chennai"
+    },
+    {
+      "date": "2026-02-01",
+      "location": "Chennai → Bangalore",
+      "title": "Travel to Bangalore",
+      "activities": [
+        {
+          "id": "hyatt-checkout",
+          "time": "12:00",
+          "title": "Checkout Hyatt Regency",
+          "description": "Check out of Hyatt Regency Chennai",
+          "type": "logistics"
+        },
+        {
+          "id": "vande-bharat-blr",
+          "time": null,
+          "title": "Vande Bharat Train",
+          "description": "Train 20607 MYS VANDEBHARAT from Chennai (MAS) to Bangalore (SBC). PNR: 4938634702. Executive Class - Austin: E2/28 Window, Monica: E2/27 Aisle.",
+          "type": "travel"
+        },
+        {
+          "id": "blr-checkin",
+          "time": null,
+          "title": "Arrive Bangalore",
+          "description": "Arrive at KSR Bengaluru station, check into accommodation",
+          "type": "logistics"
+        }
+      ],
+      "notes": "Vande Bharat: ~2.5 hrs, 362 km. Catering included (Austin: Non-Veg, Monica: Veg/Diabetic)"
+    },
+    {
+      "date": "2026-02-02",
+      "location": "Bangalore",
+      "title": "Bangalore Day 1",
+      "activities": [
+        {
+          "id": "austin-office",
+          "time": null,
+          "title": "Austin's Office",
+          "description": "Austin visits office",
+          "type": "work"
+        },
+        {
+          "id": "blr-shopping",
+          "time": null,
+          "title": "Shopping",
+          "description": "Explore Bangalore shopping areas",
+          "type": "shopping"
+        },
+        {
+          "id": "option-mysore",
+          "time": null,
+          "title": "Option: Mysore Day Trip",
+          "description": "If doing Mysore trip, take Vande Bharat early morning",
+          "type": "sightseeing"
+        }
+      ],
+      "notes": "First full day in Bangalore. Mysore trip optional."
+    },
+    {
+      "date": "2026-02-03",
+      "location": "Bangalore",
+      "title": "Bangalore Day 2",
+      "activities": [
+        {
+          "id": "blr-explore",
+          "time": null,
+          "title": "Explore Bangalore",
+          "description": "Shopping, sightseeing, or Mysore day trip",
+          "type": "free"
+        },
+        {
+          "id": "blr-packing",
+          "time": null,
+          "title": "Pack for Departure",
+          "description": "Prepare luggage for tomorrow's flight home",
+          "type": "logistics"
+        }
+      ],
+      "notes": "Last full day in India. Pack for tomorrow's departure."
+    },
+    {
+      "date": "2026-02-04",
+      "location": "Bangalore / Chennai",
+      "title": "DEPARTURE DAY",
+      "activities": [
+        {
+          "id": "blr-maa-flight",
+          "time": null,
+          "title": "Flight: Bangalore to Chennai",
+          "description": "Domestic flight BLR to MAA (~1 hr)",
+          "type": "travel"
+        },
+        {
+          "id": "depart-chennai",
+          "time": "21:45",
+          "title": "Depart Chennai",
+          "description": "Flight EK547 to Dubai",
+          "type": "travel"
+        }
+      ],
+      "notes": "Fly home via Dubai"
+    },
+    {
+      "date": "2026-02-05",
+      "location": "In Transit / Dallas",
+      "title": "Arrive Home",
+      "activities": [
+        {
+          "id": "arrive-dfw",
+          "time": "08:55",
+          "title": "Arrive Dallas",
+          "description": "Land at DFW",
+          "type": "travel"
+        }
+      ],
+      "notes": "Welcome home!"
+    }
+  ]
+}

@@ -24,13 +24,15 @@ import EventCard from "../components/EventCard.astro";
 import tripData from "../data/trip.json";
 import eventsData from "../data/events.json";
 import flightsData from "../data/flights.json";
+import itineraryData from "../data/itinerary.json";
 
-import type { Trip, WeddingEvent, FlightSegment, DayType, ItineraryDay } from "../types/data";
+import type { Trip, WeddingEvent, FlightSegment, DayType, ItineraryDay, DailyActivity, DailyItinerary, ItineraryData } from "../types/data";
 
 // Type assertions
 const trip = tripData as Trip;
 const events = eventsData.events as WeddingEvent[];
 const flights = flightsData as { confirmationCode: string; airline: string; segments: FlightSegment[] };
+const dailyItinerary = itineraryData as ItineraryData;
 
 // Generate all days between start and end dates
 function generateDays(startDate: string, endDate: string): Date[] {
@@ -72,6 +74,18 @@ function getFlightsForDate(date: Date): FlightSegment[] {
   return flights.segments.filter((segment) => segment.date === dateStr);
 }
 
+// Get daily itinerary data for a specific date
+function getDailyDataForDate(date: Date): DailyItinerary | null {
+  const dateStr = toDateString(date);
+  return dailyItinerary.days.find((day) => day.date === dateStr) || null;
+}
+
+// Get activities for a specific date
+function getActivitiesForDate(date: Date): DailyActivity[] {
+  const dayData = getDailyDataForDate(date);
+  return dayData?.activities || [];
+}
+
 // Determine day type based on events and flights
 function getDayType(date: Date): DayType {
   const dateStr = toDateString(date);
@@ -94,13 +108,35 @@ function formatTime(time: string): string {
 
 // Generate itinerary data
 const allDays = generateDays(trip.travelStart, trip.travelEnd);
-const itinerary: ItineraryDay[] = allDays.map((date, index) => ({
-  date: toDateString(date),
-  dayType: getDayType(date),
-  dayNumber: index + 1,
-  events: getEventsForDate(date),
-  flights: getFlightsForDate(date),
-}));
+const itinerary: ItineraryDay[] = allDays.map((date, index) => {
+  const dailyData = getDailyDataForDate(date);
+  return {
+    date: toDateString(date),
+    dayType: getDayType(date),
+    dayNumber: index + 1,
+    events: getEventsForDate(date),
+    flights: getFlightsForDate(date),
+    activities: getActivitiesForDate(date),
+    dayTitle: dailyData?.title,
+    location: dailyData?.location,
+    notes: dailyData?.notes || undefined,
+  };
+});
+
+// Activity type styling configuration
+const activityTypeConfig: Record<string, { icon: string; color: string; bgColor: string }> = {
+  travel: { icon: "plane", color: "var(--color-info)", bgColor: "var(--color-info-light)" },
+  logistics: { icon: "truck", color: "var(--color-earth-600)", bgColor: "var(--color-earth-100)" },
+  shopping: { icon: "bag", color: "var(--color-purple-600)", bgColor: "var(--color-purple-100)" },
+  ceremony: { icon: "flame", color: "var(--color-orange-600)", bgColor: "var(--color-orange-100)" },
+  "wedding-event": { icon: "star", color: "var(--color-gold-700)", bgColor: "var(--color-gold-100)" },
+  sightseeing: { icon: "camera", color: "var(--color-teal-600)", bgColor: "var(--color-teal-100)" },
+  family: { icon: "heart", color: "var(--color-rose-600)", bgColor: "var(--color-rose-100)" },
+  cultural: { icon: "music", color: "var(--color-indigo-600)", bgColor: "var(--color-indigo-100)" },
+  work: { icon: "briefcase", color: "var(--color-slate-600)", bgColor: "var(--color-slate-100)" },
+  personal: { icon: "user", color: "var(--color-cyan-600)", bgColor: "var(--color-cyan-100)" },
+  free: { icon: "clock", color: "var(--color-earth-500)", bgColor: "var(--color-cream-100)" },
+};
 
 // Day type labels and icons
 const dayTypeConfig: Record<DayType, { label: string; color: string; bgColor: string }> = {
@@ -175,9 +211,23 @@ const dayTypeConfig: Record<DayType, { label: string; color: string; bgColor: st
             </div>
             <div class="day-info">
               <h2 class="day-date">{formatDate(date)}</h2>
-              <span class="day-type-badge" style={`background-color: ${config.bgColor}; color: ${config.color};`}>
-                {config.label}
-              </span>
+              <div class="day-badges">
+                <span class="day-type-badge" style={`background-color: ${config.bgColor}; color: ${config.color};`}>
+                  {config.label}
+                </span>
+                {day.location && (
+                  <span class="day-location-badge">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                      <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    {day.location}
+                  </span>
+                )}
+              </div>
+              {day.dayTitle && (
+                <p class="day-title">{day.dayTitle}</p>
+              )}
             </div>
           </header>
 
@@ -226,8 +276,46 @@ const dayTypeConfig: Record<DayType, { label: string; color: string; bgColor: st
               </div>
             )}
 
-            {/* Free day message */}
-            {day.dayType === "free" && day.flights.length === 0 && day.events.length === 0 && (
+            {/* Daily Activities */}
+            {day.activities.length > 0 && (
+              <div class="activities-section">
+                <h3 class="activities-heading">Activities</h3>
+                <div class="activities-list">
+                  {day.activities.map((activity) => {
+                    const actConfig = activityTypeConfig[activity.type] || activityTypeConfig.free;
+                    return (
+                      <div class="activity-item" style={`border-left-color: ${actConfig.color};`}>
+                        <div class="activity-header">
+                          {activity.time && (
+                            <span class="activity-time">{formatTime(activity.time)}</span>
+                          )}
+                          <span class="activity-type-badge" style={`background-color: ${actConfig.bgColor}; color: ${actConfig.color};`}>
+                            {activity.type.replace("-", " ")}
+                          </span>
+                        </div>
+                        <h4 class="activity-title">{activity.title}</h4>
+                        <p class="activity-description">{activity.description}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Day notes */}
+            {day.notes && (
+              <div class="day-notes">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="16" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                <span>{day.notes}</span>
+              </div>
+            )}
+
+            {/* Free day message - only show if no activities */}
+            {day.dayType === "free" && day.flights.length === 0 && day.events.length === 0 && day.activities.length === 0 && (
               <div class="free-day-message">
                 <p>Free day for exploration, shopping, or relaxation.</p>
                 <p class="free-day-hint">Check out local markets for cloth shopping or explore Chennai's attractions.</p>
@@ -378,6 +466,13 @@ const dayTypeConfig: Record<DayType, { label: string; color: string; bgColor: st
     margin: 0;
   }
 
+  .day-badges {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    flex-wrap: wrap;
+  }
+
   .day-type-badge {
     font-size: var(--font-size-xs);
     font-weight: var(--font-weight-medium);
@@ -385,6 +480,26 @@ const dayTypeConfig: Record<DayType, { label: string; color: string; bgColor: st
     border-radius: var(--radius-button);
     text-transform: uppercase;
     letter-spacing: 0.03em;
+  }
+
+  .day-location-badge {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-button);
+    background-color: var(--color-earth-100);
+    color: var(--color-earth-700);
+  }
+
+  .day-title {
+    width: 100%;
+    margin: var(--spacing-1) 0 0 0;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-earth-800);
   }
 
   /* Day Content */
@@ -465,6 +580,85 @@ const dayTypeConfig: Record<DayType, { label: string; color: string; bgColor: st
     gap: var(--spacing-3);
   }
 
+  /* Activities Section */
+  .activities-section {
+    margin-top: var(--spacing-2);
+  }
+
+  .activities-heading {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--spacing-3) 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .activities-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+  }
+
+  .activity-item {
+    padding: var(--spacing-3) var(--spacing-4);
+    background-color: white;
+    border-radius: var(--radius-card);
+    border-left: 4px solid var(--color-earth-400);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .activity-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-2);
+  }
+
+  .activity-time {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-earth-700);
+  }
+
+  .activity-type-badge {
+    font-size: 10px;
+    font-weight: var(--font-weight-medium);
+    padding: 2px var(--spacing-2);
+    border-radius: var(--radius-button);
+    text-transform: capitalize;
+  }
+
+  .activity-title {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-earth-900);
+    margin: 0 0 var(--spacing-1) 0;
+  }
+
+  .activity-description {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  /* Day Notes */
+  .day-notes {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3);
+    background-color: var(--color-info-light);
+    border-radius: var(--radius-card);
+    font-size: var(--font-size-sm);
+    color: var(--color-info);
+  }
+
+  .day-notes svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
   /* Free Day Message */
   .free-day-message,
   .arrival-message,
@@ -493,53 +687,245 @@ const dayTypeConfig: Record<DayType, { label: string; color: string; bgColor: st
     border-left: 3px solid var(--color-gold-400);
   }
 
-  /* Responsive */
-  @media (max-width: 767px) {
-    .legend {
-      flex-direction: column;
-      gap: var(--spacing-3);
+  /* Responsive - Tablet */
+  @media (max-width: 900px) {
+    .page-title {
+      font-size: var(--font-size-3xl);
     }
 
+    .legend {
+      flex-wrap: wrap;
+      gap: var(--spacing-4);
+    }
+  }
+
+  /* Responsive - Mobile */
+  @media (max-width: 600px) {
+    .page-header {
+      margin-bottom: var(--spacing-5);
+    }
+
+    .page-title {
+      font-size: var(--font-size-2xl);
+    }
+
+    .page-description {
+      font-size: var(--font-size-base);
+    }
+
+    /* Compact legend for mobile */
+    .legend {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: var(--spacing-3);
+      padding: var(--spacing-3);
+      margin-bottom: var(--spacing-5);
+    }
+
+    .legend-item {
+      font-size: var(--font-size-xs);
+    }
+
+    .legend-icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    .legend-icon svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    /* Simplified timeline for mobile */
     .timeline::before {
-      left: 16px;
+      left: 12px;
+      width: 2px;
     }
 
     .day-entry {
-      padding-left: 48px;
+      padding-left: 36px;
+      padding-bottom: var(--spacing-5);
     }
 
+    /* Smaller day marker */
     .day-marker {
-      width: 34px;
-      height: 34px;
+      width: 26px;
+      height: 26px;
+      border-width: 2px;
     }
 
     .day-number {
-      font-size: 9px;
+      font-size: 8px;
     }
 
     .day-marker svg {
       display: none;
     }
 
+    /* Stack day info vertically */
     .day-info {
       flex-direction: column;
       align-items: flex-start;
-      gap: var(--spacing-2);
+      gap: var(--spacing-1);
     }
 
+    .day-header {
+      gap: var(--spacing-2);
+      margin-bottom: var(--spacing-3);
+    }
+
+    /* Shorter date format would be nice but we'll make it wrap */
     .day-date {
-      font-size: var(--font-size-lg);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-bold);
+      line-height: 1.3;
+    }
+
+    .day-badges {
+      gap: var(--spacing-1);
+    }
+
+    .day-type-badge,
+    .day-location-badge {
+      font-size: 9px;
+      padding: 2px 6px;
+    }
+
+    .day-title {
+      font-size: var(--font-size-xs);
+      margin-top: var(--spacing-1);
+    }
+
+    /* Compact day content */
+    .day-content {
+      gap: var(--spacing-3);
+    }
+
+    /* Mobile-friendly flight cards */
+    .flight-card {
+      border-left-width: 3px;
     }
 
     .flight-route {
-      flex-wrap: wrap;
-      font-size: var(--font-size-base);
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--spacing-1);
+      font-size: var(--font-size-sm);
+    }
+
+    .flight-arrow {
+      transform: rotate(90deg);
+      margin: var(--spacing-1) 0;
     }
 
     .flight-details {
       flex-direction: column;
       align-items: flex-start;
+      gap: var(--spacing-1);
+      font-size: var(--font-size-xs);
+    }
+
+    /* Compact activities */
+    .activities-section {
+      margin-top: var(--spacing-1);
+    }
+
+    .activities-heading {
+      font-size: var(--font-size-xs);
+      margin-bottom: var(--spacing-2);
+    }
+
+    .activities-list {
       gap: var(--spacing-2);
+    }
+
+    .activity-item {
+      padding: var(--spacing-2) var(--spacing-3);
+      border-left-width: 3px;
+    }
+
+    .activity-header {
+      margin-bottom: var(--spacing-1);
+      gap: var(--spacing-1);
+    }
+
+    .activity-time {
+      font-size: var(--font-size-xs);
+    }
+
+    .activity-type-badge {
+      font-size: 8px;
+      padding: 1px 5px;
+    }
+
+    .activity-title {
+      font-size: var(--font-size-sm);
+      margin-bottom: 2px;
+    }
+
+    .activity-description {
+      font-size: var(--font-size-xs);
+    }
+
+    /* Compact day notes */
+    .day-notes {
+      padding: var(--spacing-2);
+      font-size: var(--font-size-xs);
+      gap: var(--spacing-1);
+    }
+
+    .day-notes svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* Compact messages */
+    .free-day-message,
+    .arrival-message,
+    .departure-message {
+      padding: var(--spacing-3);
+    }
+
+    .free-day-message p,
+    .arrival-message p,
+    .departure-message p {
+      font-size: var(--font-size-sm);
+    }
+
+    .free-day-hint {
+      font-size: var(--font-size-xs);
+    }
+  }
+
+  /* Extra small screens */
+  @media (max-width: 380px) {
+    .day-entry {
+      padding-left: 30px;
+    }
+
+    .timeline::before {
+      left: 10px;
+    }
+
+    .day-marker {
+      width: 22px;
+      height: 22px;
+    }
+
+    .day-number {
+      font-size: 7px;
+    }
+
+    .day-date {
+      font-size: var(--font-size-sm);
+    }
+
+    .legend {
+      padding: var(--spacing-2);
+    }
+
+    .legend-item span:last-child {
+      font-size: 10px;
     }
   }
 </style>

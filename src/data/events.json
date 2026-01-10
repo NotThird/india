@@ -1,6 +1,20 @@
 {
   "events": [
     {
+      "id": "sumangali-pongal",
+      "name": "Sumangali Pongal",
+      "date": "2026-01-23",
+      "startTime": "09:00",
+      "endTime": "12:00",
+      "venue": null,
+      "address": null,
+      "area": "Chennai",
+      "type": "pre-wedding",
+      "description": "Traditional Sumangali Pongal ceremony",
+      "venueTBC": true,
+      "coordinates": null
+    },
+    {
       "id": "mehendi",
       "name": "Mehendi Ceremony",
       "date": "2026-01-25",
@@ -17,8 +31,22 @@
       }
     },
     {
+      "id": "ayushhomam",
+      "name": "Ayushhomam Ceremony",
+      "date": "2026-01-27",
+      "startTime": "09:00",
+      "endTime": "12:00",
+      "venue": null,
+      "address": null,
+      "area": "Salem",
+      "type": "pre-wedding",
+      "description": "Salem Senu's grandson's Ayushhomam ceremony",
+      "venueTBC": true,
+      "coordinates": null
+    },
+    {
       "id": "wedding",
-      "name": "Wedding Ceremony",
+      "name": "Abhinaya's Wedding",
       "date": "2026-01-28",
       "startTime": "09:00",
       "endTime": "10:30",
@@ -26,7 +54,7 @@
       "address": null,
       "area": null,
       "type": "ceremony",
-      "description": "Main wedding ceremony",
+      "description": "Main wedding ceremony - Abhinaya's Wedding",
       "venueTBC": true,
       "coordinates": null
     },
@@ -45,6 +73,20 @@
         "lat": 12.9847,
         "lng": 80.2589
       }
+    },
+    {
+      "id": "sanju-dance",
+      "name": "Sanju's Dance Programme",
+      "date": "2026-01-28",
+      "startTime": "18:00",
+      "endTime": null,
+      "venue": null,
+      "address": null,
+      "area": "Chennai",
+      "type": "post-wedding",
+      "description": "Evening dance performance by Sanju",
+      "venueTBC": true,
+      "coordinates": null
     },
     {
       "id": "cocktail",

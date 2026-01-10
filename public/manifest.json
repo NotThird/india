@@ -1,0 +1,17 @@
+{
+  "name": "India Trip 2026",
+  "short_name": "India Trip",
+  "description": "Chennai Wedding Trip - Jan 20 to Feb 5, 2026",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFF8F0",
+  "theme_color": "#D4A853",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

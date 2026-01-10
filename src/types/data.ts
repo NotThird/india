@@ -172,7 +172,63 @@ export interface ItineraryDay {
   dayNumber: number; // Day 1, Day 2, etc.
   events: WeddingEvent[];
   flights: FlightSegment[];
+  activities: DailyActivity[];
+  dayTitle?: string;
+  location?: string;
   notes?: string;
+}
+
+// ============================================================================
+// Daily Activity Types
+// ============================================================================
+
+/**
+ * Activity type for categorization and styling
+ */
+export type ActivityType =
+  | "travel"
+  | "logistics"
+  | "shopping"
+  | "ceremony"
+  | "wedding-event"
+  | "sightseeing"
+  | "family"
+  | "cultural"
+  | "work"
+  | "personal"
+  | "free";
+
+/**
+ * Individual daily activity
+ */
+export interface DailyActivity {
+  id: string;
+  time: string | null; // 24-hour format: HH:MM or null if flexible
+  title: string;
+  description: string;
+  type: ActivityType;
+}
+
+/**
+ * Daily itinerary data from itinerary.json
+ */
+export interface DailyItinerary {
+  date: string; // ISO date: YYYY-MM-DD
+  location: string;
+  title: string;
+  activities: DailyActivity[];
+  notes: string | null;
+}
+
+/**
+ * Itinerary data structure for JSON file
+ */
+export interface ItineraryData {
+  _meta: {
+    description: string;
+    lastUpdated: string;
+  };
+  days: DailyItinerary[];
 }
 
 // ============================================================================
@@ -444,4 +500,155 @@ export interface CountdownDisplay {
   seconds: number;
   isExpired: boolean;
   targetDate: string; // ISO datetime
+}
+
+// ============================================================================
+// Guest List Types (Phase 3)
+// ============================================================================
+
+/**
+ * RSVP status for event attendance
+ */
+export type RSVPStatus = "pending" | "confirmed" | "declined" | "tentative";
+
+/**
+ * Dietary preference types
+ */
+export type DietaryType = "vegetarian" | "non-vegetarian" | "vegan" | "eggetarian";
+
+/**
+ * Guest relationship to bride/groom
+ */
+export type GuestSide = "groom" | "bride" | "mutual";
+
+/**
+ * Guest contact information
+ */
+export interface GuestContact {
+  phone: string | null;
+  email: string | null;
+  whatsapp: string | null;
+}
+
+/**
+ * RSVP status per event
+ */
+export interface GuestRSVP {
+  mehendi: RSVPStatus;
+  wedding: RSVPStatus;
+  lunch: RSVPStatus;
+  cocktail: RSVPStatus;
+}
+
+/**
+ * Dietary requirements and restrictions
+ */
+export interface GuestDietary {
+  type: DietaryType;
+  allergies: string[];
+  notes: string | null;
+}
+
+/**
+ * Plus-one information
+ */
+export interface GuestPlusOne {
+  allowed: boolean;
+  name: string | null;
+  confirmed: boolean;
+}
+
+/**
+ * Travel and accommodation details for guests
+ */
+export interface GuestTravel {
+  needsAccommodation: boolean;
+  hotelBooked: string | null;
+  arrivalDate: string | null; // ISO date: YYYY-MM-DD
+  departureDate: string | null; // ISO date: YYYY-MM-DD
+  flightDetails: string | null;
+}
+
+/**
+ * Gift tracking information
+ */
+export interface GuestGift {
+  received: boolean;
+  description: string | null;
+  thankYouSent: boolean;
+}
+
+/**
+ * Seating arrangement details
+ */
+export interface GuestSeating {
+  table: string | null;
+  notes: string | null;
+}
+
+/**
+ * Complete guest record
+ */
+export interface Guest {
+  id: string;
+  name: string;
+  relationship: string;
+  side: GuestSide;
+  contact: GuestContact;
+  rsvp: GuestRSVP;
+  dietary: GuestDietary;
+  plusOne: GuestPlusOne;
+  travel: GuestTravel;
+  gift: GuestGift;
+  seating: GuestSeating;
+  notes: string | null;
+  tags: string[];
+}
+
+/**
+ * Event-based counts for summaries
+ */
+export interface EventCounts {
+  mehendi: number;
+  wedding: number;
+  lunch: number;
+  cocktail: number;
+}
+
+/**
+ * Dietary breakdown counts
+ */
+export interface DietaryCounts {
+  vegetarian: number;
+  nonVegetarian: number;
+  vegan: number;
+  eggetarian: number;
+}
+
+/**
+ * Guest list summary statistics
+ */
+export interface GuestSummary {
+  totalGuests: number;
+  confirmed: EventCounts;
+  pending: EventCounts;
+  dietary: DietaryCounts;
+}
+
+/**
+ * Metadata for guest list file
+ */
+export interface GuestMeta {
+  description: string;
+  lastUpdated: string; // ISO date: YYYY-MM-DD
+  events: string[];
+}
+
+/**
+ * Complete guest data structure for JSON file
+ */
+export interface GuestsData {
+  _meta: GuestMeta;
+  guests: Guest[];
+  summary: GuestSummary;
 }

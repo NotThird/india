@@ -1,21 +1,35 @@
 {
   "accommodations": [
     {
-      "id": "park-hyatt",
-      "name": "Park Hyatt Chennai",
-      "area": "Guindy",
+      "id": "hyatt-regency-chennai",
+      "name": "Hyatt Regency Chennai",
+      "area": "Teynampet",
       "city": "Chennai",
-      "status": "considering",
-      "checkIn": null,
-      "checkOut": null,
-      "confirmationNumber": null,
-      "notes": "Closest major hotel to wedding venues (~9-15 min drive)",
-      "amenities": [],
+      "status": "confirmed",
+      "checkIn": "2026-01-21T15:00:00+05:30",
+      "checkOut": "2026-02-01T12:00:00+05:30",
+      "confirmationNumber": "56349563",
+      "guestName": "Rodney Franklin",
+      "roomsBooked": 2,
+      "roomType": "Regency Executive Suite",
+      "roomDescription": "72sqm spacious Suite with Breakfast + Club access, Separate living area, WiFi, Bath Tub",
+      "preferences": "HIGH FLOOR, EARLY CHECK-IN REQUESTED",
+      "notes": "11 nights in Chennai. Premium Suite Free Night rate.",
+      "amenities": ["Breakfast included", "Club access", "WiFi", "Bath Tub", "Separate living area"],
+      "address": {
+        "street": "365, Anna Salai",
+        "area": "Teynampet",
+        "city": "Chennai",
+        "state": "Tamil Nadu",
+        "country": "India",
+        "postalCode": "600018"
+      },
       "contact": {
-        "phone": null,
+        "phone": "+91 44 6100 1234",
         "email": null,
-        "website": "https://www.hyatt.com/en-US/hotel/india/park-hyatt-chennai/maagh"
-      }
+        "website": "https://www.hyatt.com/hyatt-regency/en-US/masch-hyatt-regency-chennai"
+      },
+      "taxes": "18% GST"
     }
   ]
 }

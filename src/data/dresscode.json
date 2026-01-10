@@ -1,0 +1,48 @@
+{
+  "events": [
+    {
+      "id": "mehendi",
+      "name": "Mehendi",
+      "date": "Jan 25",
+      "dresscode": {
+        "women": "Bright colored saree or salwar kameez (yellow, green, orange)",
+        "men": "Kurta pajama or casual Indian wear",
+        "avoid": "Black, white",
+        "tip": "Wear something comfortable - you'll be sitting for henna application"
+      }
+    },
+    {
+      "id": "wedding",
+      "name": "Wedding Ceremony",
+      "date": "Jan 28 (Morning)",
+      "dresscode": {
+        "women": "Silk saree (Kanjivaram preferred), gold jewelry",
+        "men": "Sherwani or silk kurta with veshti/dhoti",
+        "avoid": "Black, white, red (reserved for bride)",
+        "tip": "This is the main event - dress your best!"
+      }
+    },
+    {
+      "id": "lunch",
+      "name": "Wedding Lunch",
+      "date": "Jan 28 (Afternoon)",
+      "dresscode": {
+        "women": "Same as wedding ceremony",
+        "men": "Same as wedding ceremony",
+        "avoid": "Changing not required",
+        "tip": "Continues from morning ceremony"
+      }
+    },
+    {
+      "id": "cocktail",
+      "name": "Cocktail Party",
+      "date": "Jan 29 (Evening)",
+      "dresscode": {
+        "women": "Designer saree, lehenga, or elegant gown",
+        "men": "Blazer with kurta, Indo-western, or formal suit",
+        "avoid": "Too casual",
+        "tip": "Smart casual to semi-formal. Evening event - darker colors work well"
+      }
+    }
+  ]
+}
