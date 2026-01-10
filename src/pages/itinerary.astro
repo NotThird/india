@@ -26,13 +26,16 @@ import eventsData from "../data/events.json";
 import flightsData from "../data/flights.json";
 import itineraryData from "../data/itinerary.json";
 
-import type { Trip, WeddingEvent, FlightSegment, DayType, ItineraryDay, DailyActivity, DailyItinerary, ItineraryData } from "../types/data";
+import type { Trip, WeddingEvent, FlightSegment, DayType, ItineraryDay, DailyActivity, DailyItinerary, ItineraryData, FlightsData, FlightBooking } from "../types/data";
 
 // Type assertions
 const trip = tripData as Trip;
 const events = eventsData.events as WeddingEvent[];
-const flights = flightsData as { confirmationCode: string; airline: string; segments: FlightSegment[] };
+const flights = flightsData as FlightsData;
 const dailyItinerary = itineraryData as ItineraryData;
+
+// Get all flight segments from all bookings
+const allFlightSegments: FlightSegment[] = (flights.bookings || []).flatMap((b: FlightBooking) => b.segments || []);
 
 // Generate all days between start and end dates
 function generateDays(startDate: string, endDate: string): Date[] {
@@ -71,7 +74,7 @@ function getEventsForDate(date: Date): WeddingEvent[] {
 // Get flights for a specific date
 function getFlightsForDate(date: Date): FlightSegment[] {
   const dateStr = toDateString(date);
-  return flights.segments.filter((segment) => segment.date === dateStr);
+  return allFlightSegments.filter((segment) => segment.date === dateStr);
 }
 
 // Get daily itinerary data for a specific date
@@ -89,7 +92,7 @@ function getActivitiesForDate(date: Date): DailyActivity[] {
 // Determine day type based on events and flights
 function getDayType(date: Date): DayType {
   const dateStr = toDateString(date);
-  const hasFlights = flights.segments.some((s) => s.date === dateStr);
+  const hasFlights = allFlightSegments.some((s) => s.date === dateStr);
   const hasEvents = events.some((e) => e.date === dateStr);
 
   if (hasFlights) return "travel";

@@ -30,6 +30,23 @@
         "website": "https://www.hyatt.com/hyatt-regency/en-US/masch-hyatt-regency-chennai"
       },
       "taxes": "18% GST"
+    },
+    {
+      "id": "bangalore-family-stay",
+      "name": "Family Stay with Bab",
+      "area": "Bangalore",
+      "city": "Bangalore",
+      "status": "confirmed",
+      "checkIn": "2026-02-01",
+      "checkOut": "2026-02-04",
+      "confirmationNumber": null,
+      "notes": "Staying with family in Bangalore. 3 nights.",
+      "amenities": ["Family hospitality"],
+      "contact": {
+        "phone": null,
+        "email": null,
+        "website": null
+      }
     }
   ]
 }
