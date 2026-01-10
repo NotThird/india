@@ -1,7 +1,7 @@
 {
   "_meta": {
     "description": "Day-by-day itinerary for Baj and Austin's India trip",
-    "lastUpdated": "2026-01-05"
+    "lastUpdated": "2026-01-09"
   },
   "days": [
     {
@@ -32,14 +32,21 @@
           "type": "travel"
         },
         {
+          "id": "transfer-hyatt",
+          "time": "20:45",
+          "title": "Transfer to Hotel",
+          "description": "Taxi/Uber from airport to Hyatt Regency (13 km, ~30-40 min in evening traffic)",
+          "type": "travel"
+        },
+        {
           "id": "drop-hyatt",
-          "time": null,
-          "title": "Check in at Hyatt",
-          "description": "Baj and Austin check into Hyatt",
+          "time": "21:30",
+          "title": "Check in at Hyatt Regency",
+          "description": "Check into Hyatt Regency Chennai, 365 Anna Salai, Teynampet",
           "type": "logistics"
         }
       ],
-      "notes": "Rest and recover from jet lag"
+      "notes": "Rest and recover from jet lag. Hotel check-in time is 3 PM but late arrival is fine."
     },
     {
       "date": "2026-01-22",
@@ -153,18 +160,32 @@
     },
     {
       "date": "2026-01-27",
-      "location": "Salem",
-      "title": "Ayushhomam",
+      "location": "Chennai → Salem",
+      "title": "Ayushhomam in Salem",
       "activities": [
+        {
+          "id": "depart-salem",
+          "time": "04:00",
+          "title": "Depart for Salem",
+          "description": "Leave Chennai early morning. Salem is 340 km away (~5 hours by car)",
+          "type": "travel"
+        },
         {
           "id": "ayushhomam",
           "time": "09:00",
-          "title": "Ayushhomam",
+          "title": "Ayushhomam Ceremony",
           "description": "Salem Senu's grandson's ceremony",
           "type": "ceremony"
+        },
+        {
+          "id": "return-chennai",
+          "time": "14:00",
+          "title": "Return to Chennai",
+          "description": "Drive back to Chennai (~5 hours). Arrive by evening.",
+          "type": "travel"
         }
       ],
-      "notes": "Early morning travel to Salem"
+      "notes": "VERY EARLY START! 340 km each way. ~10 hours total driving. Consider staying overnight in Salem if ceremony runs late."
     },
     {
       "date": "2026-01-28",
@@ -355,16 +376,23 @@
       "activities": [
         {
           "id": "blr-checkout",
-          "time": "12:00",
-          "title": "Check out & Head to Airport",
-          "description": "Check out of Bangalore accommodation. Head to BLR Airport T1.",
+          "time": "10:30",
+          "title": "Check out & Depart for Airport",
+          "description": "Check out of Bangalore accommodation. BLR Airport is 35-40 km away - allow 1.5-2 hours for Bangalore traffic!",
+          "type": "logistics"
+        },
+        {
+          "id": "arrive-blr-airport",
+          "time": "12:30",
+          "title": "Arrive BLR Airport T1",
+          "description": "Target arrival time. IndiGo counter in Terminal 1.",
           "type": "logistics"
         },
         {
           "id": "blr-checkin",
           "time": "13:40",
           "title": "Check-in Closes",
-          "description": "IndiGo 6E 506 check-in/bag drop deadline. Arrive by 12:30 PM.",
+          "description": "IndiGo 6E 506 check-in/bag drop DEADLINE (60 min before departure). Do NOT be late!",
           "type": "logistics"
         },
         {
@@ -385,11 +413,11 @@
           "id": "depart-chennai",
           "time": "21:45",
           "title": "Emirates EK547 Departs",
-          "description": "Chennai → Dubai. ~6 hour layover at Chennai Airport.",
+          "description": "Chennai → Dubai. ~6 hour layover at Chennai Airport - can use lounge.",
           "type": "travel"
         }
       ],
-      "notes": "IndiGo PNR: CDCETH. Emirates PNR: ES6BFF. ~6 hour layover at Chennai - can use lounge."
+      "notes": "ALLOW TIME FOR BANGALORE TRAFFIC! Leave by 10:30 AM latest. IndiGo PNR: CDCETH. Emirates PNR: ES6BFF."
     },
     {
       "date": "2026-02-05",

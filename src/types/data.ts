@@ -57,23 +57,68 @@ export interface TravelersData {
 // ============================================================================
 
 export type FlightDirection = "outbound" | "return";
+export type FlightType = "international" | "domestic";
 
 export interface FlightSegment {
   id: string;
   direction: FlightDirection;
   from: string; // Airport code (e.g., "DFW")
   fromCity: string;
+  fromTerminal?: string;
   to: string; // Airport code (e.g., "DXB")
   toCity: string;
+  toTerminal?: string;
   date: string; // ISO date: YYYY-MM-DD
   departureTime: string; // 24-hour format: HH:MM
   arrivalTime: string; // 24-hour format: HH:MM
-  arrivalNextDay: boolean;
+  arrivalNextDay?: boolean;
   duration: string;
   flightNumber: string;
+  aircraft?: string;
+  checkInCloses?: string;
+}
+
+export interface FlightPassenger {
+  name: string;
+  seat: string | null;
+  services: string[];
+}
+
+export interface FlightBaggage {
+  checkedBaggage: string;
+  handBaggage: string;
+  internationalConnection?: string;
+  excessCharges?: string;
+}
+
+export interface FlightCheckInPolicy {
+  counterCloses: string;
+  boardingGateCloses: string;
+  webCheckIn?: string;
+  idRequired: string;
+}
+
+export interface FlightBooking {
+  id: string;
+  confirmationCode: string;
+  airline: string;
+  type: FlightType;
+  bookingDate?: string;
+  status?: string;
+  segments: FlightSegment[];
+  passengers?: FlightPassenger[];
+  fareType?: string;
+  baggage?: FlightBaggage;
+  checkInPolicy?: FlightCheckInPolicy;
+  notes?: string;
 }
 
 export interface FlightsData {
+  bookings: FlightBooking[];
+}
+
+// Legacy support - single booking format
+export interface LegacyFlightsData {
   confirmationCode: string;
   airline: string;
   segments: FlightSegment[];

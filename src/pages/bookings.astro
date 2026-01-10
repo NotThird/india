@@ -24,7 +24,7 @@ import flightsData from "../data/flights.json";
 import travelersData from "../data/travelers.json";
 import accommodationData from "../data/accommodation.json";
 
-import type { FlightsData, TravelersData, AccommodationData, FlightSegment } from "../types/data";
+import type { FlightsData, TravelersData, AccommodationData, FlightSegment, FlightBooking } from "../types/data";
 
 // Type assertions
 const flights = flightsData as FlightsData;
@@ -38,9 +38,14 @@ const visa = traveler.visa;
 // Get the primary accommodation
 const hotel = accommodations.accommodations[0];
 
-// Group flights by direction
-const outboundFlights = flights.segments.filter((s: FlightSegment) => s.direction === "outbound");
-const returnFlights = flights.segments.filter((s: FlightSegment) => s.direction === "return");
+// Get all bookings
+const allBookings = flights.bookings;
+const emiratesBooking = allBookings.find((b: FlightBooking) => b.airline === "Emirates");
+const indigoBooking = allBookings.find((b: FlightBooking) => b.airline === "IndiGo");
+
+// Group Emirates flights by direction
+const outboundFlights = emiratesBooking?.segments.filter((s: FlightSegment) => s.direction === "outbound") || [];
+const returnFlights = emiratesBooking?.segments.filter((s: FlightSegment) => s.direction === "return") || [];
 
 // Format date for display
 function formatDate(dateStr: string): string {
@@ -101,18 +106,20 @@ function getAccommodationStatusText(status: string): string {
       </h2>
     </div>
 
-    <!-- Confirmation Code -->
-    <Card class="confirmation-card">
-      <div class="confirmation-content">
-        <div class="confirmation-info">
-          <span class="confirmation-label">Emirates Confirmation Code</span>
-          <span class="confirmation-code">{flights.confirmationCode}</span>
+    <!-- Emirates Confirmation Code -->
+    {emiratesBooking && (
+      <Card class="confirmation-card">
+        <div class="confirmation-content">
+          <div class="confirmation-info">
+            <span class="confirmation-label">Emirates Confirmation Code</span>
+            <span class="confirmation-code">{emiratesBooking.confirmationCode}</span>
+          </div>
+          <div class="airline-logo">
+            <span class="airline-name">{emiratesBooking.airline}</span>
+          </div>
         </div>
-        <div class="airline-logo">
-          <span class="airline-name">{flights.airline}</span>
-        </div>
-      </div>
-    </Card>
+      </Card>
+    )}
 
     <!-- Outbound Flights -->
     <div class="flight-group">
@@ -149,6 +156,86 @@ function getAccommodationStatusText(status: string): string {
         ))}
       </div>
     </div>
+
+    <!-- IndiGo Domestic Flight -->
+    {indigoBooking && (
+      <div class="flight-group domestic-flight">
+        <Card class="confirmation-card indigo">
+          <div class="confirmation-content">
+            <div class="confirmation-info">
+              <span class="confirmation-label">IndiGo Confirmation Code (Domestic)</span>
+              <span class="confirmation-code">{indigoBooking.confirmationCode}</span>
+            </div>
+            <div class="airline-logo">
+              <span class="airline-name">{indigoBooking.airline}</span>
+            </div>
+          </div>
+        </Card>
+
+        <h3 class="flight-group-title">
+          <span class="group-icon domestic">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+            </svg>
+          </span>
+          Domestic: Bangalore to Chennai (Feb 4)
+        </h3>
+        <div class="flight-list">
+          {indigoBooking.segments.map((flight: FlightSegment) => (
+            <FlightCard flight={flight} />
+          ))}
+        </div>
+
+        <!-- Passenger & Baggage Info -->
+        <div class="booking-details">
+          <div class="detail-section">
+            <h4>Passengers</h4>
+            <ul class="passenger-list">
+              {indigoBooking.passengers?.map((p) => (
+                <li>
+                  <strong>{p.name}</strong>
+                  {p.seat && <span class="seat-badge">Seat {p.seat}</span>}
+                  {p.services.length > 0 && (
+                    <div class="services">{p.services.join(", ")}</div>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {indigoBooking.baggage && (
+            <div class="detail-section">
+              <h4>Baggage Allowance</h4>
+              <ul class="baggage-list">
+                <li><strong>Checked:</strong> {indigoBooking.baggage.checkedBaggage}</li>
+                <li><strong>Hand:</strong> {indigoBooking.baggage.handBaggage}</li>
+                {indigoBooking.baggage.internationalConnection && (
+                  <li><strong>Intl Connection:</strong> {indigoBooking.baggage.internationalConnection}</li>
+                )}
+              </ul>
+            </div>
+          )}
+
+          {indigoBooking.checkInPolicy && (
+            <div class="detail-section">
+              <h4>Check-in Policy</h4>
+              <ul class="policy-list">
+                <li><strong>Counter closes:</strong> {indigoBooking.checkInPolicy.counterCloses}</li>
+                <li><strong>Gate closes:</strong> {indigoBooking.checkInPolicy.boardingGateCloses}</li>
+                <li><strong>ID Required:</strong> {indigoBooking.checkInPolicy.idRequired}</li>
+              </ul>
+            </div>
+          )}
+
+          {indigoBooking.notes && (
+            <div class="booking-notes">
+              <strong>Note:</strong> {indigoBooking.notes}
+            </div>
+          )}
+        </div>
+      </div>
+    )}
   </section>
 
   <!-- Visa Section -->
@@ -547,6 +634,88 @@ function getAccommodationStatusText(status: string): string {
   .status-notice svg {
     flex-shrink: 0;
     margin-top: 2px;
+  }
+
+  /* IndiGo Domestic Flight */
+  .confirmation-card.indigo {
+    background: linear-gradient(135deg, #0033a0 0%, #002266 100%);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .group-icon.domestic {
+    background-color: #e6eeff;
+    color: #0033a0;
+  }
+
+  .domestic-flight {
+    margin-top: var(--spacing-8);
+    padding-top: var(--spacing-6);
+    border-top: 2px solid var(--color-border-light);
+  }
+
+  .booking-details {
+    margin-top: var(--spacing-4);
+    padding: var(--spacing-4);
+    background-color: var(--color-cream-100);
+    border-radius: var(--radius-card);
+  }
+
+  .detail-section {
+    margin-bottom: var(--spacing-4);
+  }
+
+  .detail-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .detail-section h4 {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-earth-700);
+    margin: 0 0 var(--spacing-2) 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .passenger-list,
+  .baggage-list,
+  .policy-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .passenger-list li,
+  .baggage-list li,
+  .policy-list li {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-2);
+  }
+
+  .seat-badge {
+    display: inline-block;
+    background-color: #0033a0;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: var(--font-size-xs);
+    margin-left: var(--spacing-2);
+  }
+
+  .services {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    margin-top: var(--spacing-1);
+  }
+
+  .booking-notes {
+    margin-top: var(--spacing-4);
+    padding: var(--spacing-3);
+    background-color: var(--color-warning-light);
+    border-radius: var(--radius-button);
+    font-size: var(--font-size-sm);
+    color: var(--color-orange-800);
   }
 
   /* Responsive */
