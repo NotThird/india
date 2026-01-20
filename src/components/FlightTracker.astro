@@ -143,6 +143,7 @@ const nextFlight = upcomingFlights[0] || flightSchedule[0];
       <div class="flight-datetime" id="flight-datetime">
         <span class="flight-date"></span>
         <span class="flight-time"></span>
+        <span class="flight-timezone-info" id="timezone-info"></span>
       </div>
     </div>
 
@@ -414,8 +415,35 @@ const nextFlight = upcomingFlights[0] || flightSchedule[0];
       if (flightDatetime) {
         const dateSpan = flightDatetime.querySelector(".flight-date");
         const timeSpan = flightDatetime.querySelector(".flight-time");
+        const tzSpan = flightDatetime.querySelector(".flight-timezone-info");
         if (dateSpan) dateSpan.textContent = formatDate(flight.departureDateTime);
         if (timeSpan) timeSpan.textContent = `Departs ${flight.departureTime}`;
+
+        // Show dual timezone for non-US departures
+        if (tzSpan) {
+          const flightDate = new Date(flight.departureDateTime);
+          const isDallasDepart = flight.from === "DFW";
+          if (!isDallasDepart) {
+            // Show Dallas time equivalent for India departures
+            const dallasTime = flightDate.toLocaleString("en-US", {
+              timeZone: "America/Chicago",
+              hour: "numeric",
+              minute: "2-digit",
+              hour12: true,
+              timeZoneName: "short"
+            });
+            tzSpan.textContent = `(${dallasTime} Dallas)`;
+          } else {
+            // Show India time equivalent for Dallas departures
+            const indiaTime = flightDate.toLocaleString("en-US", {
+              timeZone: "Asia/Kolkata",
+              hour: "numeric",
+              minute: "2-digit",
+              hour12: true
+            });
+            tzSpan.textContent = `(${indiaTime} IST)`;
+          }
+        }
       }
 
       // Update mobile toggle preview
@@ -681,6 +709,13 @@ const nextFlight = upcomingFlights[0] || flightSchedule[0];
   .flight-datetime .flight-time {
     font-size: var(--font-size-xs);
     opacity: 0.8;
+  }
+
+  .flight-datetime .flight-timezone-info {
+    font-size: var(--font-size-xs);
+    color: var(--color-gold-300);
+    opacity: 0.9;
+    margin-top: 2px;
   }
 
   /* ==========================================================================

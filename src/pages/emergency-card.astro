@@ -1,0 +1,437 @@
+---
+/**
+ * Emergency Card Page
+ *
+ * Purpose: Printable one-page emergency reference card for the India trip.
+ *
+ * Features:
+ * - Designed to fit on single A4/Letter page
+ * - Foldable to wallet size
+ * - All critical contacts and confirmation codes
+ * - Optimized for print (no interactive elements)
+ */
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+import emergency from "../data/emergency.json";
+
+const pageTitle = "Emergency Card";
+---
+
+<BaseLayout title={pageTitle}>
+  <div class="emergency-card-page">
+    <!-- Print Header -->
+    <div class="print-only print-header">
+      <strong>INDIA TRIP 2026 - EMERGENCY CARD</strong>
+    </div>
+
+    <header class="page-header screen-only">
+      <h1>Emergency Card</h1>
+      <p class="subtitle">Print this page for a wallet-sized emergency reference</p>
+      <button onclick="window.print()" class="print-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 6 2 18 2 18 9"></polyline>
+          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+          <rect x="6" y="14" width="12" height="8"></rect>
+        </svg>
+        Print Card
+      </button>
+    </header>
+
+    <div class="card-container">
+      <!-- Emergency Numbers - TOP PRIORITY -->
+      <section class="section emergency-section">
+        <h2 class="section-title">EMERGENCY NUMBERS</h2>
+        <div class="emergency-grid">
+          <div class="emergency-item critical">
+            <span class="label">Police</span>
+            <a href="tel:100" class="number">100</a>
+          </div>
+          <div class="emergency-item critical">
+            <span class="label">Ambulance</span>
+            <a href="tel:108" class="number">108</a>
+          </div>
+          <div class="emergency-item critical">
+            <span class="label">Fire</span>
+            <a href="tel:101" class="number">101</a>
+          </div>
+          <div class="emergency-item">
+            <span class="label">Tourist Help</span>
+            <a href="tel:1363" class="number">1363</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- US Consulate -->
+      <section class="section consulate-section">
+        <h2 class="section-title">U.S. CONSULATE</h2>
+        <div class="contact-block">
+          <p class="address">{emergency.embassy.address}</p>
+          <a href={`tel:${emergency.embassy.phone}`} class="phone-link critical-number">
+            {emergency.embassy.phone}
+          </a>
+          <p class="hours">{emergency.embassy.hours}</p>
+        </div>
+      </section>
+
+      <!-- Hospitals -->
+      <section class="section hospital-section">
+        <h2 class="section-title">24/7 HOSPITALS</h2>
+        {emergency.hospitals.map((hospital) => (
+          <div class="contact-block">
+            <p class="name"><strong>{hospital.name}</strong></p>
+            <p class="address">{hospital.area}</p>
+            <a href={`tel:${hospital.phone}`} class="phone-link">
+              {hospital.phone}
+            </a>
+          </div>
+        ))}
+      </section>
+
+      <!-- Confirmation Codes -->
+      <section class="section confirmations-section">
+        <h2 class="section-title">CONFIRMATION CODES</h2>
+        <div class="confirmations-grid">
+          <div class="confirmation-item">
+            <span class="label">Emirates</span>
+            <span class="code">{emergency.confirmations.emirates}</span>
+          </div>
+          <div class="confirmation-item">
+            <span class="label">IndiGo</span>
+            <span class="code">{emergency.confirmations.indigo}</span>
+          </div>
+          <div class="confirmation-item">
+            <span class="label">Hyatt Chennai</span>
+            <span class="code">{emergency.confirmations.hyatt}</span>
+          </div>
+          <div class="confirmation-item">
+            <span class="label">Train PNR</span>
+            <span class="code">{emergency.confirmations.train}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Hotel Contact -->
+      <section class="section hotel-section">
+        <h2 class="section-title">HOTEL</h2>
+        <div class="contact-block">
+          <p class="name"><strong>Hyatt Regency Chennai</strong></p>
+          <p class="address">365 Anna Salai, Teynampet</p>
+          <a href="tel:+914461001234" class="phone-link">+91 44 6100 1234</a>
+        </div>
+      </section>
+
+      <!-- Transport Apps -->
+      <section class="section transport-section">
+        <h2 class="section-title">TRANSPORT</h2>
+        <div class="transport-grid">
+          <div class="transport-item">
+            <span class="app">Uber</span> - Rideshare app
+          </div>
+          <div class="transport-item">
+            <span class="app">Ola</span> - Local rideshare
+          </div>
+          <div class="transport-item">
+            Prepaid taxi at airport arrivals
+          </div>
+        </div>
+      </section>
+
+      <!-- Personal Info (blank for user to fill) -->
+      <section class="section personal-section">
+        <h2 class="section-title">PERSONAL INFO</h2>
+        <div class="personal-fields">
+          <div class="field">
+            <span class="label">Passport #:</span>
+            <span class="value">678129367</span>
+          </div>
+          <div class="field">
+            <span class="label">Visa ETA:</span>
+            <span class="value">902B1538P</span>
+          </div>
+          <div class="field">
+            <span class="label">Travel Insurance:</span>
+            <span class="value line">_________________</span>
+          </div>
+          <div class="field">
+            <span class="label">Blood Type:</span>
+            <span class="value line">_______</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Trip Dates -->
+      <div class="trip-dates">
+        <strong>Trip Dates:</strong> January 20 - February 5, 2026
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .emergency-card-page {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: var(--spacing-6);
+  }
+
+  .page-header h1 {
+    font-size: var(--font-size-3xl);
+    color: var(--color-earth-800);
+    margin-bottom: var(--spacing-2);
+  }
+
+  .subtitle {
+    color: var(--color-earth-600);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .print-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3) var(--spacing-5);
+    background-color: var(--color-gold-500);
+    color: white;
+    border: none;
+    border-radius: var(--radius-button);
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .print-btn:hover {
+    background-color: var(--color-gold-600);
+  }
+
+  .card-container {
+    background: var(--color-cream-50);
+    border: 2px solid var(--color-earth-300);
+    border-radius: var(--radius-card);
+    padding: var(--spacing-4);
+  }
+
+  .section {
+    margin-bottom: var(--spacing-4);
+    padding-bottom: var(--spacing-3);
+    border-bottom: 1px solid var(--color-earth-200);
+  }
+
+  .section:last-of-type {
+    border-bottom: none;
+    margin-bottom: var(--spacing-2);
+  }
+
+  .section-title {
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+    color: var(--color-earth-700);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--spacing-2);
+  }
+
+  /* Emergency Numbers Grid */
+  .emergency-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-2);
+  }
+
+  .emergency-item {
+    text-align: center;
+    padding: var(--spacing-2);
+    background: var(--color-cream-100);
+    border-radius: var(--radius-button);
+  }
+
+  .emergency-item.critical {
+    background: var(--color-red-50);
+    border: 1px solid var(--color-red-200);
+  }
+
+  .emergency-item .label {
+    display: block;
+    font-size: var(--font-size-xs);
+    color: var(--color-earth-600);
+  }
+
+  .emergency-item .number {
+    display: block;
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--color-earth-800);
+    text-decoration: none;
+  }
+
+  .emergency-item.critical .number {
+    color: var(--color-red-700);
+  }
+
+  /* Contact Blocks */
+  .contact-block {
+    margin-bottom: var(--spacing-2);
+  }
+
+  .contact-block:last-child {
+    margin-bottom: 0;
+  }
+
+  .contact-block .name {
+    margin: 0;
+    font-size: var(--font-size-sm);
+  }
+
+  .contact-block .address {
+    margin: 0;
+    font-size: var(--font-size-xs);
+    color: var(--color-earth-600);
+  }
+
+  .phone-link {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--color-gold-600);
+    text-decoration: none;
+  }
+
+  .phone-link:hover {
+    text-decoration: underline;
+  }
+
+  .critical-number {
+    font-size: var(--font-size-lg);
+    color: var(--color-red-600);
+  }
+
+  .hours {
+    font-size: var(--font-size-xs);
+    color: var(--color-earth-500);
+    margin: 0;
+  }
+
+  /* Confirmations Grid */
+  .confirmations-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-2);
+  }
+
+  .confirmation-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-2);
+    background: var(--color-cream-100);
+    border-radius: var(--radius-button);
+  }
+
+  .confirmation-item .label {
+    font-size: var(--font-size-xs);
+    color: var(--color-earth-600);
+  }
+
+  .confirmation-item .code {
+    font-family: monospace;
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+    color: var(--color-earth-800);
+    background: white;
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: 2px;
+    border: 1px solid var(--color-earth-300);
+  }
+
+  /* Transport */
+  .transport-grid {
+    font-size: var(--font-size-sm);
+  }
+
+  .transport-item {
+    margin-bottom: var(--spacing-1);
+  }
+
+  .transport-item .app {
+    font-weight: 600;
+  }
+
+  /* Personal Fields */
+  .personal-fields {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-2);
+  }
+
+  .field {
+    font-size: var(--font-size-sm);
+  }
+
+  .field .label {
+    color: var(--color-earth-600);
+  }
+
+  .field .value {
+    font-weight: 600;
+  }
+
+  .field .line {
+    border-bottom: 1px solid var(--color-earth-400);
+  }
+
+  /* Trip Dates */
+  .trip-dates {
+    text-align: center;
+    font-size: var(--font-size-sm);
+    color: var(--color-earth-600);
+    padding-top: var(--spacing-2);
+    border-top: 1px dashed var(--color-earth-300);
+  }
+
+  /* Mobile */
+  @media (max-width: 600px) {
+    .emergency-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .confirmations-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .personal-fields {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Print-specific overrides */
+  @media print {
+    .card-container {
+      border: 1px solid black !important;
+      padding: 0.5cm !important;
+    }
+
+    .section {
+      margin-bottom: 0.3cm !important;
+      padding-bottom: 0.2cm !important;
+    }
+
+    .emergency-grid {
+      grid-template-columns: repeat(4, 1fr) !important;
+    }
+
+    .confirmations-grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    .emergency-item .number {
+      font-size: 16pt !important;
+    }
+
+    .confirmation-item .code {
+      border: 1px solid black !important;
+    }
+  }
+</style>

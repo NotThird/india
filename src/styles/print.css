@@ -1,0 +1,367 @@
+/**
+ * Print Stylesheet
+ *
+ * Purpose: Optimize pages for printing with clean, ink-efficient layouts.
+ *
+ * Features:
+ * - Hides navigation, interactive elements, and decorative items
+ * - Resets backgrounds to white for ink saving
+ * - Optimizes typography for paper readability
+ * - Controls page breaks for logical content flow
+ * - Shows URLs for external links
+ */
+
+@media print {
+  /* ==========================================================================
+     Page Setup
+     ========================================================================== */
+  @page {
+    margin: 0.75in;
+    size: letter;
+  }
+
+  @page :first {
+    margin-top: 0.5in;
+  }
+
+  /* ==========================================================================
+     Hide Non-Essential Elements
+     ========================================================================== */
+
+  /* Navigation and interactive elements */
+  .sidebar,
+  #mobile-menu,
+  #mobile-menu-toggle,
+  .mobile-header,
+  .flight-tracker,
+  .weather-widget,
+  .currency-converter,
+  .interactive-map,
+  .leaflet-container,
+  .map-container,
+  .route-panel,
+  button:not(.print-show),
+  .no-print,
+  nav,
+  footer,
+  .mobile-menu,
+  .btn,
+  .button {
+    display: none !important;
+  }
+
+  /* Form elements that shouldn't print */
+  input[type="text"],
+  input[type="number"],
+  input[type="search"],
+  select,
+  textarea {
+    border: 1px solid #999 !important;
+    background: white !important;
+  }
+
+  /* Keep checkboxes visible for packing list */
+  input[type="checkbox"] {
+    display: inline-block !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* ==========================================================================
+     Reset Backgrounds and Colors
+     ========================================================================== */
+
+  *,
+  *::before,
+  *::after {
+    background: transparent !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 11pt;
+    line-height: 1.5;
+  }
+
+  /* Preserve some backgrounds with print-color-adjust */
+  .badge,
+  .status-badge,
+  .day-marker,
+  .progress-bar {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    background-color: #eee !important;
+    border: 1px solid #999 !important;
+  }
+
+  /* ==========================================================================
+     Layout Adjustments
+     ========================================================================== */
+
+  /* Remove sidebar offset */
+  .main-content,
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Reset flex layouts */
+  body {
+    display: block !important;
+  }
+
+  /* Cards and containers */
+  .card,
+  article,
+  section {
+    border: 1px solid #ddd !important;
+    margin-bottom: 1rem !important;
+    padding: 0.75rem !important;
+    page-break-inside: avoid;
+  }
+
+  /* ==========================================================================
+     Typography
+     ========================================================================== */
+
+  h1 {
+    font-size: 18pt !important;
+    margin-bottom: 0.5rem !important;
+    page-break-after: avoid;
+  }
+
+  h2 {
+    font-size: 14pt !important;
+    margin-top: 1rem !important;
+    margin-bottom: 0.5rem !important;
+    page-break-after: avoid;
+  }
+
+  h3 {
+    font-size: 12pt !important;
+    margin-top: 0.75rem !important;
+    margin-bottom: 0.25rem !important;
+    page-break-after: avoid;
+  }
+
+  h4, h5, h6 {
+    font-size: 11pt !important;
+    font-weight: bold !important;
+    page-break-after: avoid;
+  }
+
+  p, li, td, th {
+    font-size: 10pt !important;
+    orphans: 3;
+    widows: 3;
+  }
+
+  /* ==========================================================================
+     Links
+     ========================================================================== */
+
+  a {
+    color: black !important;
+    text-decoration: underline !important;
+  }
+
+  /* Show URLs for external links */
+  a[href^="http"]:not([href*="india-trip"])::after {
+    content: " (" attr(href) ")";
+    font-size: 8pt;
+    color: #666;
+  }
+
+  /* Don't show URLs for internal links or tel: links */
+  a[href^="/"]::after,
+  a[href^="#"]::after,
+  a[href^="tel:"]::after,
+  a[href^="mailto:"]::after {
+    content: none !important;
+  }
+
+  /* ==========================================================================
+     Page Break Control
+     ========================================================================== */
+
+  /* Avoid breaking inside these elements */
+  .day-entry,
+  .day-card,
+  .event-card,
+  .flight-card,
+  .booking-card,
+  .packing-category,
+  .shop-card,
+  tr,
+  blockquote,
+  pre,
+  img {
+    page-break-inside: avoid;
+  }
+
+  /* Force page breaks */
+  .page-break,
+  .print-page-break {
+    page-break-after: always;
+  }
+
+  /* Keep headings with content */
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+
+  /* ==========================================================================
+     Tables
+     ========================================================================== */
+
+  table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+  }
+
+  th, td {
+    border: 1px solid #999 !important;
+    padding: 0.25rem 0.5rem !important;
+    text-align: left !important;
+  }
+
+  th {
+    background-color: #eee !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  /* ==========================================================================
+     Itinerary-Specific Styles
+     ========================================================================== */
+
+  /* Timeline styling */
+  .timeline::before,
+  .day-entry::before {
+    display: none !important;
+  }
+
+  .day-marker {
+    width: 24pt !important;
+    height: 24pt !important;
+    font-size: 10pt !important;
+    line-height: 24pt !important;
+    border-radius: 50% !important;
+    text-align: center !important;
+  }
+
+  /* Activities list */
+  .activity-item {
+    padding: 0.25rem 0 !important;
+    border-bottom: 1px dotted #ccc !important;
+  }
+
+  .activity-time {
+    font-weight: bold !important;
+    min-width: 60pt !important;
+  }
+
+  /* ==========================================================================
+     Packing List Styles
+     ========================================================================== */
+
+  .packing-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    padding: 0.25rem 0 !important;
+  }
+
+  .packing-checkbox {
+    width: 12pt !important;
+    height: 12pt !important;
+  }
+
+  /* Progress bars as text */
+  .progress-bar {
+    display: none !important;
+  }
+
+  .progress-text {
+    display: inline !important;
+  }
+
+  /* ==========================================================================
+     Bookings Page Styles
+     ========================================================================== */
+
+  .confirmation-code {
+    font-family: monospace !important;
+    font-size: 12pt !important;
+    font-weight: bold !important;
+    border: 2px solid black !important;
+    padding: 0.25rem 0.5rem !important;
+    display: inline-block !important;
+  }
+
+  .flight-segment {
+    margin-bottom: 0.5rem !important;
+    padding: 0.5rem !important;
+    border: 1px solid #999 !important;
+  }
+
+  /* ==========================================================================
+     Emergency Card Specific
+     ========================================================================== */
+
+  .emergency-card-page {
+    font-size: 11pt !important;
+  }
+
+  .emergency-card-page .critical-number {
+    font-size: 14pt !important;
+    font-weight: bold !important;
+  }
+
+  .emergency-card-page .section {
+    margin-bottom: 0.75rem !important;
+    padding-bottom: 0.5rem !important;
+    border-bottom: 1px solid #999 !important;
+  }
+
+  /* ==========================================================================
+     Print Header/Footer (Browser Controlled)
+     ========================================================================== */
+
+  /* Add page title to print */
+  .print-header {
+    display: block !important;
+    text-align: center !important;
+    font-size: 10pt !important;
+    color: #666 !important;
+    margin-bottom: 1rem !important;
+  }
+
+  /* Hide screen-only header */
+  .screen-only {
+    display: none !important;
+  }
+}
+
+/* ==========================================================================
+   Print-Show Utility (elements to show ONLY in print)
+   ========================================================================== */
+
+.print-only {
+  display: none !important;
+}
+
+@media print {
+  .print-only {
+    display: block !important;
+  }
+}

@@ -1,0 +1,191 @@
+---
+/**
+ * Offline Page
+ *
+ * Purpose: Fallback page shown when user is offline and requested page isn't cached.
+ *
+ * Features:
+ * - Friendly offline message
+ * - List of available offline features
+ * - Retry button to refresh
+ * - Minimal dependencies (should always be cached)
+ */
+
+const pageTitle = "Offline";
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{pageTitle} | Chennai Wedding Trip 2026</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content="#D4A853" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: linear-gradient(135deg, #FFF8F0 0%, #F5E6D3 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        color: #4A3329;
+      }
+
+      .offline-container {
+        max-width: 400px;
+        text-align: center;
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .offline-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1.5rem;
+        color: #D4A853;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+        color: #4A3329;
+        margin-bottom: 0.5rem;
+      }
+
+      .subtitle {
+        color: #6B5B4F;
+        margin-bottom: 1.5rem;
+      }
+
+      .features {
+        text-align: left;
+        margin-bottom: 1.5rem;
+      }
+
+      .features h2 {
+        font-size: 0.875rem;
+        color: #6B5B4F;
+        margin-bottom: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .feature-list {
+        list-style: none;
+      }
+
+      .feature-list li {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0;
+        font-size: 0.9rem;
+        border-bottom: 1px solid #F5E6D3;
+      }
+
+      .feature-list li:last-child {
+        border-bottom: none;
+      }
+
+      .check {
+        color: #22C55E;
+      }
+
+      .cross {
+        color: #EF4444;
+      }
+
+      .retry-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: linear-gradient(135deg, #D4A853 0%, #B8923D 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 6px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+
+      .retry-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(212, 168, 83, 0.4);
+      }
+
+      .retry-btn:active {
+        transform: translateY(0);
+      }
+
+      .home-link {
+        display: block;
+        margin-top: 1rem;
+        color: #D4A853;
+        text-decoration: none;
+        font-size: 0.875rem;
+      }
+
+      .home-link:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="offline-container">
+      <svg class="offline-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="1" y1="1" x2="23" y2="23"></line>
+        <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
+        <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
+        <path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path>
+        <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
+        <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+        <line x1="12" y1="20" x2="12.01" y2="20"></line>
+      </svg>
+
+      <h1>You're Offline</h1>
+      <p class="subtitle">No internet connection available</p>
+
+      <div class="features">
+        <h2>Available Offline</h2>
+        <ul class="feature-list">
+          <li><span class="check">✓</span> Full itinerary</li>
+          <li><span class="check">✓</span> Packing checklist</li>
+          <li><span class="check">✓</span> Emergency contacts</li>
+          <li><span class="check">✓</span> Booking confirmations</li>
+          <li><span class="check">✓</span> Shopping guide</li>
+        </ul>
+      </div>
+
+      <div class="features">
+        <h2>Requires Connection</h2>
+        <ul class="feature-list">
+          <li><span class="cross">✗</span> Live currency rates</li>
+          <li><span class="cross">✗</span> Weather forecasts</li>
+          <li><span class="cross">✗</span> Interactive maps</li>
+        </ul>
+      </div>
+
+      <button class="retry-btn" onclick="location.reload()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 4 23 10 17 10"></polyline>
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+        </svg>
+        Try Again
+      </button>
+
+      <a href="/" class="home-link">Go to Home Page</a>
+    </div>
+  </body>
+</html>

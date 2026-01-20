@@ -35,9 +35,8 @@ const trains = trainsData as TrainsData;
 const travelers = travelersData as TravelersData;
 const accommodations = accommodationData as AccommodationData;
 
-// Get the primary traveler's visa info
-const traveler = travelers.travelers[0];
-const visa = traveler.visa;
+// Get all travelers' visa info
+const allTravelers = travelers.travelers;
 
 // Get all accommodations
 const allAccommodations = accommodations.accommodations;
@@ -53,6 +52,31 @@ const trainBooking = trains.bookings[0];
 // Group Emirates flights by direction
 const outboundFlights = emiratesBooking?.segments.filter((s: FlightSegment) => s.direction === "outbound") || [];
 const returnFlights = emiratesBooking?.segments.filter((s: FlightSegment) => s.direction === "return") || [];
+
+// Calculate total travel times
+function parseDuration(duration: string): number {
+  const match = duration.match(/(\d+)h\s*(\d+)?m?/);
+  if (!match) return 0;
+  const hours = parseInt(match[1], 10) || 0;
+  const minutes = parseInt(match[2], 10) || 0;
+  return hours * 60 + minutes;
+}
+
+function formatTotalDuration(minutes: number): string {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+}
+
+// Outbound: DFW → DXB → MAA (layover in Dubai ~2h 45m)
+const outboundFlightTime = outboundFlights.reduce((sum, f) => sum + parseDuration(f.duration), 0);
+const outboundLayover = 165; // ~2h 45m layover in Dubai
+const totalOutbound = outboundFlightTime + outboundLayover;
+
+// Return: MAA → DXB → DFW (layover in Dubai ~1h 55m)
+const returnFlightTime = returnFlights.reduce((sum, f) => sum + parseDuration(f.duration), 0);
+const returnLayover = 115; // ~1h 55m layover in Dubai
+const totalReturn = returnFlightTime + returnLayover;
 
 // Format date for display
 function formatDate(dateStr: string): string {
@@ -165,7 +189,7 @@ function getAccommodationStatusText(status: string): string {
           </svg>
         </span>
         <span class="action-label">e-Visa</span>
-        <span class="action-code">{visa.etaNumber.slice(-8)}</span>
+        <span class="action-code">{allTravelers.length} travelers</span>
       </a>
     </div>
   </section>
@@ -208,11 +232,16 @@ function getAccommodationStatusText(status: string): string {
           </svg>
         </span>
         Outbound: Dallas to Chennai
+        <span class="total-time">Total: {formatTotalDuration(totalOutbound)}</span>
       </h3>
       <div class="flight-list">
         {outboundFlights.map((flight: FlightSegment) => (
           <FlightCard flight={flight} />
         ))}
+      </div>
+      <div class="layover-info">
+        <span class="layover-icon">⏱</span>
+        <span>~2h 45m layover in Dubai</span>
       </div>
     </div>
 
@@ -226,11 +255,16 @@ function getAccommodationStatusText(status: string): string {
           </svg>
         </span>
         Return: Chennai to Dallas
+        <span class="total-time">Total: {formatTotalDuration(totalReturn)}</span>
       </h3>
       <div class="flight-list">
         {returnFlights.map((flight: FlightSegment) => (
           <FlightCard flight={flight} />
         ))}
+      </div>
+      <div class="layover-info">
+        <span class="layover-icon">⏱</span>
+        <span>~1h 55m layover in Dubai</span>
       </div>
     </div>
 
@@ -434,57 +468,69 @@ function getAccommodationStatusText(status: string): string {
             <polyline points="10 9 9 9 8 9"></polyline>
           </svg>
         </span>
-        Visa
+        Visas
       </h2>
-      <Badge variant="granted" size="md">{visa.status}</Badge>
+      <Badge variant="granted" size="md">ALL GRANTED</Badge>
     </div>
 
-    <Card>
-      <div class="visa-content">
-        <div class="visa-header">
-          <h3 class="visa-type">{visa.type}</h3>
-          <p class="visa-traveler">For: {traveler.name}</p>
-        </div>
-
-        <div class="visa-details">
-          <div class="visa-detail">
-            <span class="detail-label">ETA Number</span>
-            <span class="detail-value eta-number">{visa.etaNumber}</span>
-          </div>
-          <div class="visa-detail">
-            <span class="detail-label">Application ID</span>
-            <span class="detail-value">{visa.applicationId}</span>
-          </div>
-          <div class="visa-detail">
-            <span class="detail-label">Valid From</span>
-            <span class="detail-value">{formatDate(visa.issueDate)}</span>
-          </div>
-          <div class="visa-detail">
-            <span class="detail-label">Valid Until</span>
-            <span class="detail-value">{formatDate(visa.expiryDate)}</span>
-          </div>
-          <div class="visa-detail">
-            <span class="detail-label">Entries</span>
-            <span class="detail-value">{visa.entries}</span>
-          </div>
-          <div class="visa-detail">
-            <span class="detail-label">Maximum Stay</span>
-            <span class="detail-value">{visa.maxStay}</span>
-          </div>
-        </div>
-
-        {visa.notes && visa.notes.length > 0 && (
-          <div class="visa-notes">
-            <h4 class="notes-title">Important Notes</h4>
-            <ul class="notes-list">
-              {visa.notes.map((note: string) => (
-                <li class="note-item">{note}</li>
-              ))}
-            </ul>
-          </div>
-        )}
+    <!-- Important visa reminder -->
+    <div class="visa-reminder">
+      <span class="reminder-icon">📋</span>
+      <div class="reminder-content">
+        <strong>At Airport:</strong> Carry physical passport + ETA email (printed or on phone). No visa stamp required before travel.
       </div>
-    </Card>
+    </div>
+
+    <div class="visa-list">
+      {allTravelers.map((traveler) => (
+        <Card>
+          <div class="visa-content">
+            <div class="visa-header">
+              <h3 class="visa-type">{traveler.visa.type}</h3>
+              <p class="visa-traveler">{traveler.name}</p>
+            </div>
+
+            <div class="visa-details">
+              <div class="visa-detail">
+                <span class="detail-label">ETA Number</span>
+                <span class="detail-value eta-number">{traveler.visa.etaNumber}</span>
+              </div>
+              <div class="visa-detail">
+                <span class="detail-label">Application ID</span>
+                <span class="detail-value">{traveler.visa.applicationId}</span>
+              </div>
+              <div class="visa-detail">
+                <span class="detail-label">Passport</span>
+                <span class="detail-value">{traveler.passport}</span>
+              </div>
+              <div class="visa-detail">
+                <span class="detail-label">Valid From</span>
+                <span class="detail-value">{formatDate(traveler.visa.issueDate)}</span>
+              </div>
+              <div class="visa-detail">
+                <span class="detail-label">Valid Until</span>
+                <span class="detail-value">{formatDate(traveler.visa.expiryDate)}</span>
+              </div>
+              <div class="visa-detail">
+                <span class="detail-label">Entries</span>
+                <span class="detail-value">{traveler.visa.entries}</span>
+              </div>
+            </div>
+
+            {traveler.visa.notes && traveler.visa.notes.length > 0 && (
+              <details class="visa-notes-accordion">
+                <summary class="notes-summary">Important Notes ({traveler.visa.notes.length})</summary>
+                <ul class="notes-list">
+                  {traveler.visa.notes.map((note: string) => (
+                    <li class="note-item">{note}</li>
+                  ))}
+                </ul>
+              </details>
+            )}
+          </div>
+        </Card>
+      ))}
+    </div>
   </section>
 
   <!-- Accommodation Section -->
@@ -780,7 +826,83 @@ function getAccommodationStatusText(status: string): string {
     gap: var(--spacing-4);
   }
 
+  .total-time {
+    margin-left: auto;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-gold-700);
+    background-color: var(--color-gold-100);
+    padding: 2px 10px;
+    border-radius: 12px;
+  }
+
+  .layover-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    margin-top: var(--spacing-3);
+    padding: var(--spacing-2) var(--spacing-3);
+    background-color: var(--color-cream-100);
+    border-radius: var(--radius-button);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .layover-icon {
+    font-size: var(--font-size-base);
+  }
+
   /* Visa Section */
+  .visa-reminder {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-3);
+    padding: var(--spacing-4);
+    background: linear-gradient(135deg, #2d5a27 0%, #1a3518 100%);
+    color: white;
+    border-radius: var(--radius-card);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .reminder-icon {
+    font-size: var(--font-size-xl);
+    flex-shrink: 0;
+  }
+
+  .reminder-content {
+    font-size: var(--font-size-sm);
+  }
+
+  .reminder-content strong {
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .visa-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+  }
+
+  .visa-notes-accordion {
+    background-color: var(--color-cream-100);
+    padding: var(--spacing-3);
+    border-radius: var(--radius-card);
+    border-left: 3px solid var(--color-gold-400);
+    margin-top: var(--spacing-2);
+  }
+
+  .notes-summary {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-earth-700);
+    cursor: pointer;
+    padding: var(--spacing-1) 0;
+  }
+
+  .notes-summary:hover {
+    color: var(--color-gold-700);
+  }
   .visa-content {
     display: flex;
     flex-direction: column;

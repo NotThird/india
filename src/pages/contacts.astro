@@ -1,0 +1,463 @@
+---
+/**
+ * Quick Contacts Page
+ *
+ * Purpose: One-tap calling interface for all important contacts during the trip.
+ *
+ * Features:
+ * - Large touch targets (48px minimum) for mobile usability
+ * - tel: links for instant calling
+ * - Visual hierarchy: Emergency (red) > Medical (blue) > Travel (gold)
+ * - Organized by urgency and category
+ */
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+import emergency from "../data/emergency.json";
+
+const pageTitle = "Quick Contacts";
+---
+
+<BaseLayout title={pageTitle}>
+  <div class="contacts-page">
+    <header class="page-header">
+      <h1>Quick Contacts</h1>
+      <p class="subtitle">Tap to call - all numbers work in India</p>
+    </header>
+
+    <!-- Emergency Services - HIGHEST PRIORITY -->
+    <section class="contact-section emergency-services">
+      <h2 class="section-header">
+        <span class="icon">🚨</span>
+        Emergency Services
+      </h2>
+      <div class="contact-grid">
+        <a href="tel:100" class="contact-button emergency">
+          <div class="button-content">
+            <span class="contact-icon">🚔</span>
+            <span class="contact-label">Police</span>
+            <span class="contact-number">100</span>
+          </div>
+        </a>
+        <a href="tel:108" class="contact-button emergency">
+          <div class="button-content">
+            <span class="contact-icon">🚑</span>
+            <span class="contact-label">Ambulance</span>
+            <span class="contact-number">108</span>
+          </div>
+        </a>
+        <a href="tel:101" class="contact-button emergency">
+          <div class="button-content">
+            <span class="contact-icon">🔥</span>
+            <span class="contact-label">Fire</span>
+            <span class="contact-number">101</span>
+          </div>
+        </a>
+        <a href="tel:1363" class="contact-button emergency-alt">
+          <div class="button-content">
+            <span class="contact-icon">ℹ️</span>
+            <span class="contact-label">Tourist Help</span>
+            <span class="contact-number">1363</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- Medical - HIGH PRIORITY -->
+    <section class="contact-section medical">
+      <h2 class="section-header">
+        <span class="icon">🏥</span>
+        Hospitals (24/7)
+      </h2>
+      <div class="contact-list">
+        {emergency.hospitals.map((hospital) => (
+          <a href={`tel:${hospital.phone}`} class="contact-button medical">
+            <div class="button-content">
+              <div class="contact-info">
+                <span class="contact-label">{hospital.name}</span>
+                <span class="contact-sublabel">{hospital.area}</span>
+              </div>
+              <span class="contact-number">{hospital.phone}</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- US Consulate -->
+    <section class="contact-section consulate">
+      <h2 class="section-header">
+        <span class="icon">🇺🇸</span>
+        U.S. Consulate
+      </h2>
+      <div class="contact-list">
+        <a href={`tel:${emergency.embassy.phone}`} class="contact-button consulate-btn">
+          <div class="button-content">
+            <div class="contact-info">
+              <span class="contact-label">{emergency.embassy.name}</span>
+              <span class="contact-sublabel">{emergency.embassy.address}</span>
+              <span class="contact-hours">{emergency.embassy.hours}</span>
+            </div>
+            <span class="contact-number">{emergency.embassy.phone}</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- Hotel -->
+    <section class="contact-section hotel">
+      <h2 class="section-header">
+        <span class="icon">🏨</span>
+        Hotel
+      </h2>
+      <div class="contact-list">
+        <a href="tel:+914461001234" class="contact-button hotel-btn">
+          <div class="button-content">
+            <div class="contact-info">
+              <span class="contact-label">Hyatt Regency Chennai</span>
+              <span class="contact-sublabel">365 Anna Salai, Teynampet</span>
+              <span class="contact-code">Confirmation: 56349563</span>
+            </div>
+            <span class="contact-number">+91 44 6100 1234</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- Airlines -->
+    <section class="contact-section airlines">
+      <h2 class="section-header">
+        <span class="icon">✈️</span>
+        Airlines
+      </h2>
+      <div class="contact-list">
+        <a href="tel:+914442134444" class="contact-button airline-btn">
+          <div class="button-content">
+            <div class="contact-info">
+              <span class="contact-label">Emirates Chennai</span>
+              <span class="contact-code">Confirmation: ES6BFF</span>
+            </div>
+            <span class="contact-number">+91 44 4213 4444</span>
+          </div>
+        </a>
+        <a href="tel:09910383838" class="contact-button airline-btn">
+          <div class="button-content">
+            <div class="contact-info">
+              <span class="contact-label">IndiGo Customer Care</span>
+              <span class="contact-code">Confirmation: CDCETH</span>
+            </div>
+            <span class="contact-number">0991-038-3838</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- Transport Apps -->
+    <section class="contact-section transport">
+      <h2 class="section-header">
+        <span class="icon">🚗</span>
+        Transport
+      </h2>
+      <div class="transport-tips">
+        <div class="transport-card">
+          <span class="app-name">Uber</span>
+          <span class="app-desc">Download the Uber app - works in Chennai & Bangalore</span>
+        </div>
+        <div class="transport-card">
+          <span class="app-name">Ola</span>
+          <span class="app-desc">Popular local rideshare - often cheaper than Uber</span>
+        </div>
+        <div class="transport-card">
+          <span class="app-name">Airport Taxi</span>
+          <span class="app-desc">Prepaid taxi counter inside arrivals - fixed rates</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Reference -->
+    <section class="contact-section quick-ref">
+      <h2 class="section-header">
+        <span class="icon">📋</span>
+        Quick Reference
+      </h2>
+      <div class="reference-grid">
+        <div class="ref-item">
+          <span class="ref-label">Country Code</span>
+          <span class="ref-value">+91</span>
+        </div>
+        <div class="ref-item">
+          <span class="ref-label">Chennai Code</span>
+          <span class="ref-value">44</span>
+        </div>
+        <div class="ref-item">
+          <span class="ref-label">Bangalore Code</span>
+          <span class="ref-value">80</span>
+        </div>
+        <div class="ref-item">
+          <span class="ref-label">Time Zone</span>
+          <span class="ref-value">IST (UTC+5:30)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Print Link -->
+    <div class="print-link">
+      <a href="/emergency-card">
+        <span class="icon">🖨️</span>
+        Print Emergency Card
+      </a>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .contacts-page {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: var(--spacing-6);
+  }
+
+  .page-header h1 {
+    font-size: var(--font-size-3xl);
+    color: var(--color-earth-800);
+    margin-bottom: var(--spacing-2);
+  }
+
+  .subtitle {
+    color: var(--color-earth-600);
+  }
+
+  /* Section Styling */
+  .contact-section {
+    margin-bottom: var(--spacing-6);
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--color-earth-700);
+    margin-bottom: var(--spacing-3);
+    padding-bottom: var(--spacing-2);
+    border-bottom: 2px solid var(--color-earth-200);
+  }
+
+  .section-header .icon {
+    font-size: var(--font-size-xl);
+  }
+
+  /* Contact Grid (for emergency services) */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-3);
+  }
+
+  /* Contact List (for other sections) */
+  .contact-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+  }
+
+  /* Contact Buttons - Core Styling */
+  .contact-button {
+    display: block;
+    padding: var(--spacing-4);
+    border-radius: var(--radius-card);
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    min-height: 48px; /* Touch target */
+  }
+
+  .contact-button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  .contact-button:active {
+    transform: translateY(0);
+  }
+
+  .button-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-1);
+  }
+
+  .contact-list .button-content {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .contact-icon {
+    font-size: var(--font-size-2xl);
+  }
+
+  .contact-label {
+    font-weight: 600;
+    color: inherit;
+  }
+
+  .contact-sublabel {
+    font-size: var(--font-size-sm);
+    opacity: 0.8;
+  }
+
+  .contact-hours,
+  .contact-code {
+    font-size: var(--font-size-xs);
+    opacity: 0.7;
+  }
+
+  .contact-number {
+    font-family: monospace;
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+  }
+
+  .contact-grid .contact-number {
+    font-size: var(--font-size-2xl);
+  }
+
+  /* Emergency Button Variant */
+  .contact-button.emergency {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    color: white;
+  }
+
+  .contact-button.emergency-alt {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: white;
+  }
+
+  /* Medical Button Variant */
+  .contact-button.medical {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+  }
+
+  /* Consulate Button Variant */
+  .contact-button.consulate-btn {
+    background: linear-gradient(135deg, #1e3a5f, #1e40af);
+    color: white;
+  }
+
+  /* Hotel Button Variant */
+  .contact-button.hotel-btn {
+    background: linear-gradient(135deg, var(--color-gold-500), var(--color-gold-600));
+    color: white;
+  }
+
+  /* Airline Button Variant */
+  .contact-button.airline-btn {
+    background: linear-gradient(135deg, var(--color-earth-600), var(--color-earth-700));
+    color: white;
+  }
+
+  /* Transport Tips */
+  .transport-tips {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+
+  .transport-card {
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-3);
+    background: var(--color-cream-100);
+    border-radius: var(--radius-button);
+    border-left: 4px solid var(--color-gold-500);
+  }
+
+  .transport-card .app-name {
+    font-weight: 600;
+    color: var(--color-earth-800);
+  }
+
+  .transport-card .app-desc {
+    font-size: var(--font-size-sm);
+    color: var(--color-earth-600);
+  }
+
+  /* Reference Grid */
+  .reference-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-2);
+  }
+
+  .ref-item {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--spacing-2) var(--spacing-3);
+    background: var(--color-cream-100);
+    border-radius: var(--radius-button);
+  }
+
+  .ref-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-earth-600);
+  }
+
+  .ref-value {
+    font-weight: 600;
+    color: var(--color-earth-800);
+  }
+
+  /* Print Link */
+  .print-link {
+    text-align: center;
+    margin-top: var(--spacing-8);
+    padding-top: var(--spacing-4);
+    border-top: 1px dashed var(--color-earth-300);
+  }
+
+  .print-link a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    color: var(--color-gold-600);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .print-link a:hover {
+    text-decoration: underline;
+  }
+
+  /* Mobile Optimizations */
+  @media (max-width: 480px) {
+    .contact-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .reference-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .contact-list .button-content {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--spacing-2);
+    }
+
+    .contact-number {
+      font-size: var(--font-size-base);
+    }
+  }
+</style>

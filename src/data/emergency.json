@@ -33,7 +33,9 @@
     "airport_taxi": "Prepaid taxi counter at airport"
   },
   "confirmations": {
-    "flights": "ES6BFF",
-    "hyatt": "TBD"
+    "emirates": "ES6BFF",
+    "indigo": "CDCETH",
+    "hyatt": "56349563",
+    "train": "4938634702"
   }
 }

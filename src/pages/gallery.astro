@@ -1,0 +1,925 @@
+---
+/**
+ * Photo Gallery Page
+ *
+ * Purpose: Gallery for trip photos with upload functionality.
+ *
+ * Features:
+ * - Photo upload from Samsung/iPhone
+ * - Local storage using IndexedDB
+ * - CSS Grid layout for images
+ * - Date and location tagging
+ * - Lightbox view
+ */
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const pageTitle = "Photo Gallery";
+---
+
+<BaseLayout title={pageTitle}>
+  <div class="gallery-page">
+    <header class="page-header">
+      <h1>Photo Gallery</h1>
+      <p class="subtitle">Memories from Chennai Wedding Trip 2026</p>
+    </header>
+
+    <!-- Upload Section -->
+    <div class="upload-section">
+      <div class="upload-area" id="uploadArea">
+        <input type="file" id="photoInput" accept="image/*" multiple hidden />
+        <div class="upload-content">
+          <div class="upload-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+          </div>
+          <p class="upload-text">Tap to upload photos</p>
+          <p class="upload-hint">or drag and drop images here</p>
+          <p class="upload-formats">Supports JPG, PNG, HEIC from Samsung & iPhone</p>
+        </div>
+      </div>
+      <div class="upload-actions">
+        <button id="selectPhotos" class="btn btn-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+            <polyline points="21 15 16 10 5 21"></polyline>
+          </svg>
+          Select Photos
+        </button>
+        <button id="takePhoto" class="btn btn-secondary">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+            <circle cx="12" cy="13" r="4"></circle>
+          </svg>
+          Take Photo
+        </button>
+      </div>
+    </div>
+
+    <!-- Photo Count & Actions -->
+    <div class="gallery-toolbar" id="galleryToolbar" style="display: none;">
+      <span class="photo-count" id="photoCount">0 photos</span>
+      <button id="clearAll" class="btn btn-text-danger">Clear All</button>
+    </div>
+
+    <!-- Photo Grid -->
+    <div class="photo-grid" id="photoGrid">
+      <!-- Photos will be inserted dynamically -->
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <circle cx="8.5" cy="8.5" r="1.5"></circle>
+          <polyline points="21 15 16 10 5 21"></polyline>
+        </svg>
+      </div>
+
+      <h2>No Photos Yet</h2>
+
+      <p class="empty-message">
+        Upload your trip photos using the buttons above!
+      </p>
+
+      <div class="photo-tips">
+        <h3>Photo Tips for the Trip</h3>
+        <ul>
+          <li>
+            <span class="tip-icon">📱</span>
+            <span>Free up phone storage before departure</span>
+          </li>
+          <li>
+            <span class="tip-icon">🔋</span>
+            <span>Bring extra batteries/power banks for camera</span>
+          </li>
+          <li>
+            <span class="tip-icon">☁️</span>
+            <span>Enable auto-backup to cloud (Google Photos, iCloud)</span>
+          </li>
+          <li>
+            <span class="tip-icon">🎨</span>
+            <span>Wedding events are colorful - great photo opportunities!</span>
+          </li>
+          <li>
+            <span class="tip-icon">🌅</span>
+            <span>Best light for outdoor photos: early morning or golden hour</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="highlight-events">
+        <h3>Don't Miss These Moments</h3>
+        <div class="event-grid">
+          <div class="event-card">
+            <span class="event-date">Jan 25</span>
+            <span class="event-name">Mehendi Ceremony</span>
+            <span class="event-tip">Colorful henna, candid shots</span>
+          </div>
+          <div class="event-card">
+            <span class="event-date">Jan 28</span>
+            <span class="event-name">Wedding Day</span>
+            <span class="event-tip">Main ceremony, traditional attire</span>
+          </div>
+          <div class="event-card">
+            <span class="event-date">Jan 29</span>
+            <span class="event-name">Cocktail Party</span>
+            <span class="event-tip">Evening ambiance, group photos</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lightbox Modal -->
+    <div class="lightbox" id="lightbox">
+      <button class="lightbox-close" id="lightboxClose">&times;</button>
+      <button class="lightbox-nav lightbox-prev" id="lightboxPrev">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+      <button class="lightbox-nav lightbox-next" id="lightboxNext">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+      <div class="lightbox-content">
+        <img id="lightboxImage" src="" alt="" />
+        <div class="lightbox-info" id="lightboxInfo">
+          <span class="lightbox-date"></span>
+          <button class="lightbox-delete" id="lightboxDelete">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  // IndexedDB Photo Gallery Manager
+  class PhotoGallery {
+    private db: IDBDatabase | null = null;
+    private readonly DB_NAME = 'IndiaTrip2026';
+    private readonly STORE_NAME = 'photos';
+    private photos: { id: string; data: string; date: string; timestamp: number }[] = [];
+    private currentLightboxIndex = 0;
+
+    constructor() {
+      this.init();
+    }
+
+    private async init() {
+      await this.openDatabase();
+      await this.loadPhotos();
+      this.setupEventListeners();
+      this.render();
+    }
+
+    private openDatabase(): Promise<void> {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(this.DB_NAME, 1);
+
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+          this.db = request.result;
+          resolve();
+        };
+
+        request.onupgradeneeded = (event) => {
+          const db = (event.target as IDBOpenDBRequest).result;
+          if (!db.objectStoreNames.contains(this.STORE_NAME)) {
+            db.createObjectStore(this.STORE_NAME, { keyPath: 'id' });
+          }
+        };
+      });
+    }
+
+    private async loadPhotos(): Promise<void> {
+      if (!this.db) return;
+
+      return new Promise((resolve) => {
+        const transaction = this.db!.transaction([this.STORE_NAME], 'readonly');
+        const store = transaction.objectStore(this.STORE_NAME);
+        const request = store.getAll();
+
+        request.onsuccess = () => {
+          this.photos = request.result || [];
+          // Sort by timestamp descending (newest first)
+          this.photos.sort((a, b) => b.timestamp - a.timestamp);
+          resolve();
+        };
+
+        request.onerror = () => {
+          console.error('Failed to load photos');
+          resolve();
+        };
+      });
+    }
+
+    private async savePhoto(dataUrl: string): Promise<void> {
+      if (!this.db) return;
+
+      const photo = {
+        id: `photo_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        data: dataUrl,
+        date: new Date().toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric'
+        }),
+        timestamp: Date.now()
+      };
+
+      return new Promise((resolve, reject) => {
+        const transaction = this.db!.transaction([this.STORE_NAME], 'readwrite');
+        const store = transaction.objectStore(this.STORE_NAME);
+        const request = store.add(photo);
+
+        request.onsuccess = () => {
+          this.photos.unshift(photo);
+          this.render();
+          resolve();
+        };
+
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    private async deletePhoto(id: string): Promise<void> {
+      if (!this.db) return;
+
+      return new Promise((resolve) => {
+        const transaction = this.db!.transaction([this.STORE_NAME], 'readwrite');
+        const store = transaction.objectStore(this.STORE_NAME);
+        store.delete(id);
+
+        transaction.oncomplete = () => {
+          this.photos = this.photos.filter(p => p.id !== id);
+          this.render();
+          this.closeLightbox();
+          resolve();
+        };
+      });
+    }
+
+    private async clearAllPhotos(): Promise<void> {
+      if (!this.db) return;
+
+      if (!confirm('Are you sure you want to delete all photos? This cannot be undone.')) {
+        return;
+      }
+
+      return new Promise((resolve) => {
+        const transaction = this.db!.transaction([this.STORE_NAME], 'readwrite');
+        const store = transaction.objectStore(this.STORE_NAME);
+        store.clear();
+
+        transaction.oncomplete = () => {
+          this.photos = [];
+          this.render();
+          resolve();
+        };
+      });
+    }
+
+    private setupEventListeners() {
+      const uploadArea = document.getElementById('uploadArea');
+      const photoInput = document.getElementById('photoInput') as HTMLInputElement;
+      const selectBtn = document.getElementById('selectPhotos');
+      const takePhotoBtn = document.getElementById('takePhoto');
+      const clearAllBtn = document.getElementById('clearAll');
+      const lightbox = document.getElementById('lightbox');
+      const lightboxClose = document.getElementById('lightboxClose');
+      const lightboxPrev = document.getElementById('lightboxPrev');
+      const lightboxNext = document.getElementById('lightboxNext');
+      const lightboxDelete = document.getElementById('lightboxDelete');
+
+      // Click to upload
+      uploadArea?.addEventListener('click', () => photoInput?.click());
+      selectBtn?.addEventListener('click', () => photoInput?.click());
+
+      // Take photo (camera capture)
+      takePhotoBtn?.addEventListener('click', () => {
+        const cameraInput = document.createElement('input');
+        cameraInput.type = 'file';
+        cameraInput.accept = 'image/*';
+        cameraInput.capture = 'environment';
+        cameraInput.addEventListener('change', (e) => this.handleFileSelect(e));
+        cameraInput.click();
+      });
+
+      // File selection
+      photoInput?.addEventListener('change', (e) => this.handleFileSelect(e));
+
+      // Drag and drop
+      uploadArea?.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+      });
+
+      uploadArea?.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragover');
+      });
+
+      uploadArea?.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        const files = (e as DragEvent).dataTransfer?.files;
+        if (files) this.processFiles(files);
+      });
+
+      // Clear all
+      clearAllBtn?.addEventListener('click', () => this.clearAllPhotos());
+
+      // Lightbox controls
+      lightboxClose?.addEventListener('click', () => this.closeLightbox());
+      lightboxPrev?.addEventListener('click', () => this.navigateLightbox(-1));
+      lightboxNext?.addEventListener('click', () => this.navigateLightbox(1));
+      lightboxDelete?.addEventListener('click', () => {
+        const photo = this.photos[this.currentLightboxIndex];
+        if (photo && confirm('Delete this photo?')) {
+          this.deletePhoto(photo.id);
+        }
+      });
+
+      // Close lightbox on background click
+      lightbox?.addEventListener('click', (e) => {
+        if (e.target === lightbox) this.closeLightbox();
+      });
+
+      // Keyboard navigation
+      document.addEventListener('keydown', (e) => {
+        if (!lightbox?.classList.contains('active')) return;
+        if (e.key === 'Escape') this.closeLightbox();
+        if (e.key === 'ArrowLeft') this.navigateLightbox(-1);
+        if (e.key === 'ArrowRight') this.navigateLightbox(1);
+      });
+    }
+
+    private handleFileSelect(event: Event) {
+      const input = event.target as HTMLInputElement;
+      if (input.files) {
+        this.processFiles(input.files);
+      }
+    }
+
+    private async processFiles(files: FileList) {
+      const validTypes = ['image/jpeg', 'image/png', 'image/heic', 'image/heif', 'image/webp'];
+
+      for (const file of Array.from(files)) {
+        if (validTypes.includes(file.type) || file.type.startsWith('image/')) {
+          try {
+            const dataUrl = await this.readFileAsDataUrl(file);
+            // Resize large images to save storage
+            const resizedUrl = await this.resizeImage(dataUrl, 1920);
+            await this.savePhoto(resizedUrl);
+          } catch (error) {
+            console.error('Error processing file:', error);
+          }
+        }
+      }
+    }
+
+    private readFileAsDataUrl(file: File): Promise<string> {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(file);
+      });
+    }
+
+    private resizeImage(dataUrl: string, maxWidth: number): Promise<string> {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          if (img.width <= maxWidth) {
+            resolve(dataUrl);
+            return;
+          }
+
+          const canvas = document.createElement('canvas');
+          const ratio = maxWidth / img.width;
+          canvas.width = maxWidth;
+          canvas.height = img.height * ratio;
+
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+          resolve(canvas.toDataURL('image/jpeg', 0.85));
+        };
+        img.src = dataUrl;
+      });
+    }
+
+    private openLightbox(index: number) {
+      this.currentLightboxIndex = index;
+      const photo = this.photos[index];
+      if (!photo) return;
+
+      const lightbox = document.getElementById('lightbox');
+      const lightboxImage = document.getElementById('lightboxImage') as HTMLImageElement;
+      const lightboxInfo = document.getElementById('lightboxInfo');
+
+      if (lightboxImage) lightboxImage.src = photo.data;
+      if (lightboxInfo) {
+        const dateSpan = lightboxInfo.querySelector('.lightbox-date');
+        if (dateSpan) dateSpan.textContent = photo.date;
+      }
+
+      lightbox?.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    private closeLightbox() {
+      const lightbox = document.getElementById('lightbox');
+      lightbox?.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    private navigateLightbox(direction: number) {
+      const newIndex = this.currentLightboxIndex + direction;
+      if (newIndex >= 0 && newIndex < this.photos.length) {
+        this.openLightbox(newIndex);
+      }
+    }
+
+    private render() {
+      const grid = document.getElementById('photoGrid');
+      const emptyState = document.getElementById('emptyState');
+      const toolbar = document.getElementById('galleryToolbar');
+      const photoCount = document.getElementById('photoCount');
+
+      if (!grid || !emptyState) return;
+
+      // Show/hide elements based on photo count
+      if (this.photos.length > 0) {
+        emptyState.style.display = 'none';
+        grid.style.display = 'grid';
+        if (toolbar) toolbar.style.display = 'flex';
+        if (photoCount) photoCount.textContent = `${this.photos.length} photo${this.photos.length !== 1 ? 's' : ''}`;
+      } else {
+        emptyState.style.display = 'block';
+        grid.style.display = 'none';
+        if (toolbar) toolbar.style.display = 'none';
+      }
+
+      // Render photos
+      grid.innerHTML = this.photos.map((photo, index) => `
+        <div class="photo-item" data-index="${index}" data-id="${photo.id}">
+          <img src="${photo.data}" alt="Trip photo" loading="lazy" />
+          <div class="photo-overlay">
+            <span class="photo-date">${photo.date}</span>
+          </div>
+        </div>
+      `).join('');
+
+      // Add click handlers for lightbox
+      grid.querySelectorAll('.photo-item').forEach((item) => {
+        item.addEventListener('click', () => {
+          const index = parseInt(item.getAttribute('data-index') || '0');
+          this.openLightbox(index);
+        });
+      });
+    }
+  }
+
+  // Initialize gallery when DOM is ready
+  document.addEventListener('DOMContentLoaded', () => {
+    new PhotoGallery();
+  });
+</script>
+
+<style>
+  .gallery-page {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: var(--spacing-6);
+  }
+
+  .page-header h1 {
+    font-size: var(--font-size-3xl);
+    color: var(--color-earth-800);
+    margin-bottom: var(--spacing-2);
+  }
+
+  .subtitle {
+    color: var(--color-earth-600);
+    font-size: var(--font-size-lg);
+  }
+
+  /* Upload Section */
+  .upload-section {
+    margin-bottom: var(--spacing-6);
+  }
+
+  .upload-area {
+    border: 2px dashed var(--color-earth-300);
+    border-radius: var(--radius-card);
+    padding: var(--spacing-8);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: var(--color-cream-50);
+  }
+
+  .upload-area:hover,
+  .upload-area.dragover {
+    border-color: var(--color-gold-500);
+    background: var(--color-gold-50);
+  }
+
+  .upload-icon {
+    color: var(--color-gold-500);
+    margin-bottom: var(--spacing-3);
+  }
+
+  .upload-text {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--color-earth-700);
+    margin-bottom: var(--spacing-1);
+  }
+
+  .upload-hint {
+    color: var(--color-earth-500);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--spacing-2);
+  }
+
+  .upload-formats {
+    color: var(--color-earth-400);
+    font-size: var(--font-size-xs);
+  }
+
+  .upload-actions {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-3);
+    margin-top: var(--spacing-4);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3) var(--spacing-5);
+    border-radius: var(--radius-button);
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--color-gold-500), var(--color-orange-500));
+    color: white;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .btn-secondary {
+    background: white;
+    color: var(--color-earth-700);
+    border: 2px solid var(--color-earth-300);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--color-gold-500);
+    color: var(--color-gold-700);
+  }
+
+  .btn-text-danger {
+    background: none;
+    color: var(--color-red-600);
+    padding: var(--spacing-2) var(--spacing-3);
+  }
+
+  .btn-text-danger:hover {
+    background: var(--color-red-50);
+  }
+
+  /* Gallery Toolbar */
+  .gallery-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-4);
+    padding: var(--spacing-3) var(--spacing-4);
+    background: var(--color-cream-100);
+    border-radius: var(--radius-button);
+  }
+
+  .photo-count {
+    font-weight: 600;
+    color: var(--color-earth-700);
+  }
+
+  /* Photo Grid */
+  .photo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--spacing-3);
+  }
+
+  .photo-item {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: var(--radius-card);
+    cursor: pointer;
+    background: var(--color-earth-100);
+  }
+
+  .photo-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .photo-item:hover img {
+    transform: scale(1.05);
+  }
+
+  .photo-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: var(--spacing-3);
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    color: white;
+    font-size: var(--font-size-sm);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .photo-item:hover .photo-overlay {
+    opacity: 1;
+  }
+
+  /* Lightbox */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .lightbox.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: var(--spacing-4);
+    right: var(--spacing-4);
+    background: none;
+    border: none;
+    color: white;
+    font-size: 40px;
+    cursor: pointer;
+    z-index: 10;
+    line-height: 1;
+  }
+
+  .lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    padding: var(--spacing-3);
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background 0.2s ease;
+  }
+
+  .lightbox-nav:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .lightbox-prev {
+    left: var(--spacing-4);
+  }
+
+  .lightbox-next {
+    right: var(--spacing-4);
+  }
+
+  .lightbox-content {
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .lightbox-content img {
+    max-width: 100%;
+    max-height: 80vh;
+    object-fit: contain;
+    border-radius: var(--radius-card);
+  }
+
+  .lightbox-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+    margin-top: var(--spacing-4);
+    color: white;
+  }
+
+  .lightbox-delete {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    background: rgba(255, 59, 48, 0.2);
+    border: 1px solid rgba(255, 59, 48, 0.5);
+    color: #ff3b30;
+    padding: var(--spacing-2) var(--spacing-3);
+    border-radius: var(--radius-button);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    transition: background 0.2s ease;
+  }
+
+  .lightbox-delete:hover {
+    background: rgba(255, 59, 48, 0.4);
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: var(--spacing-8) var(--spacing-4);
+  }
+
+  .empty-icon {
+    color: var(--color-gold-400);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .empty-state h2 {
+    font-size: var(--font-size-2xl);
+    color: var(--color-earth-700);
+    margin-bottom: var(--spacing-3);
+  }
+
+  .empty-message {
+    color: var(--color-earth-600);
+    font-size: var(--font-size-lg);
+    max-width: 400px;
+    margin: 0 auto var(--spacing-6);
+  }
+
+  /* Photo Tips */
+  .photo-tips {
+    text-align: left;
+    max-width: 500px;
+    margin: 0 auto var(--spacing-8);
+    padding: var(--spacing-5);
+    background: var(--color-cream-50);
+    border-radius: var(--radius-card);
+    border: 1px solid var(--color-earth-200);
+  }
+
+  .photo-tips h3 {
+    font-size: var(--font-size-lg);
+    color: var(--color-earth-700);
+    margin-bottom: var(--spacing-3);
+    text-align: center;
+  }
+
+  .photo-tips ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .photo-tips li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-3);
+    padding: var(--spacing-2) 0;
+    border-bottom: 1px solid var(--color-earth-100);
+  }
+
+  .photo-tips li:last-child {
+    border-bottom: none;
+  }
+
+  .tip-icon {
+    font-size: var(--font-size-lg);
+    flex-shrink: 0;
+  }
+
+  /* Highlight Events */
+  .highlight-events {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .highlight-events h3 {
+    font-size: var(--font-size-lg);
+    color: var(--color-earth-700);
+    margin-bottom: var(--spacing-4);
+    text-align: center;
+  }
+
+  .event-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-3);
+  }
+
+  .event-card {
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-4);
+    background: white;
+    border-radius: var(--radius-card);
+    border: 1px solid var(--color-earth-200);
+    text-align: center;
+  }
+
+  .event-date {
+    font-size: var(--font-size-sm);
+    color: var(--color-gold-600);
+    font-weight: 600;
+  }
+
+  .event-name {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--color-earth-800);
+    margin: var(--spacing-1) 0;
+  }
+
+  .event-tip {
+    font-size: var(--font-size-xs);
+    color: var(--color-earth-500);
+  }
+
+  /* Mobile */
+  @media (max-width: 600px) {
+    .upload-area {
+      padding: var(--spacing-6);
+    }
+
+    .upload-actions {
+      flex-direction: column;
+    }
+
+    .btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .photo-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-2);
+    }
+
+    .event-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .lightbox-nav {
+      padding: var(--spacing-2);
+    }
+
+    .lightbox-prev {
+      left: var(--spacing-2);
+    }
+
+    .lightbox-next {
+      right: var(--spacing-2);
+    }
+  }
+</style>

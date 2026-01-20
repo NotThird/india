@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__filesystem__list_directory",
+      "mcp__filesystem__directory_tree",
+      "mcp__filesystem__read_text_file",
+      "mcp__filesystem__read_multiple_files",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Bash(npx astro build:*)",
+      "Bash(dir \"C:\\\\Users\\\\theth\\\\Projects\\\\india-trip-website\\\\dist\")",
+      "Bash(cmd /c \"npx astro build\")",
+      "Bash(node:*)",
+      "Bash(echo:*)",
+      "Bash(npm:*)",
+      "Bash(dir:*)",
+      "Bash(powershell -Command \"cd ''C:\\\\Users\\\\theth\\\\Projects\\\\india-trip-website''; npm ls 2>&1\")",
+      "Bash(powershell -Command \"cd ''C:\\\\Users\\\\theth\\\\Projects\\\\india-trip-website''; npm install 2>&1\")",
+      "Bash(powershell -Command \"npm view @vite-pwa/astro versions --json 2>&1 | ConvertFrom-Json | Select-Object -Last 10\")",
+      "Bash(powershell -Command \"npm view @vite-pwa/astro@1.2.0 peerDependencies --json 2>&1\")",
+      "Bash(powershell -Command \"cd ''C:\\\\Users\\\\theth\\\\Projects\\\\india-trip-website''; npm run build 2>&1\")",
+      "Bash(powershell -Command:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}

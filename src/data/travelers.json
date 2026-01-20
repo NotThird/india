@@ -23,6 +23,31 @@
           "Not valid for land border crossings"
         ]
       }
+    },
+    {
+      "id": "monica",
+      "name": "Monica Govindarajan",
+      "passport": "651230275",
+      "dob": "1993-06-25",
+      "nationality": "United States of America",
+      "visa": {
+        "type": "e-Tourist Visa",
+        "etaNumber": "902B1557P",
+        "applicationId": "I008V416C625",
+        "issueDate": "2025-11-18",
+        "expiryDate": "2030-11-17",
+        "entries": "multiple",
+        "maxStay": "180 days per calendar year",
+        "activities": "Meeting Friends/Relatives",
+        "status": "GRANTED",
+        "notes": [
+          "Carry ETA email or printed copy - physical passport required at airport",
+          "Biometrics captured on arrival",
+          "Yellow fever card required if arriving from affected countries",
+          "Not valid for land border crossings",
+          "Can arrive at 32 designated airports including Chennai (MAA) and Bangalore (BLR)"
+        ]
+      }
     }
   ]
 }
